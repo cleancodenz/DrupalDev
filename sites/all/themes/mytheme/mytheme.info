@@ -1,0 +1,48 @@
+name = mytheme
+description = A multi-column theme which can be configured to modify colors and switch between fixed and fluid width layouts.
+;screenshot default
+;screenshot = screenshot.png
+version = VERSION
+core = 7.x
+engine = phptemplate
+; if there is a master theme
+;base theme = xxx
+
+;default regions if not defined
+
+regions[pagetop] = Page Top
+regions[header] = Header
+regions[highlighted] = Highlighted
+regions[help] = Help
+regions[content] = Content
+regions[sidebar_first] = Left sidebar
+regions[sidebar_second] = Right sidebar
+regions[footer] = Footer
+regions[pagebottom] = Page Bottom
+
+;default features if none exists, if any exists, only ones exist will appear, others will be suppressed
+
+features[] = logo
+features[] = name
+features[] = slogan
+features[] = node_user_picture
+features[] = comment_user_picture
+features[] = favicon
+features[] = main_menu
+features[] = secondary_menu  
+
+
+
+;stylesheets default
+;stylesheets[all][] = style.css
+stylesheets[all][] = css/screen.css
+stylesheets[all][] = colorcss/colors.css
+;stylesheets[print][] = print.css
+stylesheets[print][] = css/print.css
+
+;scripts[] = /sites/all/mytheme/myscript.js => sites/all/mytheme/sites/all/mytheme/myscript.js
+;scripts default
+;scripts[] = script.js 
+
+;settings[garland_width] = fluid
+
