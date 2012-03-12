@@ -1,3 +1,4 @@
 name = Johnson Current Posts
 description = A module to list all current posts.
 core = 7.x
+files[] = current_posts.test

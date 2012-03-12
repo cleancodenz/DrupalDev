@@ -96,7 +96,7 @@ function current_posts_block_view($delta = '') {
         } 
         else{
           	
-          	//Pass data through theme function.
+        //Pass data through theme function.
   			$block['content']['posts'] = array(
     			'#theme' => 'item_list__current_posts__block',
     			'#items' => $items,
