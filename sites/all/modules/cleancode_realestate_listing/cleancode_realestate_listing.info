@@ -1,0 +1,4 @@
+; $Id$
+name = CleanCode Real Estate Listing
+description = "Enables the creation of cleancode real estate listings."
+core = 7.x
