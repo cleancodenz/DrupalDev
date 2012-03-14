@@ -15,12 +15,12 @@
  *   Array that holds the current path as returned from arg() function
  */
 
-function cleancode_realestate_listing_help($path, $arg) {
+function cleancode_realty_help($path, $arg) {
 	switch ($path) {
-		case 'help/cleancode_realestate_listing':
+		case 'examples/cleancode_realty':
 			return "<p>" . t("The module to provide real estate listing.
 			You can create new real estate listing using the <a href='!nodeadd'>real estate add</a>.",
-			array('!nodeadd' => url('node/add/cleancode_realestate_listing'))) . "</p>";
+			array('!nodeadd' => url('node/add/cleancode_realty'))) . "</p>";
 	}
 }
 
@@ -36,15 +36,15 @@ function cleancode_realestate_listing_help($path, $arg) {
  * Configure the body field. 
  *
  */
-function cleancode_realestate_listing_install() {
+function cleancode_realty_install() {
 
 	// During installation, the t() function is unavailable, so we use get_t()
 	// to store the name of the translation function.
 	$t = get_t();
 
 	// We define the node type as an associative array.
-	$cleancode_realestate_listing = array(
-			'type' => 'cleancode_realestate_listing',
+	$cleancode_realty = array(
+			'type' => 'cleancode_realty',
 			'name' => $t('Real Estate Listing'),
 			// 'base' tells Drupal the base string for hook functions.
 			// This is often the module name; if base is set to 'mymodule', Drupal
@@ -60,7 +60,7 @@ function cleancode_realestate_listing_install() {
 	// Complete the node type definition by setting any defaults not explicitly
 	// declared above.
 	// http://api.drupal.org/api/function/node_type_set_defaults/7
-	$content_type = node_type_set_defaults($cleancode_realestate_listing);
+	$content_type = node_type_set_defaults($cleancode_realty);
 
 	//We add a body field and set the body label immediately.
 	node_add_body_field($content_type, $t('Body Example Description'));
@@ -71,7 +71,7 @@ function cleancode_realestate_listing_install() {
 
 	// Load the instance definition for our content type's body
 	// http://api.drupal.org/api/function/field_info_instance/7
-	$body_instance = field_info_instance('node', 'body', 'cleancode_realestate_listing');
+	$body_instance = field_info_instance('node', 'body', 'cleancode_realty');
 
 	//As an alternative for node_add_body_field($type, $label = 'Body')
 	//the 'label'-key can be used to set the body label on the field instance
@@ -79,7 +79,7 @@ function cleancode_realestate_listing_install() {
 
 	// Add our example_node_list view mode to the body instance display by
 	// instructing the body to display as a summary
-	$body_instance['display']['cleancode_realestate_listing_list'] = array(
+	$body_instance['display']['cleancode_realty_list'] = array(
 			'label' => 'hidden',
 			'type' => 'text_summary_or_trimmed',
 	);
@@ -90,15 +90,15 @@ function cleancode_realestate_listing_install() {
 
 	// Create all the fields we are adding to our content type.
 	// http://api.drupal.org/api/function/field_create_field/7
-	foreach (_cleancode_realestate_listing_installed_fields() as $field) {
+	foreach (_cleancode_realty_installed_fields() as $field) {
 		field_create_field($field);
 	}
 
 	// Create all the instances for our fields.
 	// http://api.drupal.org/api/function/field_create_instance/7
-	foreach (_cleancode_realestate_listing_installed_instances() as $instance) {
+	foreach (_cleancode_realty_installed_instances() as $instance) {
 		$instance['entity_type'] = 'node';
-		$instance['bundle'] = $cleancode_realestate_listing['type'];
+		$instance['bundle'] = $cleancode_realty['type'];
 		field_create_instance($instance);
 	}
 
@@ -113,12 +113,12 @@ function cleancode_realestate_listing_install() {
  *
  */
 
-function cleancode_realestate_listing_uninstall() {
+function cleancode_realty_uninstall() {
 	// Gather all the example content that might have been created while this
 	// module was enabled.  Simple selects still use db_query().
 	// http://api.drupal.org/api/function/db_query/7
 	$sql = 'SELECT nid FROM {node} n WHERE n.type = :type';
-	$result = db_query($sql, array(':type' => 'cleancode_realestate_listing'));
+	$result = db_query($sql, array(':type' => 'cleancode_realty'));
 	$nids = array();
 	foreach ($result as $row) {
 		$nids[] = $row->nid;
@@ -131,21 +131,21 @@ function cleancode_realestate_listing_uninstall() {
 	// Loop over each of the fields defined by this module and delete
 	// all instances of the field, their data, and the field itself.
 	// http://api.drupal.org/api/function/field_delete_field/7
-	foreach (array_keys(_cleancode_realestate_listing_installed_fields()) as $field) {
+	foreach (array_keys(_cleancode_realty_installed_fields()) as $field) {
 		field_delete_field($field);
 	}
 
 	// Loop over any remaining field instances attached to the node_example
 	// content type (such as the body field) and delete them individually.
 	// http://api.drupal.org/api/function/field_delete_field/7
-	$instances = field_info_instances('node', 'cleancode_realestate_listing');
+	$instances = field_info_instances('node', 'cleancode_realty');
 	foreach ($instances as $instance_name => $instance) {
 		field_delete_instance($instance);
 	}
 
 	// Delete our content type
 	// http://api.drupal.org/api/function/node_type_delete/7
-	node_type_delete('cleancode_realestate_listing');
+	node_type_delete('cleancode_realty');
 
 	// Purge all field infromation
 	// http://api.drupal.org/api/function/field_purge_batch/7
@@ -158,26 +158,26 @@ function cleancode_realestate_listing_uninstall() {
  *
  */
 
-function _cleancode_realestate_listing_installed_fields() {
+function _cleancode_realty_installed_fields() {
 	
 	$t = get_t();
 	
 	return array(
-			'cleancode_realestate_listing_color' => array(
-					'field_name' => 'cleancode_realestate_listing_color',
+			'cleancode_realty_color' => array(
+					'field_name' => 'cleancode_realty_color',
 					'cardinality' => 3,
 					'type' => 'text',
 					'settings' => array(
 							'max_length' => 60,
 					),
 			),
-			'cleancode_realestate_listing_quantity' => array(
-					'field_name' => 'cleancode_realestate_listing_quantity',
+			'cleancode_realty_quantity' => array(
+					'field_name' => 'cleancode_realty_quantity',
 					'cardinality' => 1,
 					'type' => 'text',
 			),
-			'cleancode_realestate_listing_image' => array(
-					'field_name' => 'cleancode_realestate_listing_image',
+			'cleancode_realty_image' => array(
+					'field_name' => 'cleancode_realty_image',
 					'type' => 'image',
 					'cardinality' => 1,
 			),
@@ -193,47 +193,48 @@ function _cleancode_realestate_listing_installed_fields() {
  *
  */
 
-function _cleancode_realestate_listing_installed_instances() {
+function _cleancode_realty_installed_instances() {
 
 	$t = get_t();
 	return array(
-			'cleancode_realestate_listing_color' => array(
-					'field_name' => 'cleancode_realestate_listing_color',
-					'label' => $t('The colors available for this object.'),
+			'cleancode_realty_color' => array(
+					'field_name' => 'cleancode_realty_color',
+					'label' => $t('The colors available for this object.'),  // label above the field
 					'widget' => array(
 							'type' => 'text_textfield',
 					),
 					'display' => array(
-							'cleancode_realestate_listing_list' => array(
+							'cleancode_realty_list' => array(
 									'label' => 'hidden',
-									'type' => 'cleancode_realestate_listing_colors',
+									// there is a view defined against this type
+									'type' => 'cleancode_realty_colors',
 							),
 					),
 			),
-			'cleancode_realestate_listing_quantity' => array(
-					'field_name' => 'cleancode_realestate_listing_quantity',
+			'cleancode_realty_quantity' => array(
+					'field_name' => 'cleancode_realty_quantity',
 					'label' => $t('Quantity required'),
 					'type' => 'text',
 					'widget' => array(
 							'type' => 'text_textfield',
 					),
 					'display' => array(
-							'cleancode_realestate_listing_list' => array(
+							'cleancode_realty_list' => array(
 									'label' => 'hidden',
 									'type' => 'hidden',
 							),
 					),
 			),
-			'cleancode_realestate_listing_image' => array(
-					'field_name' => 'cleancode_realestate_listing_image',
-					'label' => $t('Upload an image:'),
+			'cleancode_realty_image' => array(
+					'field_name' => 'cleancode_realty_image',
+					'label' => $t('Upload an image:'), // label above the field
 					'required' => FALSE,
 					'widget' => array(
 							'type' => 'image_image',
 							'weight' => 2.10,
 					),
 					'display' => array(
-							'cleancode_realestate_listing_list' => array(
+							'cleancode_realty_list' => array(
 									'label' => 'hidden',
 									'type' => 'image_link_content__thumbnail',
 							),
@@ -251,12 +252,142 @@ function _cleancode_realestate_listing_installed_instances() {
  *
  */
 
-function cleancode_realestate_listing_theme($existing, $type, $theme, $path) {
+function cleancode_realty_theme($existing, $type, $theme, $path) {
 	return array(
-			'cleancode_realestate_listing_color' => array(
+			'cleancode_realty_color' => array(
 					'variables' => array('color' => NULL),
 			),
 	);
+}
+
+/**
+ * A custom theme function.
+ * By using this function to format our node-specific information, 
+ * themes can override this presentation if they wish. 
+ * 
+ * This is a simplifed theme function purely for illustrative purposes
+ * 
+ *
+ *
+ */
+
+function theme_cleancode_realty_color($variables) {
+	$output = '<span style="background-color: #ccc; padding: 1em; margin-bottom: 1em; float: left; color: ' .
+	 $variables['color'] . '">' . $variables['color'] . '</span>';
+	return $output;
+}
+
+
+/**
+ * Implements hook_field_formatter_view().
+ * 
+ * @todo: We need to provide a formatter for the colors that a user is allowed to enter during node creation.
+ *
+ *
+ *$entity_type: The type of $entity.
+ *$entity: The entity being displayed.
+ *$field: The field structure.
+ *$instance: The field instance.
+ *$langcode: The language associated with $items.
+ *$items: Array of values for this field.
+ *$display: The display settings to use, as found in the 'display' entry of instance definitions. The array notably contains the following keys and values
+ *
+ *  type: The name of the formatter to use.
+ *  settings: The array of formatter settings.
+ *  
+ *  Return value
+ *  A renderable array for the $items, as an array of child elements keyed by numeric indexes starting from 0.
+
+ *
+ */
+
+function cleancode_realty_field_formatter_view($object_type, $object, $field, $instance, $langcode, $items, $display) {
+	$element = array();
+	switch ($display['type']) {
+		case 'cleancode_realty_colors':
+			foreach ($items as $delta => $item) {
+				$element[$delta]['#type'] = 'markup';
+				$color = $item['safe_value'];
+				$element[$delta]['#markup'] = theme('cleancode_realty_color', array('color' => $color));
+			}
+			break;
+	}
+
+	return $element;
+}
+
+/**
+ * Implements hook_field_formatter_info().
+ *
+ *
+ *
+ */
+
+function cleancode_realty_field_formatter_info() {
+	return array(
+			'cleancode_realty_colors' => array(
+					'label' => t('Clean code  Example Color Handle'),
+					'field types' => array('text'),
+			),
+	);
+}
+
+
+
+/**
+ * Implements hook_menu().
+ *
+ * We are providing a default page to illustrate the use of our custom node view mode that will 
+ * live at http://example.com/?q=examples/node_example
+ *
+ */
+
+function cleancode_realty_menu() {
+	
+	$items['examples/cleancode_realty'] = array(
+			'page callback' => 'cleancode_realty_page',
+			'access arguments' => array('access content'),
+			'title' => 'CleanCode RealEstate Example',
+	);
+	return $items;
+	
+}
+
+
+
+/**
+ * 
+ * Callback that builds our content and returns it to the browser.
+ * This callback comes from hook_menu().
+ * Return value
+ * a build array a renderable array showing a list of our nodes
+ *
+ */
+
+function cleancode_realty_page() {
+	// We'll start building a renderable array that will be our page.
+	// For now we just declare the array.
+	$renderable_array = array();
+	// We query the database and find all of the nodes for the type we defined.
+	$sql = 'SELECT nid FROM {node} n WHERE n.type = :type AND n.status = :status';
+	$result = db_query($sql,
+			array(
+					':type' => 'cleancode_realty',
+					':status' => 1,
+			)
+	);
+	$renderable_array['explanation'] = array(
+			'#markup' => t("Node Example nodes you've created will be displayed here. Note that the color fields will be displayed differently in this list, than if you view the node normally. Click on the node title to see the difference. This is a result of using our 'example_node_list' node view type."),
+	);
+	// Loop through each of our node_example nodes and instruct node_view
+	// to use our "example_node_list" view.
+	// http://api.drupal.org/api/function/node_load/7
+	// http://api.drupal.org/api/function/node_view/7
+	foreach ($result as $row) {
+		$node = node_load($row->nid);
+		$renderable_array['node_list'][] = node_view($node, 'cleancode_realty_list');
+	}
+	return $renderable_array;
 }
 
 
@@ -267,7 +398,7 @@ function cleancode_realestate_listing_theme($existing, $type, $theme, $path) {
  *
  *
  */
-function cleancode_realestate_listing_permission() {
+function cleancode_realty_permission() {
 
 	return array(
 			'create cc real estate listing' =>
@@ -298,7 +429,7 @@ function cleancode_realestate_listing_permission() {
  * @param account
  *
  */
-function cleancode_realestate_listing_access($op, $node, $account) {
+function cleancode_realty_access($op, $node, $account) {
 
 	if ($op == 'create') {
 		// Only users with permission to do so may create this node type.
@@ -320,48 +451,23 @@ function cleancode_realestate_listing_access($op, $node, $account) {
 		}
 	}
 
-
 }
 
 
 /**
- * Implements hook_form.
- *
- * Form collecting the information.
- *
- * @param form
- *
- * @param formstate
+ * Implements hook_entity_info_alter().
+ * 
+ * We need to modify the default node entity info by adding a new view mode to be used in functions like node_view() or node_build_content().
  *
  *
  */
-function cleancode_realestate_listing_form($form, &$form_state) {
 
-	$type = node_get_types('type', $form);
-
-	// We need to define form elements for the node's title and body.
-	$form['title'] = array(
-			'#type' => 'textfield',
-			'#title' => check_plain($type->title_label),
-			'#required' => TRUE,
-			'#default_value' => $form->title,
-			'#weight' => -5
+function cleancode_realty_entity_info_alter(&$entity_info) {
+	// Add our new view mode to the list of view modes...
+	$entity_info['node']['view modes']['cleancode_realty_list'] = array(
+			'label' => t('Cleancode RealEstate Node List'),
+			'custom settings' => TRUE,
 	);
-
-	// We want the body and filter elements to be adjacent. We could try doing
-	// this by setting their weights, but another module might add elements to the
-	// form with the same weights and end up between ours. By putting them into a
-	// sub-array together, we're able force them to be rendered together.
-	$form['body_filter']['body'] = array(
-			'#type' => 'textarea',
-			'#title' => check_plain($type->body_label),
-			'#default_value' => $form->body,
-			'#required' => FALSE
-	);
-
-	$form['body_filter']['filter'] = filter_form($form->format);
-
-
-	return system_settings_form($form);
-
 }
+
+
