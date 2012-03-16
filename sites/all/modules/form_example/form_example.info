@@ -1,0 +1,4 @@
+; $Id$
+name = FORM EXAMPLE
+description = "FORM EXAMPLE."
+core = 7.x

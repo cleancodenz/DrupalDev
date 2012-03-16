@@ -191,6 +191,14 @@ function _cleancode_realty_installed_fields() {
  *We are going to display a page that uses a custom "node_example_list" view mode. 
  *We will set a cardinality of three allowing our content type to give the user three color fields.
  *
+ *About display item
+ *
+ *  label (string): Position of the label. 'inline', 'above' and 'hidden' are the values recognized by the default 'field' theme implementation.
+ *  type (string): The type of the display formatter, or 'hidden' for no display.
+ *  settings (array): A sub-array of key/value pairs of display options specific to the formatter.
+ *  weight (float): The weight of the field relative to the other entity components displayed in this view mode.
+ *  module (string, read-only): The name of the module which implements the display formatter.
+
  */
 
 function _cleancode_realty_installed_instances() {
@@ -265,6 +273,8 @@ function cleancode_realty_theme($existing, $type, $theme, $path) {
  * By using this function to format our node-specific information, 
  * themes can override this presentation if they wish. 
  * 
+ * Theme functions return strings, so inside them function we call other theme functions directly  
+ * rather than using array
  * This is a simplifed theme function purely for illustrative purposes
  * 
  *
@@ -390,6 +400,23 @@ function cleancode_realty_page() {
 	return $renderable_array;
 }
 
+/**
+ * Implements hook_entity_info_alter().
+ *
+ * We need to modify the default node entity info by adding a new view mode to be used in functions like node_view() or node_build_content().
+ *
+ *
+ */
+
+function cleancode_realty_entity_info_alter(&$entity_info) {
+	// Add our new view mode to the list of view modes...
+	$entity_info['node']['view modes']['cleancode_realty_list'] = array(
+			'label' => t('Cleancode RealEstate Node List'),
+			'custom settings' => TRUE,
+	);
+}
+
+
 
 /**
  * Implements hook_permission.
@@ -454,20 +481,5 @@ function cleancode_realty_access($op, $node, $account) {
 }
 
 
-/**
- * Implements hook_entity_info_alter().
- * 
- * We need to modify the default node entity info by adding a new view mode to be used in functions like node_view() or node_build_content().
- *
- *
- */
-
-function cleancode_realty_entity_info_alter(&$entity_info) {
-	// Add our new view mode to the list of view modes...
-	$entity_info['node']['view modes']['cleancode_realty_list'] = array(
-			'label' => t('Cleancode RealEstate Node List'),
-			'custom settings' => TRUE,
-	);
-}
 
 

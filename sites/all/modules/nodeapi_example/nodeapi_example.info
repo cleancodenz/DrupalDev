@@ -1,0 +1,4 @@
+; $Id$
+name = NODEAPI EXAMPLE
+description = "NODEAPI EXAMPLE."
+core = 7.x
