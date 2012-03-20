@@ -161,4 +161,10 @@ function form_example_intro() {
 }
 
 
+function form_example_element_info() {
+	require_once('form_example_elements.inc');
+	return _form_example_element_info();
+}
+
+
 
