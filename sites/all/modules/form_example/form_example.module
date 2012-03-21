@@ -166,5 +166,13 @@ function form_example_element_info() {
 	return _form_example_element_info();
 }
 
+/*
+ * All theme hooks needs to be registered
+ *  
+ * */
 
+function form_example_theme($existing, $type, $theme, $path) {
+	require_once('form_example_elements.inc');
+	return _form_example_element_theme($existing, $type, $theme, $path);
+}
 

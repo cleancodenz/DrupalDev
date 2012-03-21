@@ -1,0 +1,210 @@
+<?php 
+
+/**
+ * The primary formbuilder function for the wizard form. This is the form that you should call with drupal_get_form() from your code, and it will include the rest of the step forms defined. You are not required to change this function, as this will handle all the step actions for you.
+ * This form has two defined submit handlers to process the different steps:
+ * 
+ * Previous: handles the way to get back one step in the wizard.
+ * Next: handles each step form submission,
+ * 
+ * The third handler, the finish button handler, is the default form _submit handler used to process the information.
+ * 
+ * You are not required to change the next or previous handlers, but you must change the form_example_wizard_sbumit handler to perform the operations you need on the collected information.
+ * 
+ *  
+ * 
+ * */
+
+
+function form_example_wizard($form, &$form_state) {
+
+	// Initialize a description of the steps for the wizard.
+	if (empty($form_state['step'])) {
+		$form_state['step'] = 1;
+
+		// This array contains the function to be called at each step to get the
+		// relevant form elements. It will also store state information for each
+		// step.
+		$form_state['step_information'] = _form_example_steps();
+	}
+	$step = &$form_state['step'];
+	drupal_set_title(t('Extensible Wizard: Step @step', array('@step' => $step)));
+
+	// Call the function named in $form_state['step_information'] to get the
+	// form elements to display for this step.
+	$form = $form_state['step_information'][$step]['form']($form, $form_state);
+
+	// Show the 'previous' button if appropriate. Note that #submit is set to
+	// a special submit handler, and that we use #limit_validation_errors to
+	// skip all complaints about validation when using the back button. The
+	// values entered will be discarded, but they will not be validated, which
+	// would be annoying in a "back" button.
+	if ($step > 1) {
+		$form['prev'] = array(
+				'#type' => 'submit',
+				'#value' => t('Previous'),
+				'#name' => 'prev',
+				'#submit' => array('form_example_wizard_previous_submit'),
+				'#limit_validation_errors' => array(),
+		);
+	}
+
+	// Show the Next button only if there are more steps defined.
+	if ($step < count($form_state['step_information'])) {
+		// The Next button should be included on every step
+		$form['next'] = array(
+				'#type' => 'submit',
+				'#value' => t('Next'),
+				'#name' => 'next',
+				'#submit' => array('form_example_wizard_next_submit'),
+		);
+	}
+	else {
+		// Just in case there are no more steps, we use the default submit handler
+		// of the form wizard. Call this button Finish, Submit, or whatever you
+		// want to show. When this button is clicked, the
+		// form_example_wizard_submit handler will be called.
+		$form['finish'] = array(
+				'#type' => 'submit',
+				'#value' => t('Finish'),
+		);
+	}
+
+	// Include each validation function defined for the different steps.
+	if (function_exists($form_state['step_information'][$step]['form'] . '_validate')) {
+		$form['next']['#validate'] = array($form_state['step_information'][$step]['form'] . '_validate');
+	}
+
+	return $form;
+}
+
+
+/**
+ * Returns form elements for the 'location info' page of the wizard. This is the second step of the wizard. This step asks for a textfield value: a City. This step also includes a validation declared later.
+ * 
+ * 
+ * */
+function form_example_wizard_location_info($form, &$form_state) {
+	$form = array();
+	$form['city'] = array(
+			'#type' => 'textfield',
+			'#title' => t('City'),
+			'#description' => t('Hint: Do not enter "San Francisco", and do not leave this out.'),
+			'#required' => TRUE,
+			'#default_value' => !empty($form_state['values']['city']) ? $form_state['values']['city'] : '',
+	);
+	return $form;
+}
+
+/**Custom validation form for the 'location info' page of the wizard.
+ * This is the validation function for the second step of the wizard. The city cannot be empty or be "San Francisco".
+ * 
+ * */
+function form_example_wizard_location_info_validate($form, &$form_state) {
+	if ($form_state['values']['city'] == 'San Francisco') {
+		form_set_error('city', t('You were warned not to enter "San Francisco"'));
+	}
+}
+
+/**
+ * Submit handler for the 'next' button.
+ *  Saves away $form_state['values']
+ *   Increments the step count.
+ *   Replace $form_state['values'] from the last time we were at this page or with array() if we haven't been here before.
+ *   Force form rebuild.
+ *   
+ *   You are not required to change this function.
+ * 
+ * */
+
+function form_example_wizard_next_submit($form, &$form_state) {
+	$current_step = &$form_state['step'];
+	$form_state['step_information'][$current_step]['stored_values'] = $form_state['values'];
+
+	if ($current_step < count($form_state['step_information'])) {
+		$current_step++;
+		if (!empty($form_state['step_information'][$current_step]['stored_values'])) {
+			$form_state['values'] = $form_state['step_information'][$current_step]['stored_values'];
+		}
+		else {
+			$form_state['values'] = array();
+		}
+		$form_state['rebuild'] = TRUE; // Force rebuild with next step.
+		return;
+	}
+}
+
+/*
+ * Returns form elements for the 'other info' page of the wizard. This is the thid and last step of the example wizard.
+ * 
+ * */
+function form_example_wizard_other_info($form, &$form_state) {
+	$form = array();
+	$form['aunts_name'] = array(
+			'#type' => 'textfield',
+			'#title' => t("Your first cousin's aunt's Social Security number"),
+			'#default_value' => !empty($form_state['values']['aunts_name']) ? $form_state['values']['aunts_name'] : '',
+	);
+	return $form;
+}
+
+/**
+ * 
+ * Returns form elements for the 'personal info' page of the wizard. This is the first step of the wizard, asking for two textfields: first name and last name.
+ * 
+ * */
+function form_example_wizard_personal_info($form, &$form_state) {
+	$form = array();
+	$form['first_name'] = array(
+			'#type' => 'textfield',
+			'#title' => t('First Name'),
+			'#default_value' => !empty($form_state['values']['first_name']) ? $form_state['values']['first_name'] : '',
+	);
+	$form['last_name'] = array(
+			'#type' => 'textfield',
+			'#title' => t('Last Name'),
+			'#default_value' => !empty($form_state['values']['last_name']) ? $form_state['values']['last_name'] : '',
+	);
+	return $form;
+}
+
+/*
+ *Submit handler for the "previous" button.
+ *   Stores away $form_state['values']
+ *   Decrements the step counter
+ *   Replaces $form_state['values'] with the values from the previous state.
+ *   Forces form rebuild.
+ *   
+ *   You are not required to change this function. 
+ * 
+ * */
+function form_example_wizard_previous_submit($form, &$form_state) {
+	$current_step = &$form_state['step'];
+	$form_state['step_information'][$current_step]['stored_values'] = $form_state['values'];
+	if ($current_step > 1) {
+		$current_step--;
+		$form_state['values'] = $form_state['step_information'][$current_step]['stored_values'];
+	}
+	$form_state['rebuild'] = TRUE;
+}
+
+
+/*
+ * Returns the list of steps and their associated forms. This has been separated to clarify and easy the understanding of this example. You should edit this function to include the steps your wizard/multistep form requires
+ * 
+ * 
+ * */
+function _form_example_steps() {
+	return array(
+			1 => array(
+					'form' => 'form_example_wizard_personal_info',
+			),
+			2 => array(
+					'form' => 'form_example_wizard_location_info',
+			),
+			3 => array(
+					'form' => 'form_example_wizard_other_info',
+			),
+	);
+}
+

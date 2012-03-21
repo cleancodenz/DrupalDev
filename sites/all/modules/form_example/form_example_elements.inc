@@ -201,6 +201,11 @@ function form_type_form_example_checkbox_value($element, $input = FALSE) {
 	}
 }
 
+function theme_form_example_checkbox($variables) {
+	$element = $variables['element'];
+	return theme('checkbox', $element);
+}
+
 
 function theme_form_example_inline_form_element($variables) {
 	$element = $variables['element'];
@@ -351,9 +356,6 @@ function _form_example_element_theme() {
 	);
 }
 
-function theme_form_example_checkbox($variables) {
-	$element = $variables['element'];
-	return theme('checkbox', $element);
-}
+
 
 
