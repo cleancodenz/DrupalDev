@@ -1,0 +1,4 @@
+; $Id$
+name = ACTION EXAMPLE
+description = "ACTION EXAMPLE."
+core = 7.x
