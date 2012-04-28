@@ -75,7 +75,7 @@ function current_posts_block_view($delta = '') {
   switch($delta){
     case 'current_posts':
       
-      $block['subject'] = t('Johnson current posts');
+      $block['subject'] = t('Johnson current posts22222222');
       
       if(user_access('access content')){
        //Retrieve and process data here.
@@ -191,7 +191,7 @@ function current_posts_permission(){
 */
 function _current_posts_page() {
   
-  drupal_set_title('Johnson current posts');
+  drupal_set_title('Johnson current posts11111111');
   
   $result = current_posts_contents('page');
   //Array to contain items for the page to render.
