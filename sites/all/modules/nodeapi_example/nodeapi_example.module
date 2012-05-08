@@ -149,40 +149,7 @@ function nodeapi_example_node_view($node, $build_mode = 'full') {
 }
 
 
-function nodeapi_example_schema() {
-	$schema['nodeapi_example'] = array(
-			'description' => 'Stores information of extended content.',
-			'fields' => array(
-					'nid' => array(
-							'description' => 'Node ID that the rating is applied to.',
-							'type' => 'int',
-							'unsigned' => TRUE,
-							'not null' => TRUE,
-							'default' => 0,
-					),
-					'vid' => array(
-							'description' => 'Revision ID, as we are tracking rating with node revisions',
-							'type' => 'int',
-							'unsigned' => TRUE,
-							'not null' => TRUE,
-							'default' => 0,
-					),
-					'rating' => array(
-							'description' => 'The rating of the node.',
-							'type' => 'int',
-							'unsigned' => TRUE,
-							'not null' => TRUE,
-							'default' => 0,
-					),
-			),
-			'primary key' => array('vid'),
-			'indexes' => array(
-					'nid' => array('nid'),
-			),
-	);
 
-	return $schema;
-}
 
 function nodeapi_example_theme() {
 	return array(
@@ -193,17 +160,7 @@ function nodeapi_example_theme() {
 }
 
 
-function nodeapi_example_uninstall() {
-	// Simple DB query to get the names of our variables.
-	$results = db_select('variable', 'v')
-	->fields('v', array('name'))
-	->condition('name', 'nodeapi_example_node_type_%', 'LIKE')
-	->execute();
-	// Loop through and delete each of our variables.
-	foreach ($results as $result) {
-		variable_del($result->name);
-	}
-}
+
 
 function theme_nodeapi_example_rating($variables) {
 	$options = array(

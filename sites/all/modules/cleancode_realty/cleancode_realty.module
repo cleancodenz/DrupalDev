@@ -45,7 +45,7 @@ function cleancode_realty_install() {
 	// We define the node type as an associative array.
 	$cleancode_realty = array(
 			'type' => 'cleancode_realty',
-			'name' => $t('Real Estate Listing'),
+			'name' => $t('Real Estate Listing1111'),
 			// 'base' tells Drupal the base string for hook functions.
 			// This is often the module name; if base is set to 'mymodule', Drupal
 			// would call mymodule_insert() or similar for node hooks.
@@ -458,6 +458,14 @@ function cleancode_realty_permission() {
  */
 function cleancode_realty_access($op, $node, $account) {
 
+// Production systems might (should) not have this function
+   if (function_exists('xdebug_break'))
+   {
+      xdebug_break();
+   }
+  
+    
+  
 	if ($op == 'create') {
 		// Only users with permission to do so may create this node type.
 		return user_access('create cc real estate listing', $account);
