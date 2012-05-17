@@ -1,0 +1,12 @@
+<?php 
+/**
+ * Implements hook_menu().
+ */
+function myrender_example_menu() {
+  $items['examples/myrender_example'] = array(
+    'title' => 'My Render Example',
+    'page callback' => 'render_example_info',
+    'access callback' => TRUE,
+  );
+   return $items;
+}
