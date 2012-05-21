@@ -5,8 +5,44 @@
 function myrender_example_menu() {
   $items['examples/myrender_example'] = array(
     'title' => 'My Render Example',
-    'page callback' => 'render_example_info',
+    'page callback' => 'myrender_example_info',
     'access callback' => TRUE,
   );
    return $items;
+}
+
+function myrender_example_info() {
+  /*
+   * Simple example of htm output
+   
+  $demo= array(
+      '#markup' => t('Hello renderer!'),
+    );
+* */
+  
+  /*
+   * this is actually using theme_item_list() in includes/theme.inc
+  
+  
+  $demo= array(
+      '#theme' => 'item_list',
+      '#items' => array('Item 1', 'Item 2', 'Item 3'),
+  );
+  * */
+  
+  
+  /*
+   * theme
+   * */
+  
+  
+  $demo= array(
+      '#theme' => 'item_list',
+      '#items' => array('Item 1', 'Item 2', 'Item 3'),
+      '#title' => t('My item list'),
+      '#type' => 'ol',
+  );
+  
+  
+  return $demo;
 }
