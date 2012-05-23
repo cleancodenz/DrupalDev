@@ -13,6 +13,7 @@ function myrender_example_menu() {
    return $items;
 }
 
+<<<<<<< HEAD
 /**
  * Simple basic information about the module; an entry point.
  */
@@ -59,4 +60,40 @@ function theme_render_array($variables) {
 
   $rendered = '<div class="render-array">' . $heading . $variables['element']['#children'] . '</div>';
   return $rendered;
+=======
+function myrender_example_info() {
+  /*
+   * Simple example of htm output
+   
+  $demo= array(
+      '#markup' => t('Hello renderer!'),
+    );
+* */
+  
+  /*
+   * this is actually using theme_item_list() in includes/theme.inc
+  
+  
+  $demo= array(
+      '#theme' => 'item_list',
+      '#items' => array('Item 1', 'Item 2', 'Item 3'),
+  );
+  * */
+  
+  
+  /*
+   * theme
+   * */
+  
+  
+  $demo= array(
+      '#theme' => 'item_list',
+      '#items' => array('Item 1', 'Item 2', 'Item 3'),
+      '#title' => t('My item list'),
+      '#type' => 'ol',
+  );
+  
+  
+  return $demo;
+>>>>>>> origin/master
 }
