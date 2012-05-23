@@ -5,8 +5,58 @@
 function myrender_example_menu() {
   $items['examples/myrender_example'] = array(
     'title' => 'My Render Example',
-    'page callback' => 'render_example_info',
+    'page callback' => 'myrender_example_info',
     'access callback' => TRUE,
   );
+  
+ 
    return $items;
+}
+
+/**
+ * Simple basic information about the module; an entry point.
+ */
+function myrender_example_info() {
+  
+  
+}
+
+/**
+ * Provides a number of render arrays and show what they do.
+ *
+ * Each array is keyed by a description; it's returned for rendering at page
+ * render time. It's easy to add new examples to this.
+ *
+ * The array items in $demos are intended to be raw, normal render arrays
+ * that can be experimented with to end up with different outcomes.
+ */
+function myrender_example_arrays() {
+  
+  $demos = array(
+  // Demonstrate the simplest markup, a #markup element.
+      t('Super simple #markup')  => array(
+          '#markup' => t('Some basic text in a #markup (shows basic markup and how it is rendered)'),
+      ),
+      );
+  // The rest of this function just places the above arrays in a context where
+  // they can be rendered (hopefully attractively and usefully) on the page.
+  $page_array = array();
+  foreach ($demos as $key => $item) {
+ //   $page_array[$key]['#theme_wrappers'] = array('render_array');
+    $page_array[$key]['#description'] = $key;
+  
+    
+  }
+  
+  return $page_array;
+}
+
+/**
+ * Themes the render array (from the demonstration page).
+ */
+function theme_render_array($variables) {
+  $heading = '<div class="render-header">' . $variables['element']['#description'] . '</div>';
+
+  $rendered = '<div class="render-array">' . $heading . $variables['element']['#children'] . '</div>';
+  return $rendered;
 }
