@@ -5,7 +5,7 @@
 function myrender_example_menu() {
   $items['examples/myrender_example'] = array(
     'title' => 'My Render Example',
-    'page callback' => 'myrender_example_info',
+    'page callback' => 'myrender_example_pageinfo',
     'access callback' => TRUE,
   );
   
@@ -13,12 +13,86 @@ function myrender_example_menu() {
    return $items;
 }
 
-<<<<<<< HEAD
-/**
- * Simple basic information about the module; an entry point.
- */
-function myrender_example_info() {
+
+function myrender_example_pageinfo() {
+    /*
+      * Simple example of htm output
   
+     $demo= array(
+             '#markup' => t('Hello renderer!'),
+           );
+   * */
+  
+     /*
+      * this is actually using theme_item_list() in includes/theme.inc
+  
+  
+     $demo= array(
+             '#theme' => 'item_list',
+             '#items' => array('Item 1', 'Item 2', 'Item 3'),
+         );
+     * */
+  /**
+  $demo= array(
+      'some_text' => array(
+          '#markup' => t('This is the block body1'),
+  
+      ),
+  
+      'just_a_list_of_links' => array(
+          '#theme' => 'item_list',
+          '#items' => array('Item 1', 'Item 2', 'Item 3'),
+          '#title' => t('My item list'),
+          '#type' => 'ol',
+      ),
+      'some_other_text' => array(
+          '#markup' => t('This is the block body1'),
+  
+      ),
+  
+  );
+  
+  **/
+  
+     /*
+     * theme
+      * */
+  
+  /*
+     $demo= array(
+             '#theme' => 'item_list',
+             '#items' => array('Item 1', 'Item 2', 'Item 3'),
+             '#title' => t('My item list'),
+             '#type' => 'ol',
+         );
+         
+  
+  
+ */
+  
+  $demo= array(
+      'some_text' => array(
+          '#markup' => t('This is the block body'),
+      ),
+  
+      'just_a_list_of_links' => array(
+          '#theme' => 'example_link_list',
+          '#children' => array(
+              0 => array(
+                  'label' => t('Step 1'),
+                  'url' => 'http://www.example.com/1',
+              ),
+              1 => array(
+                  'label' => t('Step 2'),
+                  'url' => 'http://www.example.com/2',
+              ),
+          ),
+      ),
+  
+  );
+
+var_dump($demo);
+  return $demo;
   
 }
 
@@ -60,40 +134,48 @@ function theme_render_array($variables) {
 
   $rendered = '<div class="render-array">' . $heading . $variables['element']['#children'] . '</div>';
   return $rendered;
-=======
-function myrender_example_info() {
-  /*
-   * Simple example of htm output
-   
-  $demo= array(
-      '#markup' => t('Hello renderer!'),
-    );
-* */
-  
-  /*
-   * this is actually using theme_item_list() in includes/theme.inc
-  
-  
-  $demo= array(
-      '#theme' => 'item_list',
-      '#items' => array('Item 1', 'Item 2', 'Item 3'),
-  );
-  * */
-  
-  
-  /*
-   * theme
-   * */
-  
-  
-  $demo= array(
-      '#theme' => 'item_list',
-      '#items' => array('Item 1', 'Item 2', 'Item 3'),
-      '#title' => t('My item list'),
-      '#type' => 'ol',
+
+}
+
+/**
+ * Implements hook_theme().
+ */
+
+function myrender_example_theme()
+{
+  return array(
+      'example_link_list' => array(
+          'render element' => 'links',
+      ),
+      'example_progress_bar' => array(
+          'variables' => array(
+              'progress' => NULL,
+          ),
+      ),
   );
   
-  
-  return $demo;
->>>>>>> origin/master
+}
+
+/**
+ * Theme implementation
+ * */
+/**
+ * Displays a list of links.
+ */
+function theme_example_link_list($variables = array()) {
+ 
+  var_dump($variables);
+ 
+  $links = array();
+  foreach ($variables['links']['#children'] as $link) {
+    $links[] = l($link['label'], $link['url']);
+  }
+  return theme('item_list', array('items' => $links));
+}
+
+/**
+ * Displays a progress bar.
+ */
+function theme_example_progress_bar($variables = array()) {
+  return '<div id="example-progress-bar">' . $variables['progress'] . '%</div>';
 }
