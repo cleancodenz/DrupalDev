@@ -171,8 +171,9 @@ function render_example_arrays() {
     $page_array[$key]['rendered']['#prefix'] = '<p><em>Rendered version (light blue)</em>:</p>' . '<div class="rendered">';
     $page_array[$key]['rendered']['#suffix'] = '</div>';
   }
-
+  
   return $page_array;
+  
 }
 
 /**
