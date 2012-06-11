@@ -49,6 +49,7 @@ function form_example_tutorial_1($form, &$form_state) {
 
   $form['description'] = array(
     '#type' => 'item',
+    '#markup' => 'markup contents',
     '#title' => t('A form with nothing but a textfield'),
   );
   // This is the first form element. It's a textfield with a label, "Name"
