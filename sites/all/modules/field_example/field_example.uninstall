@@ -1,0 +1,8 @@
+<?php
+
+function field_example_uninstall() {
+ // $result = db_query("SELECT * FROM {example}");
+ // foreach ($result as $data) {
+ //   db_query("DELETE FROM {variable} WHERE name = :name", array(':name' => 'example_', $data->nid));
+ // }
+}
