@@ -33,3 +33,10 @@ function field_example_field_schema($field) {
     'indexes' => $indexes,
   );
 }
+
+function field_example_uninstall()
+{
+  db_drop_table('field_data_field_rgb1');
+  db_drop_table('field_revision_field_rgb1');
+  
+}
