@@ -33,3 +33,8 @@ function field_example_field_schema($field) {
     'indexes' => $indexes,
   );
 }
+
+function field_example_uninstall()
+{
+  
+}
