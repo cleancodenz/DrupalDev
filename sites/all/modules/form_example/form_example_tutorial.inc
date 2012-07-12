@@ -57,9 +57,25 @@ function form_example_tutorial_1($form, &$form_state) {
     '#type' => 'textfield',
     '#title' => t('Name'),
   );
+  
+  $form['avaluetype'] = array(
+    '#type' => 'value',
+    '#value' => 'the vlue',
+  );
+  
+  $form['submit'] = array(
+      '#type' => 'submit',
+      '#value' => 'Submit',
+  );
+  
   return $form;
 }
 
+
+function form_example_tutorial_1_submit($form, &$form_state) {
+  drupal_set_message(t('The form has been submitted. name="@first @last", year of birth=@year_of_birth',
+      array('@first' => $form_state['values']['first'], '@last' => $form_state['values']['last'], '@year_of_birth' => $form_state['values']['year_of_birth'])));
+}
 
 //////////////// Tutorial Example 2 //////////////////////
 
