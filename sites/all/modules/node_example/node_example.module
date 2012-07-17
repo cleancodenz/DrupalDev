@@ -58,7 +58,8 @@
 function node_example_menu() {
   $items['examples/node_example'] = array(
     'page callback' => 'node_example_page',
-    'access arguments' => array('access content'),
+   // 'access arguments' => array('access content'),
+    'access callback' => true,
     'title' => 'Node Example',
   );
   return $items;
