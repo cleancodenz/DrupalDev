@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the OpenLayers Locator feature.
+ */
+
+include_once('ol_locator.features.inc');
