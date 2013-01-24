@@ -1,0 +1,98 @@
+<?php
+
+/**
+ * @file
+ * Module file for image_example
+ */
+
+/**
+ * @defgroup image_example Example: Image
+ * @ingroup examples
+ * @{
+ * Demonstrates the basic use of image API.
+ *
+ * This module demonstrates the use of Drupal 7's new image styles and effects
+ * including the following topics.
+ *  - Define default image styles in code. Useful for modules that want to ship
+ *    with predefined image styles and for site developers who want their image
+ *    style configurations to be in version control.
+ *    hook_image_default_styles().
+ *  - Define new image effects. Demonstrates how a module can add additional
+ *    effects to the options available when creating image styles.
+ *    hook_image_effect_info().
+ *  - Alter existing image styles. Demonstrates the use of
+ *    hook_image_styles_alter() to modify existing image effects, especially
+ *    those defined by other modules in hook_image_default_styles() without
+ *    having to override the styles.
+ *  - Demonstrates the use of hook_image_style_save() and
+ *    hook_image_style_delete() to update module specific variables when an
+ *    image style is either re-named or deleted.
+ *  - Generate a form with a field of type #managed_file that allows the user
+ *    to upload an image and choose a style to use when displaying that image.
+ *  - Demonstrates the use of theme_image_style() to display images using an
+ *    image style.
+ *
+ * @see hook_image_default_styles().
+ * @see hook_image_effect_info().
+ * @see hook_image_style_save().
+ * @see hook_image_style_delete().
+ * @see theme_image_style().
+ */
+
+/**
+ * Implements hook_menu().
+ *
+ * Provide a menu item and a page to demonstrate features of this example
+ * module.
+ */
+function multifiles_example_menu() {
+  $items = array();
+  $items['multifiles_example'] = array(
+    'title' => 'Multifiles Example',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('multifiles_example_form'),
+    'access arguments' => array('access content'),
+    'file' => 'multifiles_example.pages.inc',
+  );
+  return $items;
+}
+
+
+
+
+
+
+/**
+ * Implements hook_theme().
+ 
+function multifiles_example_theme() {
+  return array(
+    'image_example_colorize_summary' => array(
+      'variables' => array('data' => NULL),
+    ),
+    'image_example_image' => array(
+      'variables' => array('image' => NULL, 'style' => NULL),
+      'file' => 'image_example.pages.inc',
+    ),
+  );
+}
+
+*/
+
+/**
+ * Formats a summary of an image colorize effect.
+ *
+ * @param $variables
+ *   An associative array containing:
+ *   - data: The current configuration for this colorize effect.
+
+function theme_image_example_colorize_summary($variables) {
+  $data = $variables['data'];
+  return t('as color #@color.', array('@color' => $data['color']));
+}
+
+ */
+
+/**
+ * @} End of "defgroup image_example".
+ */

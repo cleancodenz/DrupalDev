@@ -1,0 +1,25 @@
+<?php
+
+/**
+ * @file
+ * Install, update, and uninstall functions for the multifiles_example module.
+ */
+
+/**
+ * Implements hook_install().
+ *
+ * @ingroup multifiles_example
+ */
+function multifiles_example_install() {
+ 
+}
+
+/**
+ * Implements hook_uninstall().
+ *
+ * @ingroup multifiles_example
+ */
+function multifiles_example_uninstall() {
+  variable_del('multifiles_example_files');
+}
+

@@ -36,11 +36,10 @@ function image_example_style_form($form, &$form_state) {
     '#default_value' => variable_get('image_example_image_fid', ''),
     '#upload_location' => 'public://image_example_images/',
     '#upload_validators' => array(
-          'file_validate_extensions' => array('gif,png,jpg,jpeg'),
+          'file_validate_extensions' => array('gif png jpg jpeg'),
           // Pass the maximum file size in bytes
-         // 'file_validate_size' => array(MAX_FILE_SIZE*1024*1024),
+          'file_validate_size' => array(1000000),
       ),
-      
   );
 
   // Provide a select field for choosing an image style to use when displaying
