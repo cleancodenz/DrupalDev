@@ -36,60 +36,7 @@ function multifiles_example_form($form, &$form_state) {
   {
     $fileslist =array('files'=>array(),'count'=>0);
   }
-  
-  /**
-  if (!isset($form_state['values']))
-  {
-   
-   
-
-  }
-  else
-  {
-    // post back
-
-    // to get the trigger element
-    $clicked_button = end($form_state['triggering_element']['#parents']);
-
-    if ($clicked_button=='upload_button' &&
-        !empty($form_state['values'][$form_state['triggering_element']['#name']]))
-    {
-      // this is upload
-    }
-    else if ($clicked_button=='remove_button' &&
-        empty($form_state['values'][$form_state['triggering_element']['#name']]))
-    {
-      // this is remove
-
-    }
-
-    // to scan current list
-    foreach ($form_state['values']['allfiles'] as $key =>$value)
-    {
-      // Use the #managed_file FAPI element to upload an image file.
-      $form['allfiles']['file_'.$filecount] = array(
-          '#title' => t('Image '.$filecount),
-          '#type' => 'managed_file',
-          '#upload_location' => 'public://multifiles_example_images/',
-          '#upload_validators' => array(
-              'file_validate_extensions' => array('gif png jpg jpeg'),
-              // Pass the maximum file size in bytes
-              'file_validate_size' => array(1000000),
-          ),
-      );
-
-      if(empty($form_state['values']['allfiles'][$key]) && $neednewupload)
-      {
-        $neednewupload =false;
-      }
-
-      $filecount++;
-    }
- 
-  }
-
- **/
-  
+      
   // load existing list
   foreach($fileslist['files'] as $key=>$value)
   {
@@ -204,7 +151,7 @@ function multifiles_example_form_submit($form, &$form_state) {
 
         // When a module is managing a file, it must manage the usage count.
         // Here we increment the usage count with file_usage_add().
-        file_usage_add($file, 'multiplefiles_example', 'sample_image', 1);
+        file_usage_add($file, 'multifiles_example', 'sample_image', 1);
       }
 
       $newlist['files'][$file->fid]= $file->fid;
@@ -223,7 +170,7 @@ function multifiles_example_form_submit($form, &$form_state) {
     variable_set('multifiles_example_files', false);
   }
   
-  $form_state['rebuild']=true;
+  $form_state['redirect']='multifiles_example';
   
 }
 
