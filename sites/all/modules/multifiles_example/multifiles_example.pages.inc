@@ -1,22 +1,14 @@
 <?php
 
 /**
- * @file
- * Page/form showing image styles in use.
+ *
  */
 
 /**
- * Form for uploading and displaying an image using selected style.
- *
- * This page provides a form that allows the user to upload an image and choose
- * a style from the list of defined image styles to use when displaying the
- * the image. This serves as an example of integrating image styles with your
- * module and as a way to demonstrate that the styles and effects defined by
- * this module are available via Drupal's image handling system.
- *
- * @see theme_image_style()
- *
- * @ingroup image_example
+ * 
+ * @param unknown_type $form
+ * @param unknown_type $form_state
+ * @return multitype:string NULL
  */
 function multifiles_example_form($form, &$form_state) {
 
@@ -85,9 +77,9 @@ function multifiles_example_form($form, &$form_state) {
 }
 
 /**
- * Verifies that the user supplied an image with the form..
- *
- * @ingroup image_example
+ * 
+ * @param unknown_type $form
+ * @param unknown_type $form_state
  */
 function multifiles_example_form_validate($form, &$form_state) {
   if (!isset($form_state['values']))
@@ -95,15 +87,12 @@ function multifiles_example_form_validate($form, &$form_state) {
     $form_state['values']['dump']='';
 
   }
-  // if (!isset($form_state['values']['image_example_image_fid']) || !is_numeric($form_state['values']['image_example_image_fid'])) {
-  //  form_set_error('image_example_image_fid', t('Please select an image to upload.'));
-  // }
 }
 
 /**
- * Form Builder; Display a form for uploading an image.
- *
- * @ingroup image_example
+ * 
+ * @param unknown_type $form
+ * @param unknown_type $form_state
  */
 function multifiles_example_form_submit($form, &$form_state) {
 
@@ -174,61 +163,3 @@ function multifiles_example_form_submit($form, &$form_state) {
   
 }
 
-
-
-
-
-/**
- * Theme function displays an image rendered using the specified style.
- *
- * @ingroup image_example
-
- function theme_image_example_image($variables) {
- $image = $variables['image'];
- $style = $variables['style'];
-
- // theme_image_style() is the primary method for displaying images using
- // one of the defined styles. The $variables array passed to the theme
- // contains the following two important values:
- //   'style_name': the name of the image style to use when displaying the
- //   image.
- //   'path': the $file->uri of the image to display.
- // When given a style and an image path the function will first determine
- // if a derivative image already exists, in which case the existing image
- // will be displayed. If the derivative image does not already exist the
- // function returns an <img> tag with a specially crafted callback URL
- // as the src attribute for the tag. When accessed, the callback URL will
- // generate the derivative image and serve it to the browser.
- $output = theme('image_style', array('style_name' => $style, 'path' => $image->uri, 'getsize' => FALSE));
- $output .= '<p>' . t('This image is being displayed using the image style %style_name.', array('%style_name' => $style)) . '</p>';
- return $output;
- }
- */
-/*
- * 
- * */
-function multifiles_plupload_form($form, &$form_state){
-  
-  $form['my_element'] = array(
-      '#type' => 'plupload',
-      '#title' => t('Upload files'),
-      '#description' => t('This multi-upload widget uses Plupload library.'),
-      '#upload_validators' => array(
-          'file_validate_extensions' => array('jpg jpeg gif png txt doc xls pdf ppt pps odt ods odp'),
-         // 'my_custom_file_validator' => array('some validation criteria'),
-      ),
-      '#plupload_settings' => array(
-          'runtimes' => 'html5',
-          'chunk_size' => '1mb',
-      ),
-  );
-  
-  // Submit Button.
-  $form['submit'] = array(
-      '#type' => 'submit',
-      '#value' => t('Save'),
-  );
-  
-  return $form;
- 
-}
