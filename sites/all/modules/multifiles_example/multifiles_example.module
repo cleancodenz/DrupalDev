@@ -54,6 +54,14 @@ function multifiles_example_menu() {
     'access arguments' => array('access content'),
     'file' => 'multifiles_example.pages.inc',
   );
+  
+  $items['multifiles_plupload'] = array(
+      'title' => 'Multifiles Plupload Example',
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array('multifiles_plupload_form'),
+      'access arguments' => array('access content'),
+      'file' => 'multifiles_example.pages.inc',
+  );
   return $items;
 }
 

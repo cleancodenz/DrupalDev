@@ -204,3 +204,31 @@ function multifiles_example_form_submit($form, &$form_state) {
  return $output;
  }
  */
+/*
+ * 
+ * */
+function multifiles_plupload_form($form, &$form_state){
+  
+  $form['my_element'] = array(
+      '#type' => 'plupload',
+      '#title' => t('Upload files'),
+      '#description' => t('This multi-upload widget uses Plupload library.'),
+      '#upload_validators' => array(
+          'file_validate_extensions' => array('jpg jpeg gif png txt doc xls pdf ppt pps odt ods odp'),
+         // 'my_custom_file_validator' => array('some validation criteria'),
+      ),
+      '#plupload_settings' => array(
+          'runtimes' => 'html5',
+          'chunk_size' => '1mb',
+      ),
+  );
+  
+  // Submit Button.
+  $form['submit'] = array(
+      '#type' => 'submit',
+      '#value' => t('Save'),
+  );
+  
+  return $form;
+ 
+}
