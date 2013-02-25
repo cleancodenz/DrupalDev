@@ -2,14 +2,13 @@ name = Bootstrap By CleanCode
 description = Built to use Bootstrap, a sleek, intuitive, and powerful front-end framework for faster and easier web development. This is a subtheme of bootstrap, developed by CleanCode
 base theme = bootstrap
 
-stylesheets[all][] = bootstrap/css/bootstrap.css
-stylesheets[all][] = bootstrap/css/bootstrap-responsive.css
+
 stylesheets[all][] = css/bootstrapcc_style.css
 
 ;Exclude
 ;javascript
 ;exclude[js][] = 'modules/contextual/contextual.js'
-exclude[js][] = 'misc/jquery.js'
+;exclude[js][] = 'misc/jquery.js'
 
 
 ; Information added by drupal.org packaging script on 2013-02-19
