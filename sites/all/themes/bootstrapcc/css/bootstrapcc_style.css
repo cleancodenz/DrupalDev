@@ -1,1 +1,9 @@
 @CHARSET "ISO-8859-1";
+
+/* to leave the top menu out of flow*/
+body
+{
+            padding-top: 44px;
+            padding-bottom: 40px;
+}
+
