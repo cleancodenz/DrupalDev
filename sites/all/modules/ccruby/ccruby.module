@@ -1,0 +1,58 @@
+<?php 
+/**
+ * @file
+ * A node module that defines a node type: .
+ */
+
+/**
+ * Implements hook_help.
+ *
+ * Displays help and module information.
+ *
+ * @param path
+ *   Which path of the site we're using to display help
+ * @param arg
+ *   Array that holds the current path as returned from arg() function
+ */
+
+function ccruby_help($path, $arg) {
+	
+}
+
+
+/**
+ * Implements hook_menu().
+ *
+ * We are providing a default page to illustrate the use of our custom node view mode that will 
+ * live at http://example.com/?q=examples/node_example
+ *
+ 
+
+function ccruby_menu() {
+	
+	
+}
+
+*/
+
+/*
+ * 
+ */
+function ccruby_menu_alter(&$items)
+{
+  
+  $items['user']['title callback'] = 'ccruby_menu_title';
+  
+  $items['user']['access callback'] = 'user_is_logged_in';
+}
+
+/**
+ * Menu item title callback for the 'user' path.
+ *
+ * expected to see "Hello User name".
+ */
+function ccruby_menu_title() {
+  global  $user;
+
+  return t('Hello') . $user->name;
+}

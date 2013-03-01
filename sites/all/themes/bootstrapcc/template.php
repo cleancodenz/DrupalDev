@@ -1,10 +1,16 @@
 <?php
 
+/*
+ * to replace jquery in misc with nwer version 
+ */
 function bootstrapcc_js_alter(&$javascript) {
   
   $javascript['misc/jquery.js']['data'] = drupal_get_path('theme', 'bootstrapcc').'/jquery/jquery-1.9.1.js';
 }
 
+/*
+ * Add met tag with viewport to head
+ */
 function bootstrapcc_preprocess_html(&$variables) {
   
   // add view port tag to head
@@ -21,11 +27,9 @@ function bootstrapcc_preprocess_html(&$variables) {
   
 }
 
-
-function bootstrapcc_menu_tree__primary(&$variables) {
-  return '<ul class="nav">' . $variables['tree'] . '</ul>';
-}
-
+/*
+ * in default menu_tree_output there is override of menu_link_main_menu
+ */
 function bootstrapcc_menu_link__main_menu(array $variables) {
   
   global $language_url;
@@ -71,3 +75,5 @@ function bootstrapcc_menu_link__main_menu(array $variables) {
   return '<li' . drupal_attributes($element['#attributes']) . '>' . $output . $sub_menu . "</li>\n";
     
 }
+
+

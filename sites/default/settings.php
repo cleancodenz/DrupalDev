@@ -526,7 +526,7 @@ $conf['404_fast_html'] = '<html xmlns="http://www.w3.org/1999/xhtml"><head><titl
 # $conf['allow_authorize_operations'] = FALSE;
 
 //$conf = array(
-//    'theme_default' => 'bartikcopy'
+  //  'theme_default' => 'bartikcopy'
     // 'site_frontpage' => 'mobile_frontpage_address'
 //);
 

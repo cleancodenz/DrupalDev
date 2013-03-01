@@ -1,0 +1,6 @@
+; $Id$
+name = CleanCode Ruby
+description = "Enables the creation of cleancode real estate listings."
+
+package = CleanCode Ruby modules
+core = 7.x
