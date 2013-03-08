@@ -28,6 +28,7 @@ function bootstrapcc_preprocess_html(&$variables) {
 }
 
 /*
+ *Main menu item theming
  * in default menu_tree_output there is override of menu_link_main_menu
  */
 function bootstrapcc_menu_link__main_menu(array $variables) {
@@ -76,4 +77,141 @@ function bootstrapcc_menu_link__main_menu(array $variables) {
     
 }
 
+/*
+ * Secondary menu item theming
+ * 
+ * */
 
+function bootstrapcc_menu_link(array $variables) {
+  global $user;
+  
+  $element = $variables['element'];
+  $sub_menu = '';
+  
+  $options = $element['#localized_options'];
+  
+  if($element['#href']=='user')
+  {
+    $output = l('Hello '.format_username($user),$element['#href'],$options);
+    
+  }
+  else
+  {
+    $output = l($element['#title'],$element['#href'],$options);
+  }
+  return '<li' . drupal_attributes($element['#attributes']) . '>' . $output . $sub_menu . "</li>\n";
+}
+
+
+/*
+ * Navigation  menu item theming
+*
+* */
+
+function bootstrapcc_menu_link__navigation(array $variables) {
+  $element = $variables['element'];
+  $sub_menu = '';
+
+  $element['#localized_options']['html'] = TRUE;
+  
+  if ($element['#below']) {
+    // Ad our own wrapper
+    unset($element['#below']['#theme_wrappers']);
+
+    $sub_menu = '<ul id="childmenu" class="nestednav">' . drupal_render($element['#below']) . '</ul>';
+  
+    
+  }
+
+  // add active class on li level
+
+  if (($element['#href'] == $_GET['q']
+      || ($element['#href'] == '<front>' && drupal_is_front_page()))
+      && (empty($element['#localized_options']['language'])
+          || $element['#localized_options']['language']->language == $language_url->language)) {
+    $element['#attributes']['class'][] ='active';
+
+  }
+
+  $options = $element['#localized_options'];
+  
+  $output = l('<i class="icon-chevron-right"></i>'. $element['#title'],
+      $element['#href'],$options);
+  return '<li' . drupal_attributes($element['#attributes']) . '>' . $output . $sub_menu . "</li>\n";
+}
+
+
+
+/*
+ * The navigation menu wrapper
+ * Other menu wrappers
+ * bootstrap_menu_tree__primary in bootstrap.tmplate.php for main menu wrapper
+ * bootstrap_menu_tree__secondary in bootstrap.tmplate.php for secondary menu wrapper 
+ */
+
+function bootstrapcc_menu_tree(&$variables) {
+  return '<ul class="nav nav-list  cc-sidenav">' . $variables['tree'] . '</ul>';
+}
+
+
+/**
+ * remove the well class from base bootstrap
+ *
+ * @see region.tpl.php
+ */
+function bootstrapcc_preprocess_region(&$variables, $hook) {
+  
+  if ($variables['region'] == "sidebar_first") {
+    
+    if (($key = array_search('well', 
+        $variables['classes_array'])) !== false) 
+        unset($variables['classes_array'][$key]);
+    
+  }
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter() for search_block_form().
+ * add span* to customized the width of search box
+ */
+function bootstrapcc_form_search_block_form_alter(&$form, &$form_state) {
+ 
+  // form
+  // when fluid, 12 means 100% of parent
+  $form['#attributes']['class'][] = 'span12';
+  
+  // input, remove  remove span2 which was added by base theme
+  if (($key = array_search('span2',
+      $form['search_block_form']['#attributes']['class'])) !== false)
+    unset($form['search_block_form']['#attributes']['class'][$key]);
+  
+   
+  // increase size attribute which is conflicting with span*
+  // it is added by theme_textfield, so better not to override it
+  // it is not attribute, but rendered as an attribute
+  $form['search_block_form']['#size']=45;
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter() for search_form().
+ * add span* to customized the width of search box
+ * 
+ */
+function bootstrapcc_form_search_form_alter(&$form, &$form_state) {
+ 
+  // form
+  // when fluid, 12 means 100% of parent
+  $form['#attributes']['class'][] = 'span12';
+  
+  // input, remove  remove span2 which was added by base theme
+  if (($key = array_search('span2',
+      $form['basic']['keys']['#attributes']['class'])) !== false)
+    unset($form['basic']['keys']['#attributes']['class'][$key]);
+  
+  
+  // increase size attribute which is conflicting with span*
+  // it is added by theme_textfield, so better not to override it
+  // it is not attribute, but rendered as an attribute
+  $form['basic']['keys']['#size']=45;
+  
+}

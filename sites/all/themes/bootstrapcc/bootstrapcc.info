@@ -2,9 +2,8 @@ name = Bootstrap By CleanCode
 description = Built to use Bootstrap, a sleek, intuitive, and powerful front-end framework for faster and easier web development. This is a subtheme of bootstrap, developed by CleanCode
 base theme = bootstrap
 
-regions[navigation]     = 'Navigation'
+
 regions[header]         = 'Top Bar'
-regions[highlighted]    = 'Highlighted'
 regions[help]           = 'Help'
 regions[content]        = 'Content'
 regions[sidebar_first]  = 'Primary'
@@ -49,7 +48,7 @@ exclude[css][] = 'modules/taxonomy/taxonomy.css'
 exclude[css][] = 'modules/tracker/tracker.css'
 exclude[css][] = 'modules/update/update.css'
 exclude[css][] = 'modules/user/user.css'
-
+;exclude[css][] = 'modules/contextual/contextual.css'
 
 ; Information added by drupal.org packaging script on 2013-02-19
 version = "7.x-2.0-beta2+16-dev"

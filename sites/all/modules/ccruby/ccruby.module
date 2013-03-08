@@ -40,19 +40,8 @@ function ccruby_menu() {
  */
 function ccruby_menu_alter(&$items)
 {
-  
-  $items['user']['title callback'] = 'ccruby_menu_title';
-  
+    
   $items['user']['access callback'] = 'user_is_logged_in';
+   
 }
 
-/**
- * Menu item title callback for the 'user' path.
- *
- * expected to see "Hello User name".
- */
-function ccruby_menu_title() {
-  global  $user;
-
-  return t('Hello') . $user->name;
-}
