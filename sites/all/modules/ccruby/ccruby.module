@@ -40,8 +40,14 @@ function ccruby_menu() {
  */
 function ccruby_menu_alter(&$items)
 {
-    
+  // to only display it in secondary menu when user is logged in  
   $items['user']['access callback'] = 'user_is_logged_in';
-   
+  
+  //get the titile back by making it a normal menu item 
+  $items['user/login']['type'] = MENU_NORMAL_ITEM;
+  
+  //get the titile back by making it a normal menu item
+  $items['user/register']['type'] = MENU_NORMAL_ITEM;
+     
 }
 
