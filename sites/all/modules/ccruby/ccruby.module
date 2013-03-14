@@ -36,7 +36,7 @@ function ccruby_menu() {
 */
 
 /*
- * 
+ *hook_menu_alter 
  */
 function ccruby_menu_alter(&$items)
 {
@@ -51,3 +51,15 @@ function ccruby_menu_alter(&$items)
      
 }
 
+function ccruby_menu()
+{
+  // Registration and login pages.
+  $items['ccruby'] = array(
+      'title' => 'My Account',
+      
+      'access callback' => true,
+  );
+  
+  return $items;
+  
+}
