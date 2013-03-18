@@ -1,6 +1,6 @@
 
 <!--header
-two columns
+three columns
   bar-->
 <header
 	class="navbar navbar-inverse navbar-fixed-top">
@@ -57,10 +57,15 @@ two columns
 <div class="container-fluid main">
 	<div class="row-fluid">
 
-		
+		<?php if (!empty($page['sidebar_first'])): ?>
+		<aside class="span3" role="complementary">
+			<?php print render($page['sidebar_first']); ?>
+		</aside>
 		<!-- /#sidebar-first -->
-		
-		<section class="span9">
+		<?php endif; ?>
+
+		<section class="<?php print _bootstrap_content_span($columns); ?>"
+			style="margin-left: 0">
 
 			<?php if (!empty($breadcrumb)): print $breadcrumb; endif;?>
 			<!-- /#breadcrumb -->

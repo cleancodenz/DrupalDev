@@ -49,16 +49,47 @@ function ccruby_menu_alter(&$items)
   //get the titile back by making it a normal menu item
   $items['user/register']['type'] = MENU_NORMAL_ITEM;
      
+  
+  
+  
 }
 
 function ccruby_menu()
 {
   // Registration and login pages.
-  $items['ccruby'] = array(
-      'title' => 'My Account',
-      
-      'access callback' => true,
+  $items['ccruby/%user'] = array(
+      'title' => 'My Profile',
+      'page callback' => 'user_view_page',
+      'page arguments' => array(1),
+      'access callback' =>'user_view_access',
+      'access arguments' => array(1),
+      'menu_name' => 'main-menu',
   );
+  
+  
+  $items['ccruby/%user/edit'] = array(
+      'title' => 'Edit',
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array('user_profile_form', 1),
+      'access callback' => 'user_edit_access',
+      'access arguments' => array(1),
+  );
+  
+  $items['ccruby/%user/cancel'] = array(
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('user_cancel_confirm_form', 1),
+    'access callback' => 'user_cancel_access',
+    'access arguments' => array(1),
+  );
+  
+  $items['ccruby/%user/cancel/confirm/%/%'] = array(
+      'title' => 'Confirm account cancellation',
+      'page callback' => 'user_cancel_confirm',
+      'page arguments' => array(1, 4, 5),
+      'access callback' => 'user_cancel_access',
+      'access arguments' => array(1),
+  );
+  
   
   return $items;
   

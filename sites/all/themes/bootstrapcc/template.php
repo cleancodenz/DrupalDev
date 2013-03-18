@@ -8,22 +8,39 @@ function bootstrapcc_js_alter(&$javascript) {
   $javascript['misc/jquery.js']['data'] = drupal_get_path('theme', 'bootstrapcc').'/jquery/jquery-1.9.1.js';
 }
 
+
 /*
+ * html theming
  * Add met tag with viewport to head
- */
+*/
 function bootstrapcc_preprocess_html(&$variables) {
-  
+
   // add view port tag to head
   $element = array(
       '#type'=>'html_tag',
       '#tag' => 'meta',
       '#attributes' => array(
           'name' => 'viewport',
-          'content' =>'width=device-width, initial-scale=1.0', 
-          ),
+          'content' =>'width=device-width, initial-scale=1.0',
+      ),
   );
-  
+
   drupal_add_html_head($element, 'bootstrap_viewport');
+
+}
+
+
+/**
+ * Pagetheming
+ * Add own theme suggestions for page when user logged in
+ *
+ * @see page.tpl.php
+ */
+function bootstrapcc_preprocess_page(&$variables) {
+  if (user_is_logged_in())
+  {
+    $variables['theme_hook_suggestions'][]='page__loggedin';
+  }
   
 }
 
@@ -215,3 +232,5 @@ function bootstrapcc_form_search_form_alter(&$form, &$form_state) {
   $form['basic']['keys']['#size']=45;
   
 }
+
+
