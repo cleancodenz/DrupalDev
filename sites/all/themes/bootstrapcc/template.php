@@ -107,6 +107,16 @@ function bootstrapcc_menu_link(array $variables) {
   
   $options = $element['#localized_options'];
   
+  // add active class on li level
+  
+  if (($element['#href'] == $_GET['q']
+      || ($element['#href'] == '<front>' && drupal_is_front_page()))
+      && (empty($element['#localized_options']['language'])
+          || $element['#localized_options']['language']->language == $language_url->language)) {
+    $element['#attributes']['class'][] ='active';
+  
+  }
+  
   if($element['#href']=='user')
   {
     $output = l('Hello '.format_username($user),$element['#href'],$options);

@@ -1,0 +1,33 @@
+<?php 
+/**
+ * @file
+ *  Install, update and uninstall functions for the ccruby module.
+ */
+
+/**
+ * Implementation of hook_install().
+ */
+function ccruby_install() {
+  
+  // 1. create a custom menu 
+  $menu = array(
+      'menu_name' => 'secondary_top',
+      'title' => 'Top Secondary',
+      'description' => 'Top level secondary menu',
+    );
+  
+  menu_save($menu);
+}
+
+
+/**
+ * Implementation of hook_uninstall().
+ */
+function ccruby_uninstall() {
+// 1. delete custom menu
+  $menu = array(
+      'menu_name' => 'secondary_top',
+  );
+  
+  menu_delete($menu);
+}

@@ -40,57 +40,35 @@ function ccruby_menu() {
  */
 function ccruby_menu_alter(&$items)
 {
+  //items when user logged in
   // to only display it in secondary menu when user is logged in  
   $items['user']['access callback'] = 'user_is_logged_in';
+  $items['user']['title'] ='funny';
+  $items['user']['menu_name'] ='secondary_top';
   
-  //get the titile back by making it a normal menu item 
+  $items['user/logout']['menu_name'] ='secondary_top';
+  
+  // items for not logged in
+  
+  //get the titile back by making it a normal menu item
   $items['user/login']['type'] = MENU_NORMAL_ITEM;
+  $items['user/login']['weight'] =10;
+  $items['user/login']['menu_name'] ='secondary_top';
   
   //get the titile back by making it a normal menu item
   $items['user/register']['type'] = MENU_NORMAL_ITEM;
-     
-  
-  
+  $items['user/register']['title'] ='Sign up';
+  $items['user/register']['weight'] =15;
+  $items['user/register']['menu_name'] ='secondary_top';
   
 }
 
+/*
 function ccruby_menu()
 {
-  // Registration and login pages.
-  $items['ccruby/%user'] = array(
-      'title' => 'My Profile',
-      'page callback' => 'user_view_page',
-      'page arguments' => array(1),
-      'access callback' =>'user_view_access',
-      'access arguments' => array(1),
-      'menu_name' => 'main-menu',
-  );
-  
-  
-  $items['ccruby/%user/edit'] = array(
-      'title' => 'Edit',
-      'page callback' => 'drupal_get_form',
-      'page arguments' => array('user_profile_form', 1),
-      'access callback' => 'user_edit_access',
-      'access arguments' => array(1),
-  );
-  
-  $items['ccruby/%user/cancel'] = array(
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('user_cancel_confirm_form', 1),
-    'access callback' => 'user_cancel_access',
-    'access arguments' => array(1),
-  );
-  
-  $items['ccruby/%user/cancel/confirm/%/%'] = array(
-      'title' => 'Confirm account cancellation',
-      'page callback' => 'user_cancel_confirm',
-      'page arguments' => array(1, 4, 5),
-      'access callback' => 'user_cancel_access',
-      'access arguments' => array(1),
-  );
-  
+ 
   
   return $items;
   
 }
+*/
