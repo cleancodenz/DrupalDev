@@ -100,7 +100,7 @@ function bootstrapcc_menu_link__main_menu(array $variables) {
  * */
 
 function bootstrapcc_menu_link(array $variables) {
-  global $user;
+ 
   
   $element = $variables['element'];
   $sub_menu = '';
@@ -117,15 +117,15 @@ function bootstrapcc_menu_link(array $variables) {
   
   }
   
-  if($element['#href']=='user')
-  {
-    $output = l('Hello '.format_username($user),$element['#href'],$options);
+ // if($element['#href']=='user')
+ // {
+//    $output = l('Hello '.format_username($user),$element['#href'],$options);
     
-  }
-  else
-  {
+ // }
+ // else
+ //{
     $output = l($element['#title'],$element['#href'],$options);
-  }
+ // }
   return '<li' . drupal_attributes($element['#attributes']) . '>' . $output . $sub_menu . "</li>\n";
 }
 

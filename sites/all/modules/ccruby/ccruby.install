@@ -10,13 +10,24 @@
 function ccruby_install() {
   
   // 1. create a custom menu 
-  $menu = array(
+  $secondarymenu = array(
       'menu_name' => 'secondary_top',
       'title' => 'Top Secondary',
       'description' => 'Top level secondary menu',
     );
   
-  menu_save($menu);
+  menu_save($secondarymenu);
+  
+  //2. create ccrubynavigation
+  
+  $ccrubynavigationmenu = array(
+      'menu_name' => 'ccrubynavigation',
+      'title' => 'CCRuby Navigation',
+      'description' => 'Navigation menu',
+  );
+  
+  menu_save($ccrubynavigationmenu);
+  
 }
 
 
@@ -24,10 +35,17 @@ function ccruby_install() {
  * Implementation of hook_uninstall().
  */
 function ccruby_uninstall() {
-// 1. delete custom menu
-  $menu = array(
+  // 1. delete custom menu
+  $secondarymenu = array(
       'menu_name' => 'secondary_top',
   );
   
-  menu_delete($menu);
+  menu_delete($secondarymenu);
+  
+  // 2. delete custom menu
+  $ccrubynavigation = array(
+      'menu_name' => 'ccrubynavigation',
+  );
+  
+  menu_delete($ccrubynavigation);
 }
