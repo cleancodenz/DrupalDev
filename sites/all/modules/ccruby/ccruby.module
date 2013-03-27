@@ -16,54 +16,49 @@
  */
 
 function ccruby_help($path, $arg) {
-	
+
 }
 
 
 /**
  * Implements hook_menu().
  *
- * We are providing a default page to illustrate the use of our custom node view mode that will 
+ * We are providing a default page to illustrate the use of our custom node view mode that will
  * live at http://example.com/?q=examples/node_example
  *
- 
 
-function ccruby_menu() {
-	
-	
-}
 
-*/
+ function ccruby_menu() {
+
+
+ }
+
+ */
 
 /*
- *hook_menu_alter 
- */
+ *hook_menu_alter
+*/
 function ccruby_menu_alter(&$items)
 {
   //items when user logged in
-  // to only display it in secondary menu when user is logged in  
-  $items['user']['access callback'] = 'user_is_logged_in';
-  $items['user']['title callback'] ='ccruby_user_menu_title';
-  $items['user']['menu_name'] ='secondary_top';
-  
   $items['user/logout']['menu_name'] ='secondary_top';
-  
+
   // items for not logged in
-  
+
   //get the titile back by making it a normal menu item
   // need manual change to move it to top level
   $items['user/login']['type'] = MENU_NORMAL_ITEM;
   $items['user/login']['weight'] =10;
   $items['user/login']['menu_name'] ='secondary_top';
-  
+
   //get the titile back by making it a normal menu item
   // need manual change to move it to top level
   $items['user/register']['type'] = MENU_NORMAL_ITEM;
   $items['user/register']['title'] ='Sign up';
   $items['user/register']['weight'] =15;
   $items['user/register']['menu_name'] ='secondary_top';
-  
- // $items['user/%user']['menu_name'] ='ccrubynavigation';
+
+  // $items['user/%user']['menu_name'] ='ccrubynavigation';
 }
 
 /**
@@ -76,12 +71,84 @@ function ccruby_user_menu_title() {
   return 'Hello '.format_username($user);
 }
 
-/*
+
+
 function ccruby_menu()
 {
- 
-  
+
+  $items['account/%user_uid_optional'] = array(
+      'title' => 'My account',
+      'title callback' => 'ccruby_user_menu_title',
+      'title arguments' => array(1),
+      'page callback' => 'user_view_page',
+      'page arguments' => array(1),
+      'access callback' => 'user_view_access',
+      'access arguments' => array(1),
+      'menu_name' => 'secondary_top',
+  //    'file' => drupal_get_path('module', 'user').'/user.module',
+  );
+
   return $items;
-  
+
 }
-*/
+
+
+/**
+ * Implements hook_block_info().
+ */
+function ccruby_block_info() {
+
+  $blocks['navigation'] =array(
+      'info' => t('CCRuby Navigation'),
+      // Menu blocks can't be cached because each menu item can have
+      // a custom access callback. menu.inc manages its own caching.
+      'cache' => DRUPAL_NO_CACHE,
+  );
+   
+  return $blocks;
+
+}
+
+/**
+ * Implements hook_block_view().
+ *
+ * Generate a block with a promotional link to Drupal.org and
+ * all ccruby menu blocks.
+ */
+function ccruby_block_view($delta = '') {
+
+  $block = array();
+  switch ($delta) {
+    case 'navigation':
+      $block['subject'] = NULL;
+      $block['content'] = _ccruby_get_navigation();
+      return $block;
+    default:
+      break;
+  }
+}
+
+function _ccruby_get_navigation()
+{
+  if(user_is_logged_in())
+  {
+    // to get current router item
+    $router_item = menu_get_item();
+
+    if ($router_item['map'] && count($router_item['map'])>0)
+    {
+      switch ($router_item['map'][0]) {
+        case 'user':
+          $tree = menu_tree_page_data('ccrubyusernavigation');
+          break;
+        default:
+          $tree =  menu_tree_page_data('main-menu');
+        break;
+      }
+    }
+
+    return  menu_tree_output($tree);
+  }
+  return '';
+
+}

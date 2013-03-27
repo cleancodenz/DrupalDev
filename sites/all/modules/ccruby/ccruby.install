@@ -18,15 +18,15 @@ function ccruby_install() {
   
   menu_save($secondarymenu);
   
-  //2. create ccrubynavigation
+  //2. create ccrubyusernavigation
   
-  $ccrubynavigationmenu = array(
-      'menu_name' => 'ccrubynavigation',
-      'title' => 'CCRuby Navigation',
-      'description' => 'Navigation menu',
+  $ccrubyusernavigationmenu = array(
+      'menu_name' => 'ccrubyusernavigation',
+      'title' => 'CCRuby User Navigation',
+      'description' => 'User navigation menu',
   );
   
-  menu_save($ccrubynavigationmenu);
+  menu_save($ccrubyusernavigationmenu);
   
 }
 
@@ -43,9 +43,9 @@ function ccruby_uninstall() {
   menu_delete($secondarymenu);
   
   // 2. delete custom menu
-  $ccrubynavigation = array(
-      'menu_name' => 'ccrubynavigation',
+  $ccrubyusernavigation = array(
+      'menu_name' => 'ccrubyusernavigation',
   );
   
-  menu_delete($ccrubynavigation);
+  menu_delete($ccrubyusernavigation);
 }
