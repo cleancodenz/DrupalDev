@@ -2,6 +2,8 @@
 name = CleanCode Ruby
 description = "Enables the creation of cleancode real estate listings."
 
+;dependencies[] = pathauto
+
 package = CleanCode Ruby modules
 version = "7.x-1.0-beta1"
 core = 7.x

@@ -4,6 +4,7 @@
  * A node module that defines a node type: .
  */
 
+
 /**
  * Implements hook_help.
  *
@@ -17,6 +18,101 @@
 
 function ccruby_help($path, $arg) {
 
+}
+
+
+
+/**
+ * @name ccruby_meun 
+ * @{
+ */
+
+/*
+ *hook_menu_alter
+*/
+function ccruby_menu_alter(&$items)
+{
+  //items when user logged in
+  $items['user/logout']['menu_name'] ='secondary_top';
+
+  // must remove original one, it can only have one
+  if (array_key_exists('user/%user',$items))
+  {
+    unset($items['user/%user']);
+  }
+  
+  $items['user/%user_uid_optional'] = array(
+      'title' => 'My account',
+      'title callback' => 'ccruby_user_menu_title',
+      'title arguments' => array(1),
+      'page callback' => 'user_view_page',
+      'page arguments' => array(1),
+      'access callback' => 'user_view_access',
+      'access arguments' => array(1),
+      'menu_name' => 'secondary_top',
+  );
+  
+  
+  // items for not logged in
+
+  //get the titile back by making it a normal menu item
+  // need manual change to move it to top level
+  $items['user/login']['type'] = MENU_NORMAL_ITEM;
+  $items['user/login']['weight'] =10;
+  $items['user/login']['menu_name'] ='secondary_top';
+
+  //get the titile back by making it a normal menu item
+  // need manual change to move it to top level
+  $items['user/register']['type'] = MENU_NORMAL_ITEM;
+  $items['user/register']['title'] ='Sign up';
+  $items['user/register']['weight'] =15;
+  $items['user/register']['menu_name'] ='secondary_top';
+
+  
+  // user navigation menu
+  if (array_key_exists('user/%user/cancel',$items))
+  {
+    unset($items['user/%user/cancel']);
+  }
+
+  if (array_key_exists('user/%user/edit',$items))
+  {
+    unset($items['user/%user/edit']);
+  }
+  
+  $items['user/%user_uid_optional/edit'] = array(
+      'title' => 'Edit',
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array('user_profile_form', 1),
+      'access callback' => 'user_edit_access',
+      'access arguments' => array(1),
+      'file' => drupal_get_path('module', 'user').'/user.pages.inc',
+      'menu_name' => 'ccrubyusernavigation',
+      'weight'=>10,
+  );
+  
+  $items['user/%user_uid_optional/cancel'] = array(
+      'title' => 'Cancel account',
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array('user_cancel_confirm_form', 1),
+      'access callback' => 'user_cancel_access',
+      'access arguments' => array(1),
+      'file' => drupal_get_path('module', 'user').'/user.pages.inc',
+      'menu_name' => 'ccrubyusernavigation',
+      'weight'=>20,
+  );
+  
+ 
+}
+
+/**
+ * Menu item title callback for the 'user' path.
+ *
+ * expected to see "Hello user name".
+ */
+function ccruby_user_menu_title() {
+  global $user;
+  return 'Hello '.format_username($user);
 }
 
 
@@ -35,63 +131,15 @@ function ccruby_help($path, $arg) {
 
  */
 
-/*
- *hook_menu_alter
-*/
-function ccruby_menu_alter(&$items)
-{
-  //items when user logged in
-  $items['user/logout']['menu_name'] ='secondary_top';
+/**
+ * @} End of "name ccruby_menu".
+ */
 
-  // items for not logged in
-
-  //get the titile back by making it a normal menu item
-  // need manual change to move it to top level
-  $items['user/login']['type'] = MENU_NORMAL_ITEM;
-  $items['user/login']['weight'] =10;
-  $items['user/login']['menu_name'] ='secondary_top';
-
-  //get the titile back by making it a normal menu item
-  // need manual change to move it to top level
-  $items['user/register']['type'] = MENU_NORMAL_ITEM;
-  $items['user/register']['title'] ='Sign up';
-  $items['user/register']['weight'] =15;
-  $items['user/register']['menu_name'] ='secondary_top';
-
-  // $items['user/%user']['menu_name'] ='ccrubynavigation';
-}
 
 /**
- * Menu item title callback for the 'user' path.
- *
- * expected to see "Hello user name".
+ * @name ccruby_block change navigation contents when different mainmenu activated.
+ * @{
  */
-function ccruby_user_menu_title() {
-  global $user;
-  return 'Hello '.format_username($user);
-}
-
-
-
-function ccruby_menu()
-{
-
-  $items['account/%user_uid_optional'] = array(
-      'title' => 'My account',
-      'title callback' => 'ccruby_user_menu_title',
-      'title arguments' => array(1),
-      'page callback' => 'user_view_page',
-      'page arguments' => array(1),
-      'access callback' => 'user_view_access',
-      'access arguments' => array(1),
-      'menu_name' => 'secondary_top',
-  //    'file' => drupal_get_path('module', 'user').'/user.module',
-  );
-
-  return $items;
-
-}
-
 
 /**
  * Implements hook_block_info().
@@ -108,6 +156,7 @@ function ccruby_block_info() {
   return $blocks;
 
 }
+
 
 /**
  * Implements hook_block_view().
@@ -152,3 +201,8 @@ function _ccruby_get_navigation()
   return '';
 
 }
+
+
+/**
+ * @} End of "name ccruby_block".
+ */
