@@ -206,3 +206,50 @@ function _ccruby_get_navigation()
 /**
  * @} End of "name ccruby_block".
  */
+
+
+/**
+ * @name ccruby menu change
+ * @{
+ */
+
+/**
+ * Implements hook_menu_link_alter().
+ */
+function ccruby_menu_link_alter(&$link) {
+
+  // add icon to user
+  if ($link['link_path'] == 'user/%') {
+    $link['options']['icon'] = 'icon-user';
+    $link['options']['html'] = true;
+  } elseif ($link['link_path'] == 'user/logout')
+  {
+    $link['options']['icon'] = 'icon-signout';
+    $link['options']['html'] = true;
+  }
+  elseif ($link['link_path'] == 'user/login')
+  {
+    $link['options']['icon'] = 'icon-signin';
+    $link['options']['html'] = true;
+  }
+  elseif ($link['link_path'] == 'user/register')
+  {
+    $link['options']['icon'] = 'icon-upload-alt';
+    $link['options']['html'] = true;
+  }
+
+}
+
+/**
+ * Implements hook_translated_menu_link_alter().
+ */
+function ccruby_translated_menu_link_alter(&$link) {
+  // Hide the "User account" link for anonymous users.
+ // if ($link['link_path'] == 'user' && $link['module'] == 'system' && user_is_anonymous()) {
+ //   $link['hidden'] = 1;
+ // }
+}
+
+/**
+ * @} End of "name ccruby_block".
+ */

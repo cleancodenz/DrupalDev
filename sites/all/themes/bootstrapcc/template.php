@@ -10,6 +10,30 @@ function bootstrapcc_js_alter(&$javascript) {
 
 
 /*
+ * 
+ * /
+/**
+ * Returns the correct span class for a region
+ */
+function _bootstrapcc_content_span($columns = 1) {
+  $class = FALSE;
+  
+  switch($columns) {
+    case 1:
+      $class = 'span12';
+      break;
+    case 2:
+      $class = 'span10';
+      break;
+    case 3:
+      $class = 'span8';
+      break;
+  }
+  
+  return $class;
+}
+
+/*
  * html theming
  * Add met tag with viewport to head
 */
@@ -42,6 +66,16 @@ function bootstrapcc_preprocess_page(&$variables) {
     $variables['theme_hook_suggestions'][]='page__loggedin';
   }
   
+}
+
+/**
+ * Implements hook_preprocess_block().
+ */
+function bootstrapcc_preprocess_block(&$variables) {
+  // add well class to all block.
+  if (!($variables['block']->module == 'search' && $variables['block']->delta=='form')) {
+  $variables['classes_array'][] = 'well';
+  }
 }
 
 /*
@@ -89,13 +123,28 @@ function bootstrapcc_menu_link__main_menu(array $variables) {
     
   }
   
-  $output = l($element['#title'], $element['#href'], $element['#localized_options']);
+ if ($element['#title']=='Home'){
+    
+    $element['#localized_options']['html']=true;
+    
+    $output = l('<i class="icon-home"></i>'.$element['#title'], $element['#href'], $element['#localized_options']);
+    
+  }elseif (isset($element['#localized_options']['icon']))
+  {
+    $output = l('<i class="'.$element['#localized_options']['icon'].'"></i>'.$element['#title'], $element['#href'], $element['#localized_options']);
+  }
+  else
+  {
+    $output = l($element['#title'], $element['#href'], $element['#localized_options']);
+  }
+  
+
   return '<li' . drupal_attributes($element['#attributes']) . '>' . $output . $sub_menu . "</li>\n";
     
 }
 
 /*
- * Secondary menu item theming
+ * Secondary and all others menu item theming
  * 
  * */
 
@@ -105,7 +154,6 @@ function bootstrapcc_menu_link(array $variables) {
   $element = $variables['element'];
   $sub_menu = '';
   
-  $options = $element['#localized_options'];
   
   // add active class on li level
   
@@ -116,56 +164,27 @@ function bootstrapcc_menu_link(array $variables) {
     $element['#attributes']['class'][] ='active';
   
   }
-  
- // if($element['#href']=='user')
- // {
-//    $output = l('Hello '.format_username($user),$element['#href'],$options);
+  if ($element['#title']=='Home'){
     
- // }
- // else
- //{
-    $output = l($element['#title'],$element['#href'],$options);
- // }
+    $element['#localized_options']['html']=true;
+    
+    $output = l('<i class="icon-home"></i>'.$element['#title'], $element['#href'], $element['#localized_options']);
+    
+  }elseif (isset($element['#localized_options']['icon']))
+  {
+    $output = l('<i class="'.$element['#localized_options']['icon'].'"></i>'.$element['#title'], $element['#href'], $element['#localized_options']);
+  }
+  else
+  {
+    $output = l($element['#title'], $element['#href'], $element['#localized_options']);
+  }
+   
+  
+ 
   return '<li' . drupal_attributes($element['#attributes']) . '>' . $output . $sub_menu . "</li>\n";
 }
 
 
-/*
- * Navigation  menu item theming
-*
-* */
-
-function bootstrapcc_menu_link__navigation(array $variables) {
-  $element = $variables['element'];
-  $sub_menu = '';
-
-  $element['#localized_options']['html'] = TRUE;
-  
-  if ($element['#below']) {
-    // Ad our own wrapper
-    unset($element['#below']['#theme_wrappers']);
-
-    $sub_menu = '<ul id="childmenu" class="nestednav">' . drupal_render($element['#below']) . '</ul>';
-  
-    
-  }
-
-  // add active class on li level
-
-  if (($element['#href'] == $_GET['q']
-      || ($element['#href'] == '<front>' && drupal_is_front_page()))
-      && (empty($element['#localized_options']['language'])
-          || $element['#localized_options']['language']->language == $language_url->language)) {
-    $element['#attributes']['class'][] ='active';
-
-  }
-
-  $options = $element['#localized_options'];
-  
-  $output = l('<i class="icon-chevron-right"></i>'. $element['#title'],
-      $element['#href'],$options);
-  return '<li' . drupal_attributes($element['#attributes']) . '>' . $output . $sub_menu . "</li>\n";
-}
 
 
 
@@ -177,7 +196,7 @@ function bootstrapcc_menu_link__navigation(array $variables) {
  */
 
 function bootstrapcc_menu_tree(&$variables) {
-  return '<ul class="nav nav-list  cc-sidenav">' . $variables['tree'] . '</ul>';
+  return '<ul class="nav nav-list">' . $variables['tree'] . '</ul>';
 }
 
 
@@ -242,5 +261,7 @@ function bootstrapcc_form_search_form_alter(&$form, &$form_state) {
   $form['basic']['keys']['#size']=45;
   
 }
+
+
 
 

@@ -58,14 +58,14 @@ three columns
 	<div class="row-fluid">
 
 		<?php if (!empty($page['sidebar_first'])): ?>
-		<aside class="span3" role="complementary">
+		<aside class="span2" role="complementary">
 			<?php print render($page['sidebar_first']); ?>
 		</aside>
 		<!-- /#sidebar-first -->
 		<?php endif; ?>
 
-		<section class="<?php print _bootstrap_content_span($columns); ?>"
-			style="margin-left: 0">
+		<section class="<?php print _bootstrapcc_content_span($columns); ?>"
+			style="margin-left:19px">
 
 			<?php if (!empty($breadcrumb)): print $breadcrumb; endif;?>
 			<!-- /#breadcrumb -->
@@ -79,6 +79,9 @@ three columns
 			<?php endif; ?>
 			<?php print render($title_suffix); ?>
 			<?php print $messages; ?>
+			<?php if (!empty($tabs)): ?>
+			<?php print render($tabs); ?>
+			<?php endif; ?>
 			<?php if (!empty($page['help'])): ?>
 			<div class="well">
 				<?php print render($page['help']); ?>
@@ -96,7 +99,7 @@ three columns
 		</section>
 
 		<?php if (!empty($page['sidebar_second'])): ?>
-		<aside class="span3" role="complementary">
+		<aside class="span2" role="complementary">
 			<?php print render($page['sidebar_second']); ?>
 		</aside>
 		<!-- /#sidebar-second -->

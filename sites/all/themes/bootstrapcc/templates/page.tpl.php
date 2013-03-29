@@ -74,6 +74,9 @@ two columns
 			<?php endif; ?>
 			<?php print render($title_suffix); ?>
 			<?php print $messages; ?>
+			<?php if (!empty($tabs)): ?>
+			<?php print render($tabs); ?>
+			<?php endif; ?>
 			<?php if (!empty($page['help'])): ?>
 			<div class="well">
 				<?php print render($page['help']); ?>
@@ -91,7 +94,7 @@ two columns
 		</section>
 
 		<?php if (!empty($page['sidebar_second'])): ?>
-		<aside class="span3" role="complementary">
+		<aside class="span2" role="complementary">
 			<?php print render($page['sidebar_second']); ?>
 		</aside>
 		<!-- /#sidebar-second -->
