@@ -28,6 +28,19 @@ function ccruby_install() {
   
   menu_save($ccrubyusernavigationmenu);
   
+ 
+  // Create a menu link for user/% in usernavigation menu. 
+  $menu_item = array(
+      'menu_name' => 'ccrubyusernavigation',
+      'weight' => 10,
+      'link_title' => 'My Account',
+      'link_path' => 'user/%',
+      'expanded' => true,
+  );
+
+  menu_link_save($menu_item);
+  
+  
 }
 
 

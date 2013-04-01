@@ -88,7 +88,7 @@ function ccruby_menu_alter(&$items)
       'access arguments' => array(1),
       'file' => drupal_get_path('module', 'user').'/user.pages.inc',
       'menu_name' => 'ccrubyusernavigation',
-      'weight'=>10,
+      'weight'=>20,
   );
   
   $items['user/%user_uid_optional/cancel'] = array(
@@ -99,7 +99,7 @@ function ccruby_menu_alter(&$items)
       'access arguments' => array(1),
       'file' => drupal_get_path('module', 'user').'/user.pages.inc',
       'menu_name' => 'ccrubyusernavigation',
-      'weight'=>20,
+      'weight'=>30,
   );
   
  
