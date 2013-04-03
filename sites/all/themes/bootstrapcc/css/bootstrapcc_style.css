@@ -25,10 +25,34 @@ body
 
 
 /* added to blocks in side bar first except nagivation to align them with navigation*/
-.nav-list {
-    padding-right: 15px;
-    padding-left: 0px;
+
+
+
+/* nest nav-list */
+/* 2nd level */
+.nav-list .nav-list > li > a {
+  padding-left: 30px;
 }
+
+.nav-list .nav-list > li > a,
+.nav-list .nav-list .nav-header {
+  margin-left:  -30px;
+  margin-right: -30px;
+}
+
+/* 3rd level */
+.nav-list .nav-list .nav-list > li > a {
+  padding-left: 45px;
+}
+
+.nav-list .nav-list .nav-list > li > a,
+.nav-list .nav-list .nav-list .nav-header {
+  margin-left:  -45px;
+  margin-right: -45px;
+}
+
+
+
 
 .sidebar {
 	margin-bottom :10px;

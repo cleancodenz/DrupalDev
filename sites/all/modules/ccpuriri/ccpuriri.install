@@ -1,13 +1,13 @@
 <?php 
 /**
  * @file
- *  Install, update and uninstall functions for the ccruby module.
+ *  Install, update and uninstall functions for the ccpuriri module.
  */
 
 /**
  * Implementation of hook_install().
  */
-function ccruby_install() {
+function ccpuriri_install() {
   
   // 1. create a custom menu 
   $secondarymenu = array(
@@ -18,20 +18,21 @@ function ccruby_install() {
   
   menu_save($secondarymenu);
   
-  //2. create ccrubyusernavigation
+  //2. create ccpuririusernavigation
   
-  $ccrubyusernavigationmenu = array(
-      'menu_name' => 'ccrubyusernavigation',
-      'title' => 'CCRuby User Navigation',
+  $ccpuririusernavigationmenu = array(
+      'menu_name' => 'ccpuririusernavigation',
+      'title' => 'CCPuriri User Navigation',
       'description' => 'User navigation menu',
   );
   
-  menu_save($ccrubyusernavigationmenu);
+  menu_save($ccpuririusernavigationmenu);
   
  
   // Create a menu link for user/% in usernavigation menu. 
+/*
   $menu_item = array(
-      'menu_name' => 'ccrubyusernavigation',
+      'menu_name' => 'secondary_top',
       'weight' => 10,
       'link_title' => 'My Account',
       'link_path' => 'user/%',
@@ -39,7 +40,7 @@ function ccruby_install() {
   );
 
   menu_link_save($menu_item);
-  
+  */
   
 }
 
@@ -47,7 +48,7 @@ function ccruby_install() {
 /**
  * Implementation of hook_uninstall().
  */
-function ccruby_uninstall() {
+function ccpuriri_uninstall() {
   // 1. delete custom menu
   $secondarymenu = array(
       'menu_name' => 'secondary_top',
@@ -56,9 +57,9 @@ function ccruby_uninstall() {
   menu_delete($secondarymenu);
   
   // 2. delete custom menu
-  $ccrubyusernavigation = array(
-      'menu_name' => 'ccrubyusernavigation',
+  $ccpuririusernavigation = array(
+      'menu_name' => 'ccpuririusernavigation',
   );
   
-  menu_delete($ccrubyusernavigation);
+  menu_delete($ccpuririusernavigation);
 }

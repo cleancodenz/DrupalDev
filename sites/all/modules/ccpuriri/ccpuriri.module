@@ -16,42 +16,30 @@
  *   Array that holds the current path as returned from arg() function
  */
 
-function ccruby_help($path, $arg) {
+function ccpuriri_help($path, $arg) {
 
 }
 
 
 
 /**
- * @name ccruby_meun 
+ * @name ccpuriri_meun 
  * @{
  */
 
 /*
  *hook_menu_alter
 */
-function ccruby_menu_alter(&$items)
+function ccpuriri_menu_alter(&$items)
 {
   //items when user logged in
-  $items['user/logout']['menu_name'] ='secondary_top';
 
-  // must remove original one, it can only have one
-  if (array_key_exists('user/%user',$items))
-  {
-    unset($items['user/%user']);
-  }
+ $items['user']['menu_name'] ='secondary_top';
+ $items['user']['title callback'] = '_ccpuriri_user_menu_title';
+ $items['user']['weight'] =10;
   
-  $items['user/%user_uid_optional'] = array(
-      'title' => 'My account',
-      'title callback' => 'ccruby_user_menu_title',
-      'title arguments' => array(1),
-      'page callback' => 'user_view_page',
-      'page arguments' => array(1),
-      'access callback' => 'user_view_access',
-      'access arguments' => array(1),
-      'menu_name' => 'secondary_top',
-  );
-  
+  $items['user/logout']['menu_name'] ='secondary_top';
+  $items['user/logout']['weight'] =20;
   
   // items for not logged in
 
@@ -70,15 +58,41 @@ function ccruby_menu_alter(&$items)
 
   
   // user navigation menu
-  if (array_key_exists('user/%user/cancel',$items))
-  {
-    unset($items['user/%user/cancel']);
-  }
 
+  // must remove original one, it can only have one
+  if (array_key_exists('user/%user',$items))
+  {
+    unset($items['user/%user']);
+  }
+  
+  $items['user/%user_uid_optional'] = array(
+      'title' => 'My account',
+      'page callback' => 'user_view_page',
+      'page arguments' => array(1),
+      'access callback' => 'user_view_access',
+      'access arguments' => array(1),
+      'menu_name' => 'ccpuririusernavigation',
+      'weight' =>10,
+  );
+  
+  if (array_key_exists('user/%user/view',$items))
+  {
+    unset($items['user/%user/view']);
+  }
+  
   if (array_key_exists('user/%user/edit',$items))
   {
     unset($items['user/%user/edit']);
   }
+  
+  
+  
+  $items['user/%user_uid_optional/view'] = array(
+      'title' => 'View',
+      'type' => MENU_DEFAULT_LOCAL_TASK,
+      'weight' => -10,
+  );
+  
   
   $items['user/%user_uid_optional/edit'] = array(
       'title' => 'Edit',
@@ -87,21 +101,13 @@ function ccruby_menu_alter(&$items)
       'access callback' => 'user_edit_access',
       'access arguments' => array(1),
       'file' => drupal_get_path('module', 'user').'/user.pages.inc',
-      'menu_name' => 'ccrubyusernavigation',
-      'weight'=>20,
+      'type' => MENU_LOCAL_TASK,
+      
   );
   
-  $items['user/%user_uid_optional/cancel'] = array(
-      'title' => 'Cancel account',
-      'page callback' => 'drupal_get_form',
-      'page arguments' => array('user_cancel_confirm_form', 1),
-      'access callback' => 'user_cancel_access',
-      'access arguments' => array(1),
-      'file' => drupal_get_path('module', 'user').'/user.pages.inc',
-      'menu_name' => 'ccrubyusernavigation',
-      'weight'=>30,
-  );
+ 
   
+ 
  
 }
 
@@ -110,7 +116,7 @@ function ccruby_menu_alter(&$items)
  *
  * expected to see "Hello user name".
  */
-function ccruby_user_menu_title() {
+function _ccpuriri_user_menu_title() {
   global $user;
   return 'Hello '.format_username($user);
 }
@@ -124,7 +130,7 @@ function ccruby_user_menu_title() {
  *
 
 
- function ccruby_menu() {
+ function ccpuriri_menu() {
 
 
  }
@@ -132,22 +138,23 @@ function ccruby_user_menu_title() {
  */
 
 /**
- * @} End of "name ccruby_menu".
+ * @} End of "name ccpuriri_menu".
  */
 
 
 /**
- * @name ccruby_block change navigation contents when different mainmenu activated.
+ * @name ccpuriri_block change navigation contents when different mainmenu activated.
  * @{
  */
 
 /**
  * Implements hook_block_info().
  */
-function ccruby_block_info() {
+function ccpuriri_block_info() {
 
   $blocks['navigation'] =array(
-      'info' => t('CCRuby Navigation'),
+      'info' => t('CCPuriri Navigation'),
+      'region' => 'sidebar_first',
       // Menu blocks can't be cached because each menu item can have
       // a custom access callback. menu.inc manages its own caching.
       'cache' => DRUPAL_NO_CACHE,
@@ -162,22 +169,22 @@ function ccruby_block_info() {
  * Implements hook_block_view().
  *
  * Generate a block with a promotional link to Drupal.org and
- * all ccruby menu blocks.
+ * all ccpuriri menu blocks.
  */
-function ccruby_block_view($delta = '') {
+function ccpuriri_block_view($delta = '') {
 
   $block = array();
   switch ($delta) {
     case 'navigation':
       $block['subject'] = NULL;
-      $block['content'] = _ccruby_get_navigation();
+      $block['content'] = _ccpuriri_get_navigation();
       return $block;
     default:
       break;
   }
 }
 
-function _ccruby_get_navigation()
+function _ccpuriri_get_navigation()
 {
   if(user_is_logged_in())
   {
@@ -188,7 +195,7 @@ function _ccruby_get_navigation()
     {
       switch ($router_item['map'][0]) {
         case 'user':
-          $tree = menu_tree_page_data('ccrubyusernavigation');
+          $tree = menu_tree_page_data('ccpuririusernavigation');
           break;
         default:
           $tree =  menu_tree_page_data('main-menu');
@@ -204,22 +211,23 @@ function _ccruby_get_navigation()
 
 
 /**
- * @} End of "name ccruby_block".
+ * @} End of "name ccpuriri_block".
  */
 
 
 /**
- * @name ccruby menu change
+ * @name ccpuriri menu change
  * @{
  */
 
 /**
  * Implements hook_menu_link_alter().
  */
-function ccruby_menu_link_alter(&$link) {
+function ccpuriri_menu_link_alter(&$link) {
 
   // add icon to user
-  if ($link['link_path'] == 'user/%') {
+  if ($link['link_path'] == 'user/%' || 
+     $link['link_path'] == 'user') {
     $link['options']['icon'] = 'icon-user';
     $link['options']['html'] = true;
   } elseif ($link['link_path'] == 'user/logout')
@@ -243,7 +251,7 @@ function ccruby_menu_link_alter(&$link) {
 /**
  * Implements hook_translated_menu_link_alter().
  */
-function ccruby_translated_menu_link_alter(&$link) {
+function ccpuriri_translated_menu_link_alter(&$link) {
   // Hide the "User account" link for anonymous users.
  // if ($link['link_path'] == 'user' && $link['module'] == 'system' && user_is_anonymous()) {
  //   $link['hidden'] = 1;
@@ -251,5 +259,5 @@ function ccruby_translated_menu_link_alter(&$link) {
 }
 
 /**
- * @} End of "name ccruby_block".
+ * @} End of "name ccpuriri_block".
  */

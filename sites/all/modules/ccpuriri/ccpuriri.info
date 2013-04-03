@@ -1,9 +1,9 @@
 ; $Id$
-name = CleanCode Ruby
+name = CleanCode Puriri
 description = "Enables the creation of cleancode real estate listings."
 
 ;dependencies[] = pathauto
 
-package = CleanCode Ruby modules
+package = CleanCode Puriri modules
 version = "7.x-1.0-beta1"
 core = 7.x

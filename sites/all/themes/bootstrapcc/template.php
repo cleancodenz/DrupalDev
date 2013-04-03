@@ -115,12 +115,13 @@ function bootstrapcc_menu_link__main_menu(array $variables) {
   }
   // add active class on li level
   
-  if (($element['#href'] == $_GET['q'] 
-      || ($element['#href'] == '<front>' && drupal_is_front_page())) 
-      && (empty($element['#localized_options']['language']) 
-          || $element['#localized_options']['language']->language == $language_url->language)) {
+  if (isset($element['#localized_options']) && 
+      isset($element['#localized_options']['attributes']) &&
+      isset($element['#localized_options']['attributes']['class']) &&
+      (in_array("active-trail", $element['#localized_options']['attributes']['class'])
+          ||in_array("active", $element['#localized_options']['attributes']['class']))) {
     $element['#attributes']['class'][] ='active';
-    
+  
   }
   
  if ($element['#title']=='Home'){
@@ -154,16 +155,30 @@ function bootstrapcc_menu_link(array $variables) {
   $element = $variables['element'];
   $sub_menu = '';
   
+  if ($element['#below']) {
+    //can not make make below on main manu, do no tknow why
+    // Ad our own wrapper
+  
+    unset($element['#below']['#theme_wrappers']);
+    $sub_menu = '<ul class="nav nav-list">' . drupal_render($element['#below']) . '</ul>';
+     
+    $element['#localized_options']['html'] = TRUE;
+  
+    // Set dropdown trigger element to # to prevent inadvertant page loading with submenu click
+  }
   
   // add active class on li level
   
-  if (($element['#href'] == $_GET['q']
-      || ($element['#href'] == '<front>' && drupal_is_front_page()))
-      && (empty($element['#localized_options']['language'])
-          || $element['#localized_options']['language']->language == $language_url->language)) {
+  if (isset($element['#localized_options']) &&
+      isset($element['#localized_options']['attributes']) &&
+      isset($element['#localized_options']['attributes']['class']) &&
+      (in_array("active-trail", $element['#localized_options']['attributes']['class'])
+          ||in_array("active", $element['#localized_options']['attributes']['class']))) {
     $element['#attributes']['class'][] ='active';
   
   }
+  
+  
   if ($element['#title']=='Home'){
     
     $element['#localized_options']['html']=true;
