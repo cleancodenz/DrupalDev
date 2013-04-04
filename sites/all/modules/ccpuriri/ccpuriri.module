@@ -105,10 +105,36 @@ function ccpuriri_menu_alter(&$items)
       
   );
   
+  $items['user/%user_uid_optional/edit#anchor1'] = array(
+      'title' => 'Anchor1',
+      'access callback' => 'user_edit_access',
+      'access arguments' => array(1),
+  
+  );
  
   
- 
- 
+  $items['user/%user_uid_optional/edit#anchor2'] = array(
+      'title' => 'Anchor2',
+      'access callback' => 'user_edit_access',
+      'access arguments' => array(1),
+  
+  );
+  
+  $items['user/%user_uid_optional/#anchor1'] = array(
+      'title' => 'Anchor11',
+      'access callback' => 'user_edit_access',
+      'access arguments' => array(1),
+  
+  );
+  
+  
+  $items['user/%user_uid_optional/#anchor2'] = array(
+      'title' => 'Anchor12',
+      'access callback' => 'user_edit_access',
+      'access arguments' => array(1),
+  
+  );
+  
 }
 
 /**

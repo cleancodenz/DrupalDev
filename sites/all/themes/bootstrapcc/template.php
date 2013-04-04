@@ -178,7 +178,16 @@ function bootstrapcc_menu_link(array $variables) {
   
   }
   
+  $strpos = strpos($element['#href'],'#');
   
+  if( $strpos!==false)
+  {
+    $parts =explode('#',$element['#href']);
+    
+    $element['#href'] = $parts[0];
+    $element['#localized_options']['fragment']=$parts[1];
+    
+  }
   if ($element['#title']=='Home'){
     
     $element['#localized_options']['html']=true;
@@ -278,5 +287,38 @@ function bootstrapcc_form_search_form_alter(&$form, &$form_state) {
 }
 
 
+/*
+ * Bread crumb override, add current title to the end of bread crumb
+ * and title will not be displayed separately
+ * */
 
+/**
+ * Override theme_breadrumb().
+ *
+ * Print breadcrumbs as a list, with separators.
+ */
+function bootstrapcc_breadcrumb($variables) {
+  $breadcrumb = $variables['breadcrumb'];
+
+  $item = menu_get_item();
+  
+  if (!empty($breadcrumb)) {
+    $breadcrumbs = '<ul class="breadcrumb">';
+    
+  
+    foreach ($breadcrumb as $key => $value) {
+     
+        $breadcrumbs .= '<li>' . $value . '<span class="divider">/</span></li>';
+  
+  
+     
+    }
+    // add current title to it
+    $breadcrumbs .= '<li>' . $item['title'] . '</li>'.'</ul>';
+    
+  
+    
+    return $breadcrumbs;
+  }
+}
 
