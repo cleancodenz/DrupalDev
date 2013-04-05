@@ -84,57 +84,38 @@ function ccpuriri_menu_alter(&$items)
   {
     unset($items['user/%user/edit']);
   }
+   
+  if (array_key_exists('user/%user_category/edit/account',$items))
+  {
+    unset($items['user/%user_category/edit/account']);
+  }
+ 
+  if (array_key_exists('user/%user/cancel',$items))
+  {
+    unset($items['user/%user/cancel']);
+  }
   
-  
-  
-  $items['user/%user_uid_optional/view'] = array(
-      'title' => 'View',
-      'type' => MENU_DEFAULT_LOCAL_TASK,
-      'weight' => -10,
+  $items['user/%user_uid_optional/cancel'] = array(
+      'title' => 'Cancel account',
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array('user_cancel_confirm_form', 1),
+      'access callback' => 'user_cancel_access',
+      'access arguments' => array(1),
+      'menu_name' => 'ccpuririusernavigation',
+      'file' => drupal_get_path('module', 'user').'/user.pages.inc',
   );
   
-  
+  // here for new development to compare with
+  // later on set this to admin only
   $items['user/%user_uid_optional/edit'] = array(
       'title' => 'Edit',
       'page callback' => 'drupal_get_form',
       'page arguments' => array('user_profile_form', 1),
       'access callback' => 'user_edit_access',
       'access arguments' => array(1),
+      'menu_name' => 'ccpuririusernavigation',
       'file' => drupal_get_path('module', 'user').'/user.pages.inc',
-      'type' => MENU_LOCAL_TASK,
-      
   );
-  
-  $items['user/%user_uid_optional/edit#anchor1'] = array(
-      'title' => 'Anchor1',
-      'access callback' => 'user_edit_access',
-      'access arguments' => array(1),
-  
-  );
- 
-  
-  $items['user/%user_uid_optional/edit#anchor2'] = array(
-      'title' => 'Anchor2',
-      'access callback' => 'user_edit_access',
-      'access arguments' => array(1),
-  
-  );
-  
-  $items['user/%user_uid_optional/#anchor1'] = array(
-      'title' => 'Anchor11',
-      'access callback' => 'user_edit_access',
-      'access arguments' => array(1),
-  
-  );
-  
-  
-  $items['user/%user_uid_optional/#anchor2'] = array(
-      'title' => 'Anchor12',
-      'access callback' => 'user_edit_access',
-      'access arguments' => array(1),
-  
-  );
-  
 }
 
 /**
@@ -154,14 +135,23 @@ function _ccpuriri_user_menu_title() {
  * We are providing a default page to illustrate the use of our custom node view mode that will
  * live at http://example.com/?q=examples/node_example
  *
+*/
 
+function ccpuriri_menu() {
 
- function ccpuriri_menu() {
-
-
+   $items['user/%user_uid_optional/password'] = array(
+       'title' => 'Password',
+       'page callback' => 'drupal_get_form',
+       'page arguments' => array('user_password_form', 1),
+       'access callback' => 'user_edit_access',
+       'access arguments' => array(1),
+       'menu_name' => 'ccpuririusernavigation',
+       'file' =>'ccpuriri.user.pages.inc'
+       );
+   return $items;
  }
 
- */
+ 
 
 /**
  * @} End of "name ccpuriri_menu".
