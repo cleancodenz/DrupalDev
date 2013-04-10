@@ -1,0 +1,10 @@
+name = Geocoder Autocomplete
+description = Geocoder autocomplete plugin.
+core = 7.x
+
+; Information added by drupal.org packaging script on 2012-10-14
+version = "7.x-1.x-dev"
+core = "7.x"
+project = "geocoder_autocomplete"
+datestamp = "1350217494"
+

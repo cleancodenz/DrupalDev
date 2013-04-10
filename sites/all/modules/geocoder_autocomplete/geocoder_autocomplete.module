@@ -1,0 +1,62 @@
+<?php
+
+/**
+ * @file
+ * Geocoder autocomplete widget
+ *
+ * @author
+ * Stefan Auditor <stefan.auditor@erdfisch.de>
+ */
+
+define('GEOCODER_AUTOCOMPLETE_URL', 'http://maps.google.com/maps/api/geocode');
+define('GEOCODER_AUTOCOMPLETE_FORMAT', 'json');
+
+/**
+ * Implements hook_menu().
+ */
+function geocoder_autocomplete_menu() {
+  $items['geocoder/autocomplete'] = array(
+    'title' => 'Geocoder autocomplete',
+    'page callback' => 'geocoder_autocomplete_autocomplete',
+    'access callback' => TRUE,
+    'type' => MENU_CALLBACK,
+    'file' => 'geocoder_autocomplete.pages.inc',
+  );
+  return $items;
+}
+
+/**
+ * Implements hook_field_widget_info().
+ */
+function geocoder_autocomplete_field_widget_info() {
+  return array(
+    'geocoder_autocomplete' => array(
+      'label' => t('Geocoder (autocomplete)'),
+      'field types' => array('text'),
+    ),
+  );
+}
+
+/**
+ * Implements hook_field_widget_form().
+ */
+function geocoder_autocomplete_field_widget_form(&$form, &$form_state, $field, $instance, $langcode, $items, $delta, $element) {
+  $widget = $element;
+  $widget['#delta'] = $delta;
+
+  switch ($instance['widget']['type']) {
+    case 'geocoder_autocomplete':
+      $widget = $element + array(
+        '#type' => 'textfield',
+        '#default_value' => isset($items[$delta]['value']) ? $items[$delta]['value'] : NULL,
+        '#size' => isset($instance['widget']['settings']['size']) ? $instance['widget']['settings']['size'] : 60,
+        '#maxlength' => $field['settings']['max_length'],
+        '#attributes' => array('class' => array('text-geocoder')),
+        '#autocomplete_path' => 'geocoder/autocomplete',
+      );
+      break;
+  }
+
+  $element['value'] = $widget;
+  return $element;
+}
