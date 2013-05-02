@@ -1,0 +1,9 @@
+; $Id$
+name = CleanCode Puriri Address Field
+description = "Wraps all normal address fields into one field."
+
+;dependencies[] = pathauto
+
+package = CleanCode Puriri modules
+version = "7.x-1.0-beta1"
+core = 7.x

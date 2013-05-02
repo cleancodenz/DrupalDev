@@ -1,0 +1,163 @@
+<?php 
+
+/**
+ * Implements hook_field_schema()
+ */
+function ccpuriri_addressfield_field_schema() {
+  $columns = array(
+      'country' => array(
+          'description' => 'Two letter ISO country code of this address.',
+          'type' => 'varchar',
+          'length' => 2,
+          'not null' => FALSE,
+          'default' => '',
+      ),
+      'administrative_area' => array(
+          'description' => 'The administrative area of this address. (i.e. State/Province)',
+          'type' => 'varchar',
+          'length' => 255,
+          'default' => '',
+          'not null' => FALSE,
+      ),
+      'sub_administrative_area' => array(
+          'description' => 'The sub administrative area of this address.',
+          'type' => 'varchar',
+          'length' => 255,
+          'default' => '',
+          'not null' => FALSE,
+      ),
+      'locality' => array(
+          'description' => 'The locality of this address. (i.e. City)',
+          'type' => 'varchar',
+          'length' => 255,
+          'default' => '',
+          'not null' => FALSE,
+      ),
+      'dependent_locality' => array(
+          'description' => 'The dependent locality of this address.',
+          'type' => 'varchar',
+          'length' => 255,
+          'default' => '',
+          'not null' => FALSE,
+      ),
+      'postal_code' => array(
+          'description' => 'The postal code of this address.',
+          'type' => 'varchar',
+          'length' => 255,
+          'default' => '',
+          'not null' => FALSE,
+      ),
+      'thoroughfare' => array(
+          'description' => 'The thoroughfare of this address. (i.e. Street address)',
+          'type' => 'varchar',
+          'length' => 255,
+          'default' => '',
+          'not null' => FALSE,
+      ),
+      'premise' => array(
+          'description' => 'The premise of this address. (i.e. Apartment / Suite number)',
+          'type' => 'varchar',
+          'length' => 255,
+          'default' => '',
+          'not null' => FALSE,
+      ),
+      'sub_premise' => array(
+          'description' => 'The sub_premise of this address.',
+          'type' => 'varchar',
+          'length' => 255,
+          'default' => '',
+          'not null' => FALSE,
+      ),
+      'organisation_name' => array(
+          'description' => 'Contents of a primary OrganisationName element in the xNL XML.',
+          'type' => 'varchar',
+          'length' => 255,
+          'not null' => FALSE,
+          'default' => '',
+      ),
+      'name_line' => array(
+          'description' => 'Contents of a primary NameLine element in the xNL XML.',
+          'type' => 'varchar',
+          'length' => 255,
+          'not null' => FALSE,
+          'default' => '',
+      ),
+      'first_name' => array(
+          'description' => 'Contents of the FirstName element of a primary PersonName element in the xNL XML.',
+          'type' => 'varchar',
+          'length' => 255,
+          'not null' => FALSE,
+          'default' => '',
+      ),
+      'last_name' => array(
+          'description' => 'Contents of the LastName element of a primary PersonName element in the xNL XML.',
+          'type' => 'varchar',
+          'length' => 255,
+          'not null' => FALSE,
+          'default' => '',
+      ),
+      'data' => array(
+          'description' => 'Additional data for this address.',
+          'type' => 'text',
+          'size' => 'big',
+          'not null' => FALSE,
+          'serialize' => TRUE,
+      ),
+  );
+
+  return array(
+      'columns' => $columns,
+      // TODO Add indexes.
+  );
+}
+
+/**
+ * Implementation of hook_enable().
+ */
+function ccpuriri_addressfield_enable() {
+
+  // create addressfield
+  $fieldname = 'field_ccpuriri_addressfield';
+  $field = field_read_field($fieldname, array('include_inactive' => TRUE));
+
+  if (empty($field)) {
+
+    $field = array(
+        'field_name' => $fieldname,
+        'type' => 'ccpuriri_addressfield',
+        'entity_types' => array('user'),
+    );
+
+    field_create_field($field);
+
+    // Create the instance if needed.
+    if (!field_read_instance('user', $fieldname , 'user', array('include_inactive' => TRUE))) {
+
+      field_attach_create_bundle('user', 'user');
+
+      $instance = array(
+          'field_name' => $fieldname,
+          'label' => 'Address',
+          'entity_type' => 'user',
+          'bundle' => 'user',
+      );
+      field_create_instance($instance);
+    }
+
+  }
+
+}
+
+
+/**
+ * Implementation of hook_uninstall().
+ */
+function ccpuriri_addressfield_uninstall() {
+
+  field_delete_field('field_ccpuriri_addressfield');
+  
+  //Purge field data now to allow module to be reinstalled
+  //if this is the only field remaining.
+  field_purge_batch(10);
+  
+}
