@@ -173,3 +173,73 @@ function ccpuriri_user_picture_form($form, &$form_state, $account)
   return $form;
 }
 
+
+/*
+ * The form to change address
+* */
+function ccpuriri_user_address_form($form, &$form_state, $account)
+{
+  // do not worry about admin, admin is still using the old user/%/edit
+  global $user;
+
+  module_load_include('module', 'user', 'user');
+  module_load_include('inc', 'user', 'user.pages');
+
+  if (!isset($form_state['user'])) {
+    $form_state['user'] = $account;
+  }
+  else {
+    $account = $form_state['user'];
+  }
+
+  $form['#user'] = $account;
+
+  $form['#user_category'] = 'account'; // to satisfy shared validation functions
+
+
+  $form['picture'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('Picture'),
+      '#weight' => 1,
+      '#access' => variable_get('user_pictures', 0),
+  );
+
+  $form['picture']['picture'] = array(
+      '#type' => 'value',
+      '#value' => isset($account->picture) ? $account->picture : NULL,
+  );
+
+  $form['picture']['picture_current'] = array(
+      '#markup' => theme('user_picture', array('account' => $account)),
+  );
+
+  $form['picture']['picture_delete'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Delete picture'),
+      '#access' => !empty($account->picture->fid),
+      '#description' => t('Check this box to delete your current picture.'),
+  );
+  $form['picture']['picture_upload'] = array(
+      '#type' => 'file',
+      '#title' => t('Upload picture'),
+      '#size' => 48,
+      '#description' => t('Your virtual face or picture. Pictures larger than @dimensions pixels will be scaled down.', array('@dimensions' => variable_get('user_picture_dimensions', '85x85'))) . ' ' . filter_xss_admin(variable_get('user_picture_guidelines', '')),
+  );
+  $form['#validate'][] = 'user_validate_picture';
+
+
+  $form['actions'] = array('#type' => 'actions');
+  $form['actions']['submit'] = array(
+      '#type' => 'submit',
+      '#value' => t('Save'),
+  );
+
+
+  // Add the final user profile form submit handler.
+  $form['#submit'][] = 'user_profile_form_submit';
+
+  return $form;
+}
+
+
+

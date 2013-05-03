@@ -102,6 +102,7 @@ function ccpuriri_menu_alter(&$items)
       'access callback' => 'user_cancel_access',
       'access arguments' => array(1),
       'menu_name' => 'ccpuririusernavigation',
+      'weight' =>100,
       'file' => drupal_get_path('module', 'user').'/user.pages.inc',
   );
 
@@ -145,6 +146,7 @@ function ccpuriri_menu() {
       'access callback' => 'user_edit_access',
       'access arguments' => array(1),
       'menu_name' => 'ccpuririusernavigation',
+      'weight' =>10,
       'file' =>'ccpuriri.user.pages.inc'
   );
   
@@ -155,6 +157,18 @@ function ccpuriri_menu() {
       'access callback' => 'user_edit_access',
       'access arguments' => array(1),
       'menu_name' => 'ccpuririusernavigation',
+      'weight' =>30,
+      'file' =>'ccpuriri.user.pages.inc'
+  );
+  
+  $items['user/%user_uid_optional/address'] = array(
+      'title' => 'Address',
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array('ccpuriri_user_address_form', 1),
+      'access callback' => 'user_edit_access',
+      'access arguments' => array(1),
+      'menu_name' => 'ccpuririusernavigation',
+      'weight' =>20,
       'file' =>'ccpuriri.user.pages.inc'
   );
   

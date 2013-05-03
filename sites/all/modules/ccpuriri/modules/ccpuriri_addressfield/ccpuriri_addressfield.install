@@ -117,6 +117,10 @@ function ccpuriri_addressfield_field_schema() {
 function ccpuriri_addressfield_enable() {
 
   // create addressfield
+  // to clear the cache to include the field type defined in this module
+  
+  _field_info_collate_types(true);
+  
   $fieldname = 'field_ccpuriri_addressfield';
   $field = field_read_field($fieldname, array('include_inactive' => TRUE));
 
