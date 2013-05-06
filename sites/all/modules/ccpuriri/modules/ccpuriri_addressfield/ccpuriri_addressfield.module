@@ -62,7 +62,7 @@ function ccpuriri_addressfield_field_widget_form(&$form, &$form_state, $field, $
   if (!empty($form_state['addressfield'][$element_key])) {
     // Use the value from the form_state if available.
     $address = $form_state['addressfield'][$element_key];
-  }
+  }  
   elseif (!empty($items[$delta]['country'])) {
     // Else use the saved value for the field.
     $address = $items[$delta];

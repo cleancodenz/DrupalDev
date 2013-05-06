@@ -181,64 +181,65 @@ function ccpuriri_user_address_form($form, &$form_state, $account)
 {
   // do not worry about admin, admin is still using the old user/%/edit
   global $user;
-
+  
   module_load_include('module', 'user', 'user');
   module_load_include('inc', 'user', 'user.pages');
-
+  module_load_include('inc', 'ccpuriri', 'ccpuriri.common');
+  
   if (!isset($form_state['user'])) {
     $form_state['user'] = $account;
   }
   else {
     $account = $form_state['user'];
   }
-
+  
   $form['#user'] = $account;
-
+  
   $form['#user_category'] = 'account'; // to satisfy shared validation functions
+  
+  //field_attach_form on one field address field
+  
+  // to create options
+  // If no language is provided use the default site language.
+  $options = array('language' => field_valid_language(NULL));
+  $options['default'] = FALSE;
+  $options['deleted'] = FALSE;
+  // to get all instances
+  
+  // Determine the list of instances to iterate on.
+  list(, , $bundle) = entity_extract_ids('user', $account);
+  $instances = _field_invoke_get_instances('user', $bundle, $options);
+  
+  if($instances['field_ccpuriri_addressfield'])
+  {
+    // get the form element for that field
+    
+    // Set #parents to 'top-level' by default.
+    $form += array('#parents' => array());
+    
+    ccpuriri_field_attach_one_form('user',
+        $account,$bundle, $instances['field_ccpuriri_addressfield'],
+        $form, $form_state, $options);
 
-
-  $form['picture'] = array(
-      '#type' => 'fieldset',
-      '#title' => t('Picture'),
-      '#weight' => 1,
-      '#access' => variable_get('user_pictures', 0),
-  );
-
-  $form['picture']['picture'] = array(
-      '#type' => 'value',
-      '#value' => isset($account->picture) ? $account->picture : NULL,
-  );
-
-  $form['picture']['picture_current'] = array(
-      '#markup' => theme('user_picture', array('account' => $account)),
-  );
-
-  $form['picture']['picture_delete'] = array(
-      '#type' => 'checkbox',
-      '#title' => t('Delete picture'),
-      '#access' => !empty($account->picture->fid),
-      '#description' => t('Check this box to delete your current picture.'),
-  );
-  $form['picture']['picture_upload'] = array(
-      '#type' => 'file',
-      '#title' => t('Upload picture'),
-      '#size' => 48,
-      '#description' => t('Your virtual face or picture. Pictures larger than @dimensions pixels will be scaled down.', array('@dimensions' => variable_get('user_picture_dimensions', '85x85'))) . ' ' . filter_xss_admin(variable_get('user_picture_guidelines', '')),
-  );
-  $form['#validate'][] = 'user_validate_picture';
-
-
-  $form['actions'] = array('#type' => 'actions');
-  $form['actions']['submit'] = array(
-      '#type' => 'submit',
-      '#value' => t('Save'),
-  );
-
-
-  // Add the final user profile form submit handler.
-  $form['#submit'][] = 'user_profile_form_submit';
-
+    
+   // $form['#validate'][] = 'user_validate_picture';
+    
+    
+    $form['actions'] = array('#type' => 'actions');
+    $form['actions']['submit'] = array(
+        '#type' => 'submit',
+        '#value' => t('Save'),
+    );
+    
+    
+    // Add the final user profile form submit handler.
+    $form['#submit'][] = 'user_profile_form_submit';
+    
+    
+  } 
+  
   return $form;
+  
 }
 
 
