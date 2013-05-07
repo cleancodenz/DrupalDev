@@ -5,5 +5,8 @@ description = "Enables the creation of cleancode real estate listings."
 ;dependencies[] = pathauto
 
 package = CleanCode Puriri modules
+
+configure = admin/config/ccpuriri
+
 version = "7.x-1.0-beta1"
 core = 7.x

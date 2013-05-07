@@ -172,6 +172,15 @@ function ccpuriri_menu() {
       'file' =>'ccpuriri.user.pages.inc'
   );
   
+  $items['admin/config/ccpuriri'] = array(
+      'title' => 'Configuation settings for CCPURIRI',
+      'description' =>  'Configuation settings',
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array('ccpuriri_admin_settings'),
+      'file' => 'ccpuriri.admin.inc',
+      'access arguments' => array('administer site configuration'),
+  );
+  
   return $items;
 }
 
