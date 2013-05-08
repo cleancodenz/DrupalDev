@@ -209,21 +209,28 @@ function ccpuriri_user_address_form($form, &$form_state, $account)
   // Determine the list of instances to iterate on.
   list(, , $bundle) = entity_extract_ids('user', $account);
   $instances = _field_invoke_get_instances('user', $bundle, $options);
-  
+    
   if($instances['field_ccpuriri_addressfield'])
-  {
+  {       
     // get the form element for that field
     
     // Set #parents to 'top-level' by default.
     $form += array('#parents' => array());
     
+    
+    $instance = $instances['field_ccpuriri_addressfield'];
+        
+    $field = field_info_field_by_id($instance['field_id']);
+    
+    // save it in $form_state
+    $form_state["#formfield"] = $field;
+    
+    $form_state["#formfieldinstance"] = $instance;
+    
     ccpuriri_field_attach_one_form('user',
-        $account,$bundle, $instances['field_ccpuriri_addressfield'],
-        $form, $form_state, $options);
+        $account,$bundle, $field, 
+        $instance, $form, $form_state, $options);
 
-    
-   // $form['#validate'][] = 'user_validate_picture';
-    
     
     $form['actions'] = array('#type' => 'actions');
     $form['actions']['submit'] = array(
@@ -232,14 +239,42 @@ function ccpuriri_user_address_form($form, &$form_state, $account)
     );
     
     
-    // Add the final user profile form submit handler.
-    $form['#submit'][] = 'user_profile_form_submit';
     
     
   } 
   
   return $form;
   
+}
+
+/*
+ * Validate handler for address form
+ * */
+function ccpuriri_user_address_form_validate($form, &$form_state)
+{
+   $account = $form['#user'];
+  
+   // Determine the list of instances to iterate on.
+   list(, , $bundle) = entity_extract_ids('user', $account);
+   $instances = _field_invoke_get_instances('user', $bundle, $options);
+   
+   if($instances['field_ccpuriri_addressfield'])
+   {
+     
+     ccpuriri_field_attach_one_form_validate($entity_type,
+         $entity,$bundle, $instance,
+         &$form, &$form_state,
+         $options);
+   }
+   
+}
+
+/*
+ * Submit handler  for address form
+* */
+function ccpuriri_user_address_form_submit($form, &$form_state)
+{
+
 }
 
 
