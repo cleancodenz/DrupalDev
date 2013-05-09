@@ -182,6 +182,7 @@ function ccpuriri_user_address_form($form, &$form_state, $account)
   // do not worry about admin, admin is still using the old user/%/edit
   global $user;
   
+  
   module_load_include('module', 'user', 'user');
   module_load_include('inc', 'user', 'user.pages');
   module_load_include('inc', 'ccpuriri', 'ccpuriri.common');
@@ -199,11 +200,9 @@ function ccpuriri_user_address_form($form, &$form_state, $account)
   
   //field_attach_form on one field address field
   
-  // to create options
-  // If no language is provided use the default site language.
-  $options = array('language' => field_valid_language(NULL));
-  $options['default'] = FALSE;
-  $options['deleted'] = FALSE;
+  // only available after 5.15
+ // $langcode = entity_language('user', $account);
+  $langcode = NULL;
   // to get all instances
   
   // Determine the list of instances to iterate on.
@@ -228,8 +227,8 @@ function ccpuriri_user_address_form($form, &$form_state, $account)
     $form_state["#formfieldinstance"] = $instance;
     
     ccpuriri_field_attach_one_form('user',
-        $account,$bundle, $field, 
-        $instance, $form, $form_state, $options);
+        $account, $bundle, $field, 
+        $instance, $form, $form_state, $langcode);
 
     
     $form['actions'] = array('#type' => 'actions');
@@ -254,12 +253,17 @@ function ccpuriri_user_address_form_validate($form, &$form_state)
 {
    $account = $form['#user'];
   
-   // Determine the list of instances to iterate on.
-   list(, , $bundle) = entity_extract_ids('user', $account);
-   $instances = _field_invoke_get_instances('user', $bundle, $options);
+   // to create options
+   // If no language is provided use the default site language.
+   $options = array('language' => field_valid_language(NULL));
+   $options['default'] = FALSE;
+   $options['deleted'] = FALSE;
    
-   if($instances['field_ccpuriri_addressfield'])
+   
+   if($form_state["#formfield"] &&
+       $form_state["#formfieldinstance"])
    {
+     
      
      ccpuriri_field_attach_one_form_validate($entity_type,
          $entity,$bundle, $instance,
