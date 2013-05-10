@@ -28,7 +28,9 @@ function ccpuriri_addressfield_field_widget_info() {
   $widgets['ccpuriri_addressfield_standard'] = array(
       'label' => t('CCPuriri address form'),
       'field types' => array('ccpuriri_addressfield'),
-      'settings' => array(),
+      'settings' => array(
+          'showname' => false,
+          ),
   );
 
   return $widgets;

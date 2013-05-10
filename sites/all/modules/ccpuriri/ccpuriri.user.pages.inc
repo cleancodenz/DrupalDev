@@ -2,7 +2,7 @@
 /*
  * The form to change password
 * */
-function ccpuriri_user_account_info_form($form, &$form_state, $account)
+function ccpuriri_user_account_info_form($form, $form_state, $account)
 {
   // do not worry about admin, admin is still using the old user/%/edit
   global $user;
@@ -109,7 +109,7 @@ function ccpuriri_user_account_info_form($form, &$form_state, $account)
 /*
  * The form to change picture/avarta
 * */
-function ccpuriri_user_picture_form($form, &$form_state, $account)
+function ccpuriri_user_picture_form($form, $form_state, $account)
 {
   // do not worry about admin, admin is still using the old user/%/edit
   global $user;
@@ -177,14 +177,14 @@ function ccpuriri_user_picture_form($form, &$form_state, $account)
 /*
  * The form to change address
 * */
-function ccpuriri_user_address_form($form, &$form_state, $account)
+function ccpuriri_user_address_form($form, $form_state, $account)
 {
   // do not worry about admin, admin is still using the old user/%/edit
   global $user;
   
   
-  module_load_include('module', 'user', 'user');
-  module_load_include('inc', 'user', 'user.pages');
+ // module_load_include('module', 'user', 'user');
+//  module_load_include('inc', 'user', 'user.pages');
   module_load_include('inc', 'ccpuriri', 'ccpuriri.common');
   
   if (!isset($form_state['user'])) {
@@ -207,6 +207,10 @@ function ccpuriri_user_address_form($form, &$form_state, $account)
   
   // Determine the list of instances to iterate on.
   list(, , $bundle) = entity_extract_ids('user', $account);
+  $options = array(
+      'deleted' => FALSE,
+  );
+  
   $instances = _field_invoke_get_instances('user', $bundle, $options);
     
   if($instances['field_ccpuriri_addressfield'])
@@ -237,9 +241,6 @@ function ccpuriri_user_address_form($form, &$form_state, $account)
         '#value' => t('Save'),
     );
     
-    
-    
-    
   } 
   
   return $form;
@@ -249,26 +250,21 @@ function ccpuriri_user_address_form($form, &$form_state, $account)
 /*
  * Validate handler for address form
  * */
-function ccpuriri_user_address_form_validate($form, &$form_state)
+function ccpuriri_user_address_form_validate($form, $form_state)
 {
    $account = $form['#user'];
-  
-   // to create options
-   // If no language is provided use the default site language.
-   $options = array('language' => field_valid_language(NULL));
-   $options['default'] = FALSE;
-   $options['deleted'] = FALSE;
-   
+        
    
    if($form_state["#formfield"] &&
        $form_state["#formfieldinstance"])
    {
+          
+     ccpuriri_field_attach_one_form_validate('user',
+         $account, 
+         $form_state["#formfield"],
+         $form_state["#formfieldinstance"],
+         $form, $form_state);
      
-     
-     ccpuriri_field_attach_one_form_validate($entity_type,
-         $entity,$bundle, $instance,
-         &$form, &$form_state,
-         $options);
    }
    
 }
@@ -276,9 +272,38 @@ function ccpuriri_user_address_form_validate($form, &$form_state)
 /*
  * Submit handler  for address form
 * */
-function ccpuriri_user_address_form_submit($form, &$form_state)
+function ccpuriri_user_address_form_submit($form, $form_state)
 {
-
+  // to get field values from form
+  $account = $form['#user'];
+  
+  
+  if($form_state["#formfield"] &&
+      $form_state["#formfieldinstance"])
+  {
+    // field_attach_submit
+    ccpuriri_field_attach_one_form_submit('user',
+        $account,
+        $form_state["#formfield"],
+        $form_state["#formfieldinstance"],
+        $form, $form_state);
+  
+    //field_attach_presave
+    ccpuriri_field_attach_one_presave('user',
+        $account,
+        $form_state["#formfield"],
+        $form_state["#formfieldinstance"]);
+    
+    
+    // field_attach_update, to actually save field to db
+    ccpuriri_field_attach_one_update('user',
+        $account,
+        $form_state["#formfield"],
+        $form_state["#formfieldinstance"]);
+    
+    drupal_set_message(t('The address changes have been saved.'));
+    
+  }
 }
 
 
