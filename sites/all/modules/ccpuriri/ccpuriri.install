@@ -62,4 +62,12 @@ function ccpuriri_uninstall() {
   );
   
   menu_delete($ccpuririusernavigation);
+  
+  //delete the field
+  field_delete_field('field_ccpuriri_addressfield');
+  
+  //Purge field data now to allow module to be reinstalled
+  //if this is the only field remaining.
+  field_purge_batch(10);
+  
 }

@@ -7,15 +7,22 @@ function ccpuriri_addressfield_field_info() {
   $fields = array();
 
   $fields['ccpuriri_addressfield'] = array(
-    'label' => t('Postal address'),
-    'description' => t('A field type used for storing postal addresses according the xNAL standard.'),
-    'settings' => array(),
-    'instance_settings' => array(),
-    'default_widget' => 'ccpuriri_addressfield_standard',
-    'default_formatter' => 'ccpuriri_addressfield_default',
+      'label' => t('Postal address'),
+      'description' => t('A field type used for storing postal addresses according the xNAL standard.'),
+      'settings' => array(),
+      'instance_settings' => array(),
+      'default_widget' => 'ccpuriri_addressfield_standard',
+      'default_formatter' => 'ccpuriri_addressfield_default',
   );
 
   return $fields;
+}
+
+/**
+ * Implements hook_field_is_empty()
+ */
+function ccpuriri_addressfield_field_is_empty($item, $field) {
+  return empty($item['country']);
 }
 
 
@@ -30,11 +37,11 @@ function ccpuriri_addressfield_field_widget_info() {
       'field types' => array('ccpuriri_addressfield'),
       'settings' => array(
           'showname' => false,
-          ),
+      ),
   );
 
   return $widgets;
-  
+
 }
 
 
@@ -64,7 +71,7 @@ function ccpuriri_addressfield_field_widget_form(&$form, &$form_state, $field, $
   if (!empty($form_state['addressfield'][$element_key])) {
     // Use the value from the form_state if available.
     $address = $form_state['addressfield'][$element_key];
-  }  
+  }
   elseif (!empty($items[$delta]['country'])) {
     // Else use the saved value for the field.
     $address = $items[$delta];
@@ -75,8 +82,8 @@ function ccpuriri_addressfield_field_widget_form(&$form, &$form_state, $field, $
   }
 
   // Merge in default values to provide a value for every expected array key.
- // $countries = _addressfield_country_options_list($field, $instance);
- // $address += addressfield_default_values($countries);
+  // $countries = _addressfield_country_options_list($field, $instance);
+  // $address += addressfield_default_values($countries);
 
   // Add the form elements for the standard widget, which includes a country
   // select list at the top that reloads the available address elements when the
@@ -89,19 +96,38 @@ function ccpuriri_addressfield_field_widget_form(&$form, &$form_state, $field, $
 
     // Generate the address form.
     $context = array(
-    'mode' => 'form',
-    'field' => $field,
-    'instance' => $instance,
-    'langcode' => $langcode,
-    'delta' => $delta,
+        'mode' => 'form',
+        'field' => $field,
+        'instance' => $instance,
+        'langcode' => $langcode,
+        'delta' => $delta,
     );
-  //  $element += addressfield_generate($address, $settings['format_handlers'], $context);
+    //$element += addressfield_generate($address, $settings['format_handlers'], $context);
 
     // Mark the form element as required if necessary.
     $element['#required'] = $delta == 0 && $instance['required'];
+  }
+
+  return $element;
 }
 
-return $element;
+/**
+ * Implements  hook_field_widget_settings_form
+ */
+function ccpuriri_addressfield_field_widget_settings_form($field, $instance)
+{
+  $widget = $instance['widget'];
+  $settings = $widget['settings'];
+
+  $form['showname'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Show name fields for address'),
+      '#default_value' => $settings['showname'],
+
+  );
+
+  return $form;
+
 }
 
 
@@ -129,9 +155,9 @@ function ccpuriri_addressfield_field_formatter_view($entity_type, $entity, $fiel
 
   switch ($display['type']) {
     case 'ccpuriri_addressfield_default':
-    
+
       foreach ($items as $delta => $address) {
-      
+
         //$element[$delta] = addressfield_generate($address, $handlers, $context);
       }
       break;

@@ -158,10 +158,6 @@ function ccpuriri_addressfield_enable() {
  */
 function ccpuriri_addressfield_uninstall() {
 
-  field_delete_field('field_ccpuriri_addressfield');
   
-  //Purge field data now to allow module to be reinstalled
-  //if this is the only field remaining.
-  field_purge_batch(10);
   
 }
