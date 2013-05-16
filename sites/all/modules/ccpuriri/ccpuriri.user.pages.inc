@@ -303,6 +303,11 @@ function ccpuriri_user_address_form_submit($form, $form_state)
     
     drupal_set_message(t('The address changes have been saved.'));
     
+    // Clear the static loading cache.
+    entity_get_controller('user')->resetCache(array($account->uid));
+    
+    // Clear the page and block caches.
+   // cache_clear_all();
   }
 }
 

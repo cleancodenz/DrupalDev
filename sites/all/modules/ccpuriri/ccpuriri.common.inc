@@ -1,8 +1,11 @@
 <?php 
 
+/*
+ * field_attach_form for one field
+ * */
 function ccpuriri_field_attach_one_form($entity_type,
     $entity,$bundle, $field, $instance,
-    $form, $form_state,$langcode = NULL,
+    &$form, &$form_state,$langcode = NULL,
     $options = array())
 {
 
@@ -34,9 +37,12 @@ function ccpuriri_field_attach_one_form($entity_type,
 
 }
 
+/*
+ * field_attach_form_validate for only one field
+ * */
 function ccpuriri_field_attach_one_form_validate($entity_type,
     $entity, $field, $instance,
-    $form, $form_state, $options = array())
+    &$form, &$form_state, $options = array())
 {
 
   $options = is_array($options) ? $options : array();
@@ -90,10 +96,12 @@ function ccpuriri_field_attach_one_form_validate($entity_type,
 
 }
 
-
+/*
+ * field_attach_form_submit for one field
+ * */
 function ccpuriri_field_attach_one_form_submit($entity_type,
     $entity, $field, $instance,
-    $form, $form_state, $options = array())
+    &$form, &$form_state, $options = array())
 {
   $options = is_array($options) ? $options : array();
   $options['default'] = true;
@@ -118,6 +126,9 @@ function ccpuriri_field_attach_one_form_submit($entity_type,
   
 }
 
+/*
+ * field_attach_one_presave for one field only 
+ * */
 function ccpuriri_field_attach_one_presave($entity_type, $entity,$field, $instance)
 {
    _ccpuriri_field_one_field_invoke(

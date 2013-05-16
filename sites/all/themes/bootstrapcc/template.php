@@ -40,16 +40,16 @@ function _bootstrapcc_content_span($columns = 1) {
 function bootstrapcc_preprocess_html(&$variables) {
 
   // add view port tag to head
-  $element = array(
-      '#type'=>'html_tag',
-      '#tag' => 'meta',
-      '#attributes' => array(
-          'name' => 'viewport',
-          'content' =>'width=device-width, initial-scale=1.0',
-      ),
-  );
+ // $element = array(
+ //     '#type'=>'html_tag',
+ //     '#tag' => 'meta',
+ //     '#attributes' => array(
+ //         'name' => 'viewport',
+ //         'content' =>'width=device-width, initial-scale=1.0',
+ //     ),
+ // );
 
-  drupal_add_html_head($element, 'bootstrap_viewport');
+ // drupal_add_html_head($element, 'bootstrap_viewport');
 
 }
 
