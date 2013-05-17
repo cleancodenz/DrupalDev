@@ -1,5 +1,8 @@
 <?php 
 
+define('CCPURIRI_ADDRESSFIELD_AUTOCOMPLETE_URL', 'http://maps.google.com/maps/api/geocode');
+define('CCPURIRI_ADDRESSFIELD_AUTOCOMPLETE_FORMAT', 'json');
+
 function ccpuriri_addressfield_generate($address, $context)
 {
 
@@ -17,7 +20,7 @@ function ccpuriri_addressfield_generate($address, $context)
   {
     ccpuriri_addressfield_name_full($elements, $address, $context);
   }
-  // organizartion 
+  // organizartion
   if ($settings['showorganization'])
   {
     ccpuriri_addressfield_organisation($elements, $address, $context);
@@ -37,6 +40,18 @@ function ccpuriri_addressfield_generate($address, $context)
 * */
 function ccpuriri_addressfield_street_NZ(&$elements, $address, $context)
 {
+
+  $elements['extrernal_autocomplete'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Auto complete'),
+      '#attributes' => array('class' => array('extrernal_autocomplete')),
+      '#size' => 60,
+      '#weight' => 5,
+      '#description' =>'If autocomplete does not work, use fields below',
+      '#autocomplete_path' => 'ccpuriri_addressfield/autocomplete',
+      // to not include this as a field column
+      '#parents' => array(),
+  );
 
   // The street block.
   $elements['street_block'] = array(
@@ -177,4 +192,111 @@ function ccpuriri_addressfield_organisation(&$elements, $address, $context) {
       '#default_value' =>$address['organisation_name'],
       '#attributes' => array('class' => array('organisation-name')),
   );
+}
+
+/*
+ * external autocomplete
+* the result of google geocoder is per result
+* $result	stdClass
+address_components	Array [7]
+0	stdClass
+long_name	123
+short_name	123
+types	Array [1]
+0	street_number
+1	stdClass
+long_name	Dominion Road
+short_name	Dominion Rd
+types	Array [1]
+0	route
+2	stdClass
+long_name	Mount Eden
+short_name	Mount Eden
+types	Array [2]
+0	sublocality
+1	political
+3	stdClass
+long_name	Auckland
+short_name	Auckland
+types	Array [2]
+4	stdClass
+long_name	Auckland
+short_name	Auckland
+types	Array [2]
+0	administrative_area_level_1
+1	political
+5	stdClass
+long_name	New Zealand
+short_name	NZ
+types	Array [2]
+0	country
+1	political
+6	stdClass
+long_name	1024
+short_name	1024
+types	Array [1]
+formatted_address	123 Dominion Road, Mount Eden, Auckland 1024, New Zealand
+geometry	stdClass
+location	stdClass
+lat	-36.8725162
+lng	174.7519526
+location_type	ROOFTOP
+viewport	stdClass
+postcode_localities	Array [0]
+types	Array [1]
+0	street_address
+
+*
+* */
+function ccpuriri_addressfield_external_autocomplete($string = '')
+{
+  global $language;
+
+  $matches = array();
+  $params = array(
+      'address' => $string,
+      'language' => $language->language,
+      'sensor' => 'false',
+  );
+
+  if ($string) {
+    $url = CCPURIRI_ADDRESSFIELD_AUTOCOMPLETE_URL . '/' . CCPURIRI_ADDRESSFIELD_AUTOCOMPLETE_FORMAT . '?' . drupal_http_build_query($params);
+    $response = drupal_http_request($url);
+
+    if ($response->code == 200) {
+      $data = json_decode($response->data);
+      switch ($data->status)
+      {
+        // "OK" indicates that no errors occurred; the address was successfully parsed and at least one geocode was returned.
+        case 'OK':
+          foreach ($data->results as $result) {
+            $formatted_address = '';
+            if (isset($result->formatted_address)) {
+              $formatted_address = check_plain($result->formatted_address);
+              $matches[$formatted_address] = $formatted_address;
+            }
+          }
+          break;
+          // "ZERO_RESULTS" indicates that the geocode was successful but returned no results. This may occur if the geocode was passed a non-existent address or a latlng in a remote location.
+        case 'ZERO_RESULTS'  :
+          break;
+
+          //"OVER_QUERY_LIMIT" indicates that you are over your quota.
+        case 'OVER_QUERY_LIMIT'  :
+         // "REQUEST_DENIED" indicates that your request was denied, generally because of lack of a sensor parameter.
+        case 'REQUEST_DENIED'  :
+         // "INVALID_REQUEST" generally indicates that the query (address or latlng) is missing.
+        case 'INVALID_REQUEST'  :
+          // UNKNOWN_ERROR indicates that the request could not be processed due to a server error. The request may succeed if you try again.
+        default:
+          // log the status
+          watchdog('geocoder error', 'status code is '.$data->status);
+          
+          break;
+      }
+    }
+  }
+
+  drupal_json_output($matches);
+
 }

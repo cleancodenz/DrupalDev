@@ -142,6 +142,8 @@ function ccpuriri_field_attach_one_presave($entity_type, $entity,$field, $instan
 // update is done by deleting first, so if it is inserting, calling update should be the same
 function ccpuriri_field_attach_one_update($entity_type, $entity,$field, $instance)
 {
+  list($id, $vid, $bundle) = entity_extract_ids($entity_type, $entity);
+  
   _ccpuriri_field_one_field_invoke(
       'update', $entity_type, $entity,
       $field,$instance);
