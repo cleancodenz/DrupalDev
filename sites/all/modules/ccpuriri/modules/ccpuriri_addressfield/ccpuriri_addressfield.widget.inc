@@ -51,6 +51,9 @@ function ccpuriri_addressfield_street_NZ(&$elements, $address, $context)
       '#autocomplete_path' => 'ccpuriri_addressfield/autocomplete',
       // to not include this as a field column
       '#parents' => array(),
+      // give it #id and #name as it does not have #parents
+      '#id' => 'extrernal_autocomplete',
+      '#name' => 'extrernal_autocomplete',
   );
 
   // The street block.
