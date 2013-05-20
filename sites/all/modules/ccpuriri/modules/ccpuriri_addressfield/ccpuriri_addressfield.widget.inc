@@ -54,7 +54,14 @@ function ccpuriri_addressfield_street_NZ(&$elements, $address, $context)
       // give it #id and #name as it does not have #parents
       '#id' => 'extrernal_autocomplete',
       '#name' => 'extrernal_autocomplete',
+      // add js, to make sure it is added after autocomplete
+      '#attached' => array(
+          'js' => array(drupal_get_path('module', 'ccpuriri_addressfield') . '/ccpuriri_addressfield.js'=>
+              array('group' => JS_DEFAULT, 'weight'=>100)),
+      ),
   );
+
+
 
   // The street block.
   $elements['street_block'] = array(
@@ -200,65 +207,79 @@ function ccpuriri_addressfield_organisation(&$elements, $address, $context) {
 /*
  * external autocomplete
 * the result of google geocoder is per result
-* $result	stdClass
-address_components	Array [7]
+* $result	stdClass for nz search
+$result	stdClass
+address_components	Array [8]
 0	stdClass
-long_name	123
-short_name	123
+long_name	1
+short_name	1
+types	Array [1]
+0	subpremise
+1	stdClass
+long_name	125
+short_name	125
 types	Array [1]
 0	street_number
-1	stdClass
-long_name	Dominion Road
-short_name	Dominion Rd
+2	stdClass
+long_name	Maich Road
+short_name	Maich Rd
 types	Array [1]
 0	route
-2	stdClass
-long_name	Mount Eden
-short_name	Mount Eden
+3	stdClass
+long_name	Manurewa
+short_name	Manurewa
 types	Array [2]
 0	sublocality
 1	political
-3	stdClass
+4	stdClass
 long_name	Auckland
 short_name	Auckland
 types	Array [2]
-4	stdClass
+0	locality
+1	political
+5	stdClass
 long_name	Auckland
 short_name	Auckland
 types	Array [2]
 0	administrative_area_level_1
 1	political
-5	stdClass
+6	stdClass
 long_name	New Zealand
 short_name	NZ
 types	Array [2]
 0	country
 1	political
-6	stdClass
-long_name	1024
-short_name	1024
+7	stdClass
+long_name	2102
+short_name	2102
 types	Array [1]
-formatted_address	123 Dominion Road, Mount Eden, Auckland 1024, New Zealand
+0	postal_code
+formatted_address	1/125 Maich Road, Manurewa, Auckland 2102, New Zealand
 geometry	stdClass
 location	stdClass
-lat	-36.8725162
-lng	174.7519526
-location_type	ROOFTOP
+lat	-37.0114676
+lng	174.8898388
+location_type	APPROXIMATE
 viewport	stdClass
+northeast	stdClass
+lat	-37.010118619709
+lng	174.89118778029
+southwest	stdClass
+lat	-37.012816580292
+lng	174.88848981971
+partial_match	true
 postcode_localities	Array [0]
 types	Array [1]
-0	street_address
-
+0	subpremise
+http://maps.google.com/maps/api/geocode
 *
 * */
 function ccpuriri_addressfield_external_autocomplete($string = '')
 {
-  global $language;
-
   $matches = array();
   $params = array(
       'address' => $string,
-      'language' => $language->language,
+      'components' =>'country:'.variable_get('ccpuriri_country', "NZ"),
       'sensor' => 'false',
   );
 
@@ -273,11 +294,7 @@ function ccpuriri_addressfield_external_autocomplete($string = '')
         // "OK" indicates that no errors occurred; the address was successfully parsed and at least one geocode was returned.
         case 'OK':
           foreach ($data->results as $result) {
-            $formatted_address = '';
-            if (isset($result->formatted_address)) {
-              $formatted_address = check_plain($result->formatted_address);
-              $matches[$formatted_address] = $formatted_address;
-            }
+            $matches+= _ccpuriri_addressfield_read_geocode($result) ;
           }
           break;
           // "ZERO_RESULTS" indicates that the geocode was successful but returned no results. This may occur if the geocode was passed a non-existent address or a latlng in a remote location.
@@ -286,15 +303,15 @@ function ccpuriri_addressfield_external_autocomplete($string = '')
 
           //"OVER_QUERY_LIMIT" indicates that you are over your quota.
         case 'OVER_QUERY_LIMIT'  :
-         // "REQUEST_DENIED" indicates that your request was denied, generally because of lack of a sensor parameter.
+          // "REQUEST_DENIED" indicates that your request was denied, generally because of lack of a sensor parameter.
         case 'REQUEST_DENIED'  :
-         // "INVALID_REQUEST" generally indicates that the query (address or latlng) is missing.
+          // "INVALID_REQUEST" generally indicates that the query (address or latlng) is missing.
         case 'INVALID_REQUEST'  :
           // UNKNOWN_ERROR indicates that the request could not be processed due to a server error. The request may succeed if you try again.
         default:
           // log the status
           watchdog('geocoder error', 'status code is '.$data->status);
-          
+
           break;
       }
     }
@@ -302,4 +319,72 @@ function ccpuriri_addressfield_external_autocomplete($string = '')
 
   drupal_json_output($matches);
 
+}
+
+function _ccpuriri_addressfield_read_geocode($result)
+{
+  $matches =array();
+
+  if (isset($result->formatted_address)) {
+    $formatted_address = check_plain($result->formatted_address);
+
+
+    $macth =array();
+
+    if (isset($result->address_components))
+    {
+      foreach ($result->address_components as $component)
+      {
+        if (isset($component->types) && count($component->types))
+        {
+          switch ($component->types[0])
+          {
+            case 'subpremise':
+            case 'premise':
+              $match['unit'] += check_plain($component->long_name) ;
+              break;
+
+            case 'street_number':
+              $match['streetnumber'] =check_plain($component->long_name) ;
+              break;
+
+            case 'route':
+              $match['street'] = check_plain($component->long_name);
+              break;
+
+            case 'sublocality':
+              $match['suburb'] = check_plain($component->long_name);
+              break;
+
+            case 'locality':
+              $match['city'] =check_plain($component->long_name);
+              break;
+            case 'country':
+              $match['country'] =check_plain($component->short_name);
+
+            case 'postal_code':
+              $match['postalcode'] = check_plain($component->short_name);
+
+            default:
+              break;
+          }
+
+        }
+
+      }
+    }
+    if ($match && isset($result->geometry) && isset($result->geometry->location))
+    {
+      $match['lat'] = check_plain($result->geometry->location->lat);
+      $match['lng'] = check_plain($result->geometry->location->lng);
+    }
+
+    if ($match)
+    {
+      $matches[$formatted_address]= $match ;
+    }
+
+  }
+
+  return $matches;
 }

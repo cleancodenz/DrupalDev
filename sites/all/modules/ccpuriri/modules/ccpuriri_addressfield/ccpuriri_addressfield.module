@@ -272,9 +272,10 @@ function ccpuriri_addressfield_default_value()
 function ccpuriri_addressfield_menu() {
 
   // google search 
-  $items['ccpuriri_addressfield/autocomplete'] = array(
+  $items['ccpuriri_addressfield/autocomplete/%menu_tail'] = array(
     'title' => 'Geocoder autocomplete',
     'page callback' => 'ccpuriri_addressfield_external_autocomplete',
+    'page arguments' => array(1),
     'access callback' => TRUE,
     'type' => MENU_CALLBACK,
     'file' => 'ccpuriri_addressfield.widget.inc',
