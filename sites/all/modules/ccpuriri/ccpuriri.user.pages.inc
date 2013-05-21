@@ -2,7 +2,7 @@
 /*
  * The form to change password
 * */
-function ccpuriri_user_account_info_form($form, $form_state, $account)
+function ccpuriri_user_account_info_form($form, &$form_state, $account)
 {
   // do not worry about admin, admin is still using the old user/%/edit
   global $user;
@@ -109,7 +109,7 @@ function ccpuriri_user_account_info_form($form, $form_state, $account)
 /*
  * The form to change picture/avarta
 * */
-function ccpuriri_user_picture_form($form, $form_state, $account)
+function ccpuriri_user_picture_form($form, &$form_state, $account)
 {
   // do not worry about admin, admin is still using the old user/%/edit
   global $user;
@@ -177,7 +177,7 @@ function ccpuriri_user_picture_form($form, $form_state, $account)
 /*
  * The form to change address
 * */
-function ccpuriri_user_address_form($form, $form_state, $account)
+function ccpuriri_user_address_form($form, &$form_state, $account)
 {
   // do not worry about admin, admin is still using the old user/%/edit
   global $user;
@@ -250,7 +250,7 @@ function ccpuriri_user_address_form($form, $form_state, $account)
 /*
  * Validate handler for address form
  * */
-function ccpuriri_user_address_form_validate($form, $form_state)
+function ccpuriri_user_address_form_validate($form, &$form_state)
 {
    $account = $form['#user'];
         
@@ -272,7 +272,7 @@ function ccpuriri_user_address_form_validate($form, $form_state)
 /*
  * Submit handler  for address form
 * */
-function ccpuriri_user_address_form_submit($form, $form_state)
+function ccpuriri_user_address_form_submit($form, &$form_state)
 {
   // to get field values from form
   $account = $form['#user'];

@@ -77,29 +77,13 @@ function ccpuriri_addressfield_theme() {
  * Implements hook_field_widget_form()
  */
 function ccpuriri_addressfield_field_widget_form(&$form, &$form_state, $field, $instance, $langcode, $items, $delta, $element) {
-
-  // Generate a specific key used to identify this element to restore a default
-  // value upon AJAX submission regardless of where this element is in the
-  // $form array.
-  $element_key = implode('|', array($element['#entity_type'], $element['#bundle'], $element['#field_name'], $element['#language'], $element['#delta']));
-
-  // Store the key in the element array as a value so it can be easily retrieved
-  // in context in the $form_state['values'] array in the element validator.
-  $element['element_key'] = array(
-      '#type' => 'value',
-      '#value' => $element_key,
-  );
-
+  
   // Get the default address used to build the widget form elements, looking
   // first in the form state, then in the stored value for the field, and then
   // in the default values of the instance.
   $address = array();
 
-  if (!empty($form_state['addressfield'][$element_key])) {
-    // Use the value from the form_state if available.
-    $address = $form_state['addressfield'][$element_key];
-  }
-  elseif (!empty($items[$delta]['country'])) {
+  if (!empty($items[$delta]['country'])) {
     // Else use the saved value for the field.
     $address = $items[$delta];
   }
@@ -127,12 +111,15 @@ function ccpuriri_addressfield_field_widget_form(&$form, &$form_state, $field, $
         'instance' => $instance,
         'langcode' => $langcode,
         'delta' => $delta,
+        'searchstr' =>isset($form_state['values']['extrernal_autocomplete'])?
+          $form_state['values']['extrernal_autocomplete']:'', 
     );
 
     module_load_include('inc', 'ccpuriri_addressfield', 'ccpuriri_addressfield.widget');
 
     $element += ccpuriri_addressfield_generate($address, $context);
 
+       
     // Mark the form element as required if necessary.
     $element['#required'] = $delta == 0 && $instance['required'];
   }
@@ -272,10 +259,9 @@ function ccpuriri_addressfield_default_value()
 function ccpuriri_addressfield_menu() {
 
   // google search 
-  $items['ccpuriri_addressfield/autocomplete/%menu_tail'] = array(
+  $items['ccpuriri_addressfield/autocomplete'] = array(
     'title' => 'Geocoder autocomplete',
     'page callback' => 'ccpuriri_addressfield_external_autocomplete',
-    'page arguments' => array(1),
     'access callback' => TRUE,
     'type' => MENU_CALLBACK,
     'file' => 'ccpuriri_addressfield.widget.inc',

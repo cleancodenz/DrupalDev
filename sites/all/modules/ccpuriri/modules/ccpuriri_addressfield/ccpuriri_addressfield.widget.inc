@@ -45,12 +45,14 @@ function ccpuriri_addressfield_street_NZ(&$elements, $address, $context)
       '#type' => 'textfield',
       '#title' => t('Auto complete'),
       '#attributes' => array('class' => array('extrernal_autocomplete')),
-      '#size' => 60,
+      '#size' => 80,
       '#weight' => 5,
       '#description' =>'If autocomplete does not work, use fields below',
       '#autocomplete_path' => 'ccpuriri_addressfield/autocomplete',
+      // remember the search between post
+      '#default_value' =>$context['searchstr'],
       // to not include this as a field column
-      '#parents' => array(),
+      '#parents' => array(0=>'extrernal_autocomplete'),
       // give it #id and #name as it does not have #parents
       '#id' => 'extrernal_autocomplete',
       '#name' => 'extrernal_autocomplete',
@@ -274,16 +276,25 @@ types	Array [1]
 http://maps.google.com/maps/api/geocode
 *
 * */
-function ccpuriri_addressfield_external_autocomplete($string = '')
+function ccpuriri_addressfield_external_autocomplete()
 {
+  if(!isset($_POST['search']))
+  {
+    return array();
+  }
+  
+  $search=$_POST['search'];
+   
   $matches = array();
+  
+  
   $params = array(
-      'address' => $string,
+      'address' => $search,
       'components' =>'country:'.variable_get('ccpuriri_country', "NZ"),
       'sensor' => 'false',
   );
 
-  if ($string) {
+  if ($search) {
     $url = CCPURIRI_ADDRESSFIELD_AUTOCOMPLETE_URL . '/' . CCPURIRI_ADDRESSFIELD_AUTOCOMPLETE_FORMAT . '?' . drupal_http_build_query($params);
     $response = drupal_http_request($url);
 
