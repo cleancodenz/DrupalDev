@@ -112,7 +112,7 @@ function ccpuriri_user_account_info_form($form, &$form_state, $account)
 function ccpuriri_user_picture_form($form, &$form_state, $account)
 {
   // do not worry about admin, admin is still using the old user/%/edit
-  global $user;
+ 
 
   module_load_include('module', 'user', 'user');
   module_load_include('inc', 'user', 'user.pages');
@@ -180,11 +180,7 @@ function ccpuriri_user_picture_form($form, &$form_state, $account)
 function ccpuriri_user_address_form($form, &$form_state, $account)
 {
   // do not worry about admin, admin is still using the old user/%/edit
-  global $user;
-  
-  
- // module_load_include('module', 'user', 'user');
-//  module_load_include('inc', 'user', 'user.pages');
+   
   module_load_include('inc', 'ccpuriri', 'ccpuriri.common');
   
   if (!isset($form_state['user'])) {
@@ -250,7 +246,7 @@ function ccpuriri_user_address_form($form, &$form_state, $account)
 /*
  * Validate handler for address form
  * */
-function ccpuriri_user_address_form_validate($form, &$form_state)
+function ccpuriri_user_address_form_validate(&$form, &$form_state)
 {
    $account = $form['#user'];
         
@@ -272,7 +268,7 @@ function ccpuriri_user_address_form_validate($form, &$form_state)
 /*
  * Submit handler  for address form
 * */
-function ccpuriri_user_address_form_submit($form, &$form_state)
+function ccpuriri_user_address_form_submit(&$form, &$form_state)
 {
   // to get field values from form
   $account = $form['#user'];
@@ -305,6 +301,9 @@ function ccpuriri_user_address_form_submit($form, &$form_state)
     
     // no need to clear the edited entity cache as it has been done in field_attach_update
     // do not do cache_clear_all() as in this case the edit form is 
+    
+    // rebuild the form again
+    $form_state["rebuild"]= true;
     
   }
 }
