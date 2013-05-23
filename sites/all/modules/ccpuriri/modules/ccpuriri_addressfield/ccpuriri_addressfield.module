@@ -270,3 +270,24 @@ function ccpuriri_addressfield_menu() {
   
   return $items;
 }
+
+/*
+ * Implements hook_cron_queue_info().
+ * Save external searches to internal. 
+ * */
+function ccpuriri_addressfield_cron_queue_info() {
+  $queues['ccpuriri_addressfield_update'] = array(
+      'worker callback' => 'ccpuriri_addressfield_search_update',
+      'time' => 60,
+  );
+  return $queues;
+}
+
+/**
+ * worker callback of queue: ccpuriri_addressfield_update
+ * */
+function ccpuriri_addressfield_search_update($searchResult)
+{
+  
+  
+}

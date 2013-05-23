@@ -96,6 +96,16 @@ function ccpuriri_addressfield_field_schema() {
           'not null' => FALSE,
           'default' => '',
       ),
+      'lat' => array(
+          'description' => 'Latitude',
+          'type' => 'float',
+          'not null' => FALSE,
+      ),
+      'lon' => array(
+          'description' => 'Longitude',
+          'type' => 'float',
+          'not null' => FALSE,
+      ),
       'data' => array(
           'description' => 'Additional data for this address.',
           'type' => 'text',
@@ -105,52 +115,145 @@ function ccpuriri_addressfield_field_schema() {
       ),
   );
 
+
+
   return array(
       'columns' => $columns,
-      // TODO Add indexes.
+      'indexes' => array(
+          'ccpuriri_geoindex' => array('lat', 'lon'),),
   );
 }
 
+
 /**
- * Implementation of hook_enable().
+ * Implements hook_schema()
  */
-function ccpuriri_addressfield_enable() {
+function ccpuriri_addressfield_schema() {
 
-  // create addressfield
-  // to clear the cache to include the field type defined in this module
-  
-  _field_info_collate_types(true);
-  
-  $fieldname = 'field_ccpuriri_addressfield';
-  $field = field_read_field($fieldname, array('include_inactive' => TRUE));
+  $schema['ccpuriri_addressfield_search']=array(
+      'description' => 'Stores external searches as fusion table',
+      'fields' =>array(
+          'sid' => array(
+              'description' => 'The primary identifier for a searched result.',
+              'type' => 'serial',
+              'unsigned' => TRUE,
+              'not null' => TRUE,
+          ),
+          
+          'skey' => array(
+              'description' => 'The key used to do the search.',
+              'type' => 'varchar',
+              'length' => 255,
+              'not null' => TRUE,
+              'default' => '',
+          ),
+                    
+          'formatted_address' => array(
+              'description' => 'Formatted address.',
+              'type' => 'varchar',
+              'length' => 255,
+              'not null' => TRUE,
+              'default' => '',
+          ),
+          
+          'country' => array(
+              'description' => 'Two letter ISO country code of this address.',
+              'type' => 'varchar',
+              'length' => 2,
+              'not null' => FALSE,
+              'default' => '',
+          ),
+          'administrative_area' => array(
+              'description' => 'The administrative area of this address. (i.e. State/Province)',
+              'type' => 'varchar',
+              'length' => 255,
+              'default' => '',
+              'not null' => FALSE,
+          ),
+          'sub_administrative_area' => array(
+              'description' => 'The sub administrative area of this address.',
+              'type' => 'varchar',
+              'length' => 255,
+              'default' => '',
+              'not null' => FALSE,
+          ),
+          'locality' => array(
+              'description' => 'The locality of this address. (i.e. City)',
+              'type' => 'varchar',
+              'length' => 255,
+              'default' => '',
+              'not null' => FALSE,
+          ),
+          'dependent_locality' => array(
+              'description' => 'The dependent locality of this address.',
+              'type' => 'varchar',
+              'length' => 255,
+              'default' => '',
+              'not null' => FALSE,
+          ),
+          'postal_code' => array(
+              'description' => 'The postal code of this address.',
+              'type' => 'varchar',
+              'length' => 255,
+              'default' => '',
+              'not null' => FALSE,
+          ),
+          'thoroughfare' => array(
+              'description' => 'The thoroughfare of this address. (i.e. Street address)',
+              'type' => 'varchar',
+              'length' => 255,
+              'default' => '',
+              'not null' => FALSE,
+          ),
+          'premise' => array(
+              'description' => 'The premise of this address. (i.e. Apartment / Suite number)',
+              'type' => 'varchar',
+              'length' => 255,
+              'default' => '',
+              'not null' => FALSE,
+          ),
+          'sub_premise' => array(
+              'description' => 'The sub_premise of this address.',
+              'type' => 'varchar',
+              'length' => 255,
+              'default' => '',
+              'not null' => FALSE,
+          ),
+          'lat' => array(
+              'description' => 'Latitude',
+              'type' => 'float',
+              'not null' => FALSE,
+          ),
+          'lon' => array(
+              'description' => 'Longitude',
+              'type' => 'float',
+              'not null' => FALSE,
+          ),
+          'data' => array(
+              'description' => 'Additional data for this address.',
+              'type' => 'text',
+              'size' => 'big',
+              'not null' => FALSE,
+              'serialize' => TRUE,
+          ),
+          'created' => array(
+              'description' => 'The Unix timestamp when the node was created.',
+              'type' => 'int',
+              'not null' => TRUE,
+              'default' => 0,
+          ),
+      ),
+      'primary key' => array('sid'),
+      'indexes' => array(
+          'search_key' => array('skey'),),
+      
+  );
 
-  if (empty($field)) {
-
-    $field = array(
-        'field_name' => $fieldname,
-        'type' => 'ccpuriri_addressfield',
-        'entity_types' => array('user'),
-    );
-
-    field_create_field($field);
-
-    // Create the instance if needed.
-    if (!field_read_instance('user', $fieldname , 'user', array('include_inactive' => TRUE))) {
-
-      field_attach_create_bundle('user', 'user');
-
-      $instance = array(
-          'field_name' => $fieldname,
-          'label' => 'Address',
-          'entity_type' => 'user',
-          'bundle' => 'user',
-      );
-      field_create_instance($instance);
-    }
-
-  }
-
+ // $schema1=array(); hack to avoid table being dropped during uninstall
+  return $schema;
 }
+
+
 
 
 /**
@@ -158,6 +261,18 @@ function ccpuriri_addressfield_enable() {
  */
 function ccpuriri_addressfield_uninstall() {
 
-  
-  
+
 }
+
+/**
+ * Implementation of hook_update_N().
+
+ function ccpuriri_addressfield_update_7101() {
+
+ // add two new columns to field
+
+ // add cachting table for external searches
+
+ }
+
+ */

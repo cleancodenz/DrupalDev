@@ -42,6 +42,8 @@ function ccpuriri_install() {
   menu_link_save($menu_item);
   */
   
+  // add address field
+  _ccpuriri_add_addressfield() ;
 }
 
 
@@ -69,5 +71,43 @@ function ccpuriri_uninstall() {
   //Purge field data now to allow module to be reinstalled
   //if this is the only field remaining.
   field_purge_batch(10);
+  
+}
+
+function  _ccpuriri_add_addressfield()
+{
+  // create addressfield
+  // to clear the cache to include the field type defined in this module
+  
+  _field_info_collate_types(true);
+  
+  $fieldname = 'field_ccpuriri_addressfield';
+  $field = field_read_field($fieldname, array('include_inactive' => TRUE));
+  
+  if (empty($field)) {
+  
+    $field = array(
+        'field_name' => $fieldname,
+        'type' => 'ccpuriri_addressfield',
+        'entity_types' => array('user'),
+    );
+  
+    field_create_field($field);
+  
+    // Create the instance if needed.
+    if (!field_read_instance('user', $fieldname , 'user', array('include_inactive' => TRUE))) {
+  
+      field_attach_create_bundle('user', 'user');
+  
+      $instance = array(
+          'field_name' => $fieldname,
+          'label' => 'Address',
+          'entity_type' => 'user',
+          'bundle' => 'user',
+      );
+      field_create_instance($instance);
+    }
+  
+  }
   
 }
