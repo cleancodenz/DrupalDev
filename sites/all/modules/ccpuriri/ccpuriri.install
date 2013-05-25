@@ -55,14 +55,21 @@ function  _ccpuriri_add_addressfield()
     field_create_field($field);
   
     // Create the instance if needed.
+    // add the field to user, with some widget settings
     if (!field_read_instance('user', $fieldname , 'user', array('include_inactive' => TRUE))) {
   
       field_attach_create_bundle('user', 'user');
   
+      $settings= array(
+          'showname'=> true,
+          'showorganization' => false,
+          ); 
+      
       $instance = array(
           'field_name' => $fieldname,
           'label' => 'Address',
           'entity_type' => 'user',
+          'widget' => array('settings'=> $settings),
           'bundle' => 'user',
       );
       field_create_instance($instance);
@@ -111,6 +118,19 @@ function _ccpuriri_add_custom_menu(){
    );
   
   menu_link_save($menu_item);
+  */
+  // add ccpuriri navigation block to side bar first
+  /*
+  db_update('block')
+  ->fields(array(
+      'status' => 1,
+      'weight' => -15,
+      'region' => 'sidebar_first',
+  ))
+  ->condition('module', 'ccpuriri')
+  ->condition('delta','navigation')
+  ->condition('theme', 'bootstrapcc')
+  ->execute();
   */
   
   

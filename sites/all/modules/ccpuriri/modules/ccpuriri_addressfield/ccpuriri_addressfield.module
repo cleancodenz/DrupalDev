@@ -87,7 +87,7 @@ function ccpuriri_addressfield_field_widget_form(&$form, &$form_state, $field, $
     // Else use the saved value for the field.
     $address = $items[$delta];
   }
-  else {
+  elseif( isset($instance['default_value']))  {
     // Otherwise use the instance default.
     $address = (array) $instance['default_value'][0];
   }
