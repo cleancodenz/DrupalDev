@@ -25,22 +25,24 @@ function ccpuriri_addressfield_generate($address, $context)
   {
     ccpuriri_addressfield_organisation($elements, $address, $context);
   }
-  $streetfunction = 'ccpuriri_addressfield_street_'.$country;
-
-  if (function_exists($streetfunction)) {
-    $streetfunction($elements, $address, $context);
-
-  }
+    
+  ccpuriri_addressfield_street($elements, $address, $context);
+  
 
   return $elements;
 }
 
 /*
- * Street block, locality block, NZ
+ * Street block, locality block
 * */
-function ccpuriri_addressfield_street_NZ(&$elements, $address, $context)
+function ccpuriri_addressfield_street(&$elements, $address, $context)
 {
-
+  module_load_include('inc', 'ccpuriri', 'ccpuriri.utility');
+  
+  $fieldconfig = ccpuriri_addressfield_country_config();
+  $country = variable_get('ccpuriri_country', "NZ");
+  
+  
   $elements['extrernal_autocomplete'] = array(
       '#type' => 'textfield',
       '#title' => t('Auto complete'),
@@ -76,7 +78,8 @@ function ccpuriri_addressfield_street_NZ(&$elements, $address, $context)
 
   $elements['street_block']['sub_premise'] = array(
       '#type' => 'textfield',
-      '#title' => t('Unit'),
+      '#title' => t($fieldconfig[$country]['sub_premise']['label']),
+      '#access' =>$fieldconfig[$country]['sub_premise']['enabled'], 
       '#tag' => 'div',
       '#attributes' => array('class' => array('sub_premise')),
       '#default_value' =>$address['sub_premise'],
@@ -85,10 +88,11 @@ function ccpuriri_addressfield_street_NZ(&$elements, $address, $context)
       '#description' =>'A unit(flat, suite etc) and/or floor. It can also include a building name',
   );
 
-
+  // second column
   $elements['street_block']['premise'] = array(
       '#type' => 'textfield',
-      '#title' => t('Street Number'),
+      '#title' => t($fieldconfig[$country]['premise']['label']),
+      '#access' =>$fieldconfig[$country]['premise']['enabled'],
       '#tag' => 'div',
       '#attributes' => array('class' => array('premise')),
       '#default_value' =>$address['premise'],
@@ -96,9 +100,11 @@ function ccpuriri_addressfield_street_NZ(&$elements, $address, $context)
       '#weight' => 20,
   );
 
+  // third column
   $elements['street_block']['thoroughfare'] = array(
       '#type' => 'textfield',
-      '#title' => t('Street'),
+      '#title' => t($fieldconfig[$country]['thoroughfare']['label']),
+      '#access' =>$fieldconfig[$country]['thoroughfare']['enabled'],
       '#tag' => 'div',
       '#attributes' => array('class' => array('thoroughfare')),
       '#default_value' =>$address['thoroughfare'],
@@ -116,7 +122,8 @@ function ccpuriri_addressfield_street_NZ(&$elements, $address, $context)
   // $format['locality_block']['#attached']['css'][] = drupal_get_path('module', 'addressfield') . '/addressfield.css';
   $elements['locality_block']['dependent_locality'] = array(
       '#type' => 'textfield',
-      '#title' => t('Suburb'),
+      '#title' => t($fieldconfig[$country]['dependent_locality']['label']),
+      '#access' =>$fieldconfig[$country]['dependent_locality']['enabled'],
       '#size' => 30,
       '#weight' => 10,
       '#prefix' => ' ',
@@ -127,7 +134,8 @@ function ccpuriri_addressfield_street_NZ(&$elements, $address, $context)
 
   $elements['locality_block']['locality'] = array(
       '#type' => 'textfield',
-      '#title' => t('Town or City'),
+      '#title' => t($fieldconfig[$country]['locality']['label']),
+      '#access' =>$fieldconfig[$country]['locality']['enabled'],
       '#size' => 30,
       '#weight' => 20,
       '#required' => TRUE,
@@ -138,7 +146,8 @@ function ccpuriri_addressfield_street_NZ(&$elements, $address, $context)
 
   $elements['locality_block']['postal_code'] = array(
       '#type' => 'textfield',
-      '#title' => t('Postal Code'),
+      '#title' => t($fieldconfig[$country]['postal_code']['label']),
+      '#access' =>$fieldconfig[$country]['postal_code']['enabled'],
       '#size' => 30,
       '#weight' => 30,
       // '#required' => TRUE,
@@ -146,8 +155,28 @@ function ccpuriri_addressfield_street_NZ(&$elements, $address, $context)
       '#attributes' => array('class' => array('postal-code')),
   );
 
-  module_load_include('inc', 'ccpuriri', 'ccpuriri.utility');
-
+  $elements['locality_block']['sub_administrative_area'] = array(
+      '#type' => 'textfield',
+      '#title' => t($fieldconfig[$country]['sub_administrative_area']['label']),
+      '#access' =>$fieldconfig[$country]['sub_administrative_area']['enabled'],
+      '#size' => 30,
+      '#weight' => 30,
+      // '#required' => TRUE,
+      '#default_value' =>$address['sub_administrative_area'],
+      '#attributes' => array('class' => array('sub-administrative-area')),
+  );
+   
+  $elements['locality_block']['administrative_area'] = array(
+      '#type' => 'textfield',
+      '#title' => t($fieldconfig[$country]['administrative_area']['label']),
+      '#access' =>$fieldconfig[$country]['administrative_area']['enabled'],
+      '#size' => 30,
+      '#weight' => 30,
+      // '#required' => TRUE,
+      '#default_value' =>$address['administrative_area'],
+      '#attributes' => array('class' => array('administrative-area')),
+  );
+  
   $elements['country'] = array(
       '#type' => 'select',
       '#title' => t('Country'),
@@ -282,12 +311,12 @@ function ccpuriri_addressfield_external_autocomplete()
   {
     return array();
   }
-  
+
   $search=$_POST['search'];
    
   $matches = array();
-  
-  
+
+
   $params = array(
       'address' => $search,
       'components' =>'country:'.variable_get('ccpuriri_country', "NZ"),
@@ -307,6 +336,19 @@ function ccpuriri_addressfield_external_autocomplete()
           foreach ($data->results as $result) {
             $matches+= _ccpuriri_addressfield_read_geocode($result) ;
           }
+          
+          if (count($matches)>0)
+          {
+            // add the search to db through queue
+            $queue = DrupalQueue::get('ccpuriri_addressfield_update');
+
+            $searchResult = array(
+                'key'=> $search,
+                'macthes' => $matches,
+            );
+            $queue->createItem($searchResult);
+          }
+
           break;
           // "ZERO_RESULTS" indicates that the geocode was successful but returned no results. This may occur if the geocode was passed a non-existent address or a latlng in a remote location.
         case 'ZERO_RESULTS'  :
@@ -325,6 +367,8 @@ function ccpuriri_addressfield_external_autocomplete()
 
           break;
       }
+
+
     }
   }
 
@@ -350,31 +394,49 @@ function _ccpuriri_addressfield_read_geocode($result)
         {
           switch ($component->types[0])
           {
+            // match is indexed through standard  xNAL standard
+            //subpremise indicates a first-order entity below a named location, usually a singular building within a collection of buildings with a common name
             case 'subpremise':
+              $match['sub_premise'] = check_plain($component->long_name) ;
+              break;
+            
+            // premise indicates a named location, usually a building or collection of buildings with a common name
             case 'premise':
-              $match['unit'] += check_plain($component->long_name) ;
-              break;
-
+            //street_number indicates the precise street number.
             case 'street_number':
-              $match['streetnumber'] =check_plain($component->long_name) ;
+              $match['premise'] =check_plain($component->long_name) ;
               break;
-
+            
+             //route indicates a named route (such as "US 101").
             case 'route':
-              $match['street'] = check_plain($component->long_name);
+              $match['thoroughfare'] = check_plain($component->long_name);
               break;
 
+             //sublocality indicates an first-order civil entity below a locality
             case 'sublocality':
-              $match['suburb'] = check_plain($component->long_name);
+              $match['dependent_locality'] = check_plain($component->long_name);
               break;
-
+            
+             //locality indicates an incorporated city or town political entity.
             case 'locality':
-              $match['city'] =check_plain($component->long_name);
+              $match['locality'] =check_plain($component->long_name);
               break;
+              
+            //administrative_area_level_2 indicates a second-order civil entity below the country level. Within the United States, these administrative levels are counties. Not all nations exhibit these administrative levels
+            case 'administrative_area_level_2':
+            case 'administrative_area_level_3':
+              $match['sub_administrative_area'] =check_plain($component->long_name);
+                break;
+                
+            case 'administrative_area_level_1':
+              $match['administrative_area'] =check_plain($component->long_name);
+                  break;
+                
             case 'country':
               $match['country'] =check_plain($component->short_name);
 
             case 'postal_code':
-              $match['postalcode'] = check_plain($component->short_name);
+              $match['postal_code'] = check_plain($component->short_name);
 
             default:
               break;
@@ -387,7 +449,7 @@ function _ccpuriri_addressfield_read_geocode($result)
     if ($match && isset($result->geometry) && isset($result->geometry->location))
     {
       $match['lat'] = check_plain($result->geometry->location->lat);
-      $match['lng'] = check_plain($result->geometry->location->lng);
+      $match['lon'] = check_plain($result->geometry->location->lng);
     }
 
     if ($match)

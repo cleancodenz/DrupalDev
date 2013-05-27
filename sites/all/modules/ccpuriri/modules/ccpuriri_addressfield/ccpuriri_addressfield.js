@@ -85,41 +85,54 @@
 	Drupal.jsAC.prototype.updateOther = function(otherVaule) {
 
 		// update unit
-		if (otherVaule.unit) {
+		if (otherVaule.sub_premise) {
 			$('#edit-field-ccpuriri-addressfield-und-0-sub-premise').val(
-					otherVaule.unit);
+					otherVaule.sub_premise);
 		}
 		// update street number
-		if (otherVaule.streetnumber) {
+		if (otherVaule.premise) {
 			$('#edit-field-ccpuriri-addressfield-und-0-premise').val(
-					otherVaule.streetnumber);
+					otherVaule.premise);
 		}
 
 		// update street
-		if (otherVaule.street) {
+		if (otherVaule.thoroughfare) {
 			$('#edit-field-ccpuriri-addressfield-und-0-thoroughfare').val(
-					otherVaule.street);
+					otherVaule.thoroughfare);
 		}
 
 		// update suburb
-		if (otherVaule.suburb) {
+		if (otherVaule.dependent_locality) {
 			$('#edit-field-ccpuriri-addressfield-und-0-dependent-locality')
-					.val(otherVaule.suburb);
+					.val(otherVaule.dependent_locality);
 		}
 
 		// update city
-		if (otherVaule.city) {
+		if (otherVaule.locality) {
 			$('#edit-field-ccpuriri-addressfield-und-0-locality').val(
-					otherVaule.city);
+					otherVaule.locality);
 		}
 
 		// update postalcode
-		if (otherVaule.postalcode) {
+		if (otherVaule.postal_code) {
 			$('#edit-field-ccpuriri-addressfield-und-0-postal-code').val(
-					otherVaule.postalcode);
+					otherVaule.postal_code);
 		}
 
-		// update postalcode
+		// update subadministrativearea
+		if (otherVaule.sub_administrative_area) {
+			$('#edit-field-ccpuriri-addressfield-und-0-sub-administrative-area').val(
+					otherVaule.sub_administrative_area);
+		}
+
+		// update administrativearea
+		if (otherVaule.administrative_area) {
+			$('#edit-field-ccpuriri-addressfield-und-0-administrative-area').val(
+					otherVaule.administrative_area);
+		}
+		
+		
+		// update country
 		if (otherVaule.country) {
 			$('#edit-field-ccpuriri-addressfield-und-0-country').val(
 					otherVaule.country);

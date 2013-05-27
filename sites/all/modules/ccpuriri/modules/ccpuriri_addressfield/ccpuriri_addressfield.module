@@ -77,7 +77,7 @@ function ccpuriri_addressfield_theme() {
  * Implements hook_field_widget_form()
  */
 function ccpuriri_addressfield_field_widget_form(&$form, &$form_state, $field, $instance, $langcode, $items, $delta, $element) {
-  
+
   // Get the default address used to build the widget form elements, looking
   // first in the form state, then in the stored value for the field, and then
   // in the default values of the instance.
@@ -112,14 +112,14 @@ function ccpuriri_addressfield_field_widget_form(&$form, &$form_state, $field, $
         'langcode' => $langcode,
         'delta' => $delta,
         'searchstr' =>isset($form_state['values']['extrernal_autocomplete'])?
-          $form_state['values']['extrernal_autocomplete']:'', 
+        $form_state['values']['extrernal_autocomplete']:'',
     );
 
     module_load_include('inc', 'ccpuriri_addressfield', 'ccpuriri_addressfield.widget');
 
     $element += ccpuriri_addressfield_generate($address, $context);
 
-       
+     
     // Mark the form element as required if necessary.
     $element['#required'] = $delta == 0 && $instance['required'];
   }
@@ -253,28 +253,28 @@ function ccpuriri_addressfield_default_value()
 
 /**
  * Implements hook_menu().
- * 
+ *
  */
 
 function ccpuriri_addressfield_menu() {
 
-  // google search 
+  // google search
   $items['ccpuriri_addressfield/autocomplete'] = array(
-    'title' => 'Geocoder autocomplete',
-    'page callback' => 'ccpuriri_addressfield_external_autocomplete',
-    'access callback' => TRUE,
-    'type' => MENU_CALLBACK,
-    'file' => 'ccpuriri_addressfield.widget.inc',
+      'title' => 'Geocoder autocomplete',
+      'page callback' => 'ccpuriri_addressfield_external_autocomplete',
+      'access callback' => TRUE,
+      'type' => MENU_CALLBACK,
+      'file' => 'ccpuriri_addressfield.widget.inc',
   );
 
-  
+
   return $items;
 }
 
 /*
  * Implements hook_cron_queue_info().
- * Save external searches to internal. 
- * */
+* Save external searches to internal.
+* */
 function ccpuriri_addressfield_cron_queue_info() {
   $queues['ccpuriri_addressfield_update'] = array(
       'worker callback' => 'ccpuriri_addressfield_search_update',
@@ -288,6 +288,54 @@ function ccpuriri_addressfield_cron_queue_info() {
  * */
 function ccpuriri_addressfield_search_update($searchResult)
 {
-  
-  
+
+  $skey = $searchResult['key'];
+
+  // The transaction opens here.
+  $transaction = db_transaction();
+
+  try {
+
+    // to delete old records
+    db_delete('ccpuriri_addressfield_search')
+    ->condition('skey', $skey)
+    ->execute();
+
+    // add records back
+
+    $query = db_insert('ccpuriri_addressfield_search')
+    ->fields(array(
+        'skey', 'formatted_address', 'country',
+        'administrative_area','sub_administrative_area','locality',
+        'dependent_locality','postal_code','thoroughfare',
+        'premise','sub_premise','lat',
+        'lon','created'));
+
+
+    foreach ($searchResult['matches'] as $key=> $macth) {
+
+      $record = array_merge($macth,
+          array(
+              'skey' => $skey,
+              'formatted_address' => $key,
+              'created'=> REQUEST_TIME,
+          )) ;
+
+      $query->values($record);
+    }
+    
+    $query->execute();
+
+
+  }
+  catch (Exception $e) {
+    $transaction->rollback();
+    watchdog_exception('ccpuriri_db', $e);
+  }
+
+
+
+
+
+
 }
