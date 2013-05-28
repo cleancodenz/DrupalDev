@@ -25,9 +25,9 @@ function ccpuriri_addressfield_generate($address, $context)
   {
     ccpuriri_addressfield_organisation($elements, $address, $context);
   }
-    
+
   ccpuriri_addressfield_street($elements, $address, $context);
-  
+
 
   return $elements;
 }
@@ -38,11 +38,11 @@ function ccpuriri_addressfield_generate($address, $context)
 function ccpuriri_addressfield_street(&$elements, $address, $context)
 {
   module_load_include('inc', 'ccpuriri', 'ccpuriri.utility');
-  
+
   $fieldconfig = ccpuriri_addressfield_country_config();
   $country = variable_get('ccpuriri_country', "NZ");
-  
-  
+
+
   $elements['extrernal_autocomplete'] = array(
       '#type' => 'textfield',
       '#title' => t('Auto complete'),
@@ -79,7 +79,7 @@ function ccpuriri_addressfield_street(&$elements, $address, $context)
   $elements['street_block']['sub_premise'] = array(
       '#type' => 'textfield',
       '#title' => t($fieldconfig[$country]['sub_premise']['label']),
-      '#access' =>$fieldconfig[$country]['sub_premise']['enabled'], 
+      '#access' =>$fieldconfig[$country]['sub_premise']['enabled'],
       '#tag' => 'div',
       '#attributes' => array('class' => array('sub_premise')),
       '#default_value' =>$address['sub_premise'],
@@ -176,7 +176,7 @@ function ccpuriri_addressfield_street(&$elements, $address, $context)
       '#default_value' =>$address['administrative_area'],
       '#attributes' => array('class' => array('administrative-area')),
   );
-  
+
   $elements['country'] = array(
       '#type' => 'select',
       '#title' => t('Country'),
@@ -186,6 +186,22 @@ function ccpuriri_addressfield_street(&$elements, $address, $context)
       '#disabled'=> true,
   );
 
+  $elements['map_block'] = array(
+      '#type' => 'ccpuriri_addressfield_container',
+      '#attributes' => array('class' => array('map-block')),
+      '#weight' => 40,
+  );
+  
+  $elements['map_block']['lat'] = array(
+      '#type' => 'hidden',
+      // '#required' => TRUE,
+      '#default_value' =>$address['lat'],
+  );
+  $elements['map_block']['lon'] = array(
+      '#type' => 'hidden',
+      // '#required' => TRUE,
+      '#default_value' =>$address['lon'],
+  );
 }
 
 /*
@@ -316,60 +332,13 @@ function ccpuriri_addressfield_external_autocomplete()
    
   $matches = array();
 
-
-  $params = array(
-      'address' => $search,
-      'components' =>'country:'.variable_get('ccpuriri_country', "NZ"),
-      'sensor' => 'false',
-  );
-
   if ($search) {
-    $url = CCPURIRI_ADDRESSFIELD_AUTOCOMPLETE_URL . '/' . CCPURIRI_ADDRESSFIELD_AUTOCOMPLETE_FORMAT . '?' . drupal_http_build_query($params);
-    $response = drupal_http_request($url);
 
-    if ($response->code == 200) {
-      $data = json_decode($response->data);
-      switch ($data->status)
-      {
-        // "OK" indicates that no errors occurred; the address was successfully parsed and at least one geocode was returned.
-        case 'OK':
-          foreach ($data->results as $result) {
-            $matches+= _ccpuriri_addressfield_read_geocode($result) ;
-          }
-          
-          if (count($matches)>0)
-          {
-            // add the search to db through queue
-            $queue = DrupalQueue::get('ccpuriri_addressfield_update');
-
-            $searchResult = array(
-                'key'=> $search,
-                'macthes' => $matches,
-            );
-            $queue->createItem($searchResult);
-          }
-
-          break;
-          // "ZERO_RESULTS" indicates that the geocode was successful but returned no results. This may occur if the geocode was passed a non-existent address or a latlng in a remote location.
-        case 'ZERO_RESULTS'  :
-          break;
-
-          //"OVER_QUERY_LIMIT" indicates that you are over your quota.
-        case 'OVER_QUERY_LIMIT'  :
-          // "REQUEST_DENIED" indicates that your request was denied, generally because of lack of a sensor parameter.
-        case 'REQUEST_DENIED'  :
-          // "INVALID_REQUEST" generally indicates that the query (address or latlng) is missing.
-        case 'INVALID_REQUEST'  :
-          // UNKNOWN_ERROR indicates that the request could not be processed due to a server error. The request may succeed if you try again.
-        default:
-          // log the status
-          watchdog('geocoder error', 'status code is '.$data->status);
-
-          break;
-      }
-
-
+    if (!_ccpuriri_addressfield_search_internal($search,$matches))
+    {
+      _ccpuriri_addressfield_search_external($search,$matches);
     }
+     
   }
 
   drupal_json_output($matches);
@@ -399,39 +368,39 @@ function _ccpuriri_addressfield_read_geocode($result)
             case 'subpremise':
               $match['sub_premise'] = check_plain($component->long_name) ;
               break;
-            
-            // premise indicates a named location, usually a building or collection of buildings with a common name
+
+              // premise indicates a named location, usually a building or collection of buildings with a common name
             case 'premise':
-            //street_number indicates the precise street number.
+              //street_number indicates the precise street number.
             case 'street_number':
               $match['premise'] =check_plain($component->long_name) ;
               break;
-            
-             //route indicates a named route (such as "US 101").
+
+              //route indicates a named route (such as "US 101").
             case 'route':
               $match['thoroughfare'] = check_plain($component->long_name);
               break;
 
-             //sublocality indicates an first-order civil entity below a locality
+              //sublocality indicates an first-order civil entity below a locality
             case 'sublocality':
               $match['dependent_locality'] = check_plain($component->long_name);
               break;
-            
-             //locality indicates an incorporated city or town political entity.
+
+              //locality indicates an incorporated city or town political entity.
             case 'locality':
               $match['locality'] =check_plain($component->long_name);
               break;
-              
-            //administrative_area_level_2 indicates a second-order civil entity below the country level. Within the United States, these administrative levels are counties. Not all nations exhibit these administrative levels
+
+              //administrative_area_level_2 indicates a second-order civil entity below the country level. Within the United States, these administrative levels are counties. Not all nations exhibit these administrative levels
             case 'administrative_area_level_2':
             case 'administrative_area_level_3':
               $match['sub_administrative_area'] =check_plain($component->long_name);
-                break;
-                
+              break;
+
             case 'administrative_area_level_1':
               $match['administrative_area'] =check_plain($component->long_name);
-                  break;
-                
+              break;
+
             case 'country':
               $match['country'] =check_plain($component->short_name);
 
@@ -460,4 +429,97 @@ function _ccpuriri_addressfield_read_geocode($result)
   }
 
   return $matches;
+}
+
+function _ccpuriri_addressfield_search_internal($search, &$matches)
+{
+  $result = db_query('SELECT
+      skey, formatted_address, country,
+      administrative_area, sub_administrative_area, locality,
+      dependent_locality, postal_code, thoroughfare,
+      premise, sub_premise,lat,lon
+
+      FROM {ccpuriri_addressfield_search}
+      WHERE skey = :skey',
+      array(':skey' => $search),
+      array(
+          'fetch' => PDO::FETCH_ASSOC,));
+
+  $internalexists = ($result->rowCount()>0);
+
+  if ($internalexists)
+  {
+    foreach ($result as $record)
+    {
+      $formattedaddress = $record['formatted_address'];
+      // to remove that column then set it to matches
+      unset($record['formatted_address']);
+
+      $matches[$formattedaddress] = $record;
+
+    }
+
+  }
+
+  return $internalexists;
+
+}
+
+
+function _ccpuriri_addressfield_search_external($search, &$matches)
+{
+  $params = array(
+      'address' => $search,
+      'components' =>'country:'.variable_get('ccpuriri_country', "NZ"),
+      'sensor' => 'false',
+  );
+
+  $url = CCPURIRI_ADDRESSFIELD_AUTOCOMPLETE_URL . '/' . CCPURIRI_ADDRESSFIELD_AUTOCOMPLETE_FORMAT . '?' . drupal_http_build_query($params);
+  $response = drupal_http_request($url);
+
+
+  if ($response->code == 200) {
+    $data = json_decode($response->data);
+    switch ($data->status)
+    {
+      // "OK" indicates that no errors occurred; the address was successfully parsed and at least one geocode was returned.
+      case 'OK':
+        foreach ($data->results as $result) {
+          $matches+= _ccpuriri_addressfield_read_geocode($result) ;
+        }
+
+        if (count($matches)>0)
+        {
+          // add the search to db through queue
+          $queue = DrupalQueue::get('ccpuriri_addressfield_update');
+
+          $searchResult = array(
+              'key'=> $search,
+              'matches' => $matches,
+          );
+          $queue->createItem($searchResult);
+        }
+
+        break;
+        // "ZERO_RESULTS" indicates that the geocode was successful but returned no results. This may occur if the geocode was passed a non-existent address or a latlng in a remote location.
+      case 'ZERO_RESULTS'  :
+        break;
+
+        //"OVER_QUERY_LIMIT" indicates that you are over your quota.
+      case 'OVER_QUERY_LIMIT'  :
+        // "REQUEST_DENIED" indicates that your request was denied, generally because of lack of a sensor parameter.
+      case 'REQUEST_DENIED'  :
+        // "INVALID_REQUEST" generally indicates that the query (address or latlng) is missing.
+      case 'INVALID_REQUEST'  :
+        // UNKNOWN_ERROR indicates that the request could not be processed due to a server error. The request may succeed if you try again.
+      default:
+        // log the status
+        watchdog('geocoder error', 'status code is '.$data->status);
+
+        break;
+    }
+
+
+  }// end of if
+
 }

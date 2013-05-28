@@ -86,58 +86,69 @@
 
 		// update unit
 		if (otherVaule.sub_premise) {
-			$('#edit-field-ccpuriri-addressfield-und-0-sub-premise').val(
+			$('[name="field_ccpuriri_addressfield[und][0][sub_premise]"]').val(
 					otherVaule.sub_premise);
 		}
 		// update street number
 		if (otherVaule.premise) {
-			$('#edit-field-ccpuriri-addressfield-und-0-premise').val(
+			$('[name="field_ccpuriri_addressfield[und][0][premise]"]').val(
 					otherVaule.premise);
 		}
 
 		// update street
 		if (otherVaule.thoroughfare) {
-			$('#edit-field-ccpuriri-addressfield-und-0-thoroughfare').val(
+			$('[name="field_ccpuriri_addressfield[und][0][thoroughfare]"]').val(
 					otherVaule.thoroughfare);
 		}
 
 		// update suburb
 		if (otherVaule.dependent_locality) {
-			$('#edit-field-ccpuriri-addressfield-und-0-dependent-locality')
+			$('[name="field_ccpuriri_addressfield[und][0][dependent_locality]"]')
 					.val(otherVaule.dependent_locality);
 		}
 
 		// update city
 		if (otherVaule.locality) {
-			$('#edit-field-ccpuriri-addressfield-und-0-locality').val(
+			$('[name="field_ccpuriri_addressfield[und][0][locality]"]').val(
 					otherVaule.locality);
 		}
 
 		// update postalcode
 		if (otherVaule.postal_code) {
-			$('#edit-field-ccpuriri-addressfield-und-0-postal-code').val(
+			$('[name="field_ccpuriri_addressfield[und][0][postal_code]"]').val(
 					otherVaule.postal_code);
 		}
 
 		// update subadministrativearea
 		if (otherVaule.sub_administrative_area) {
-			$('#edit-field-ccpuriri-addressfield-und-0-sub-administrative-area').val(
+			$('[name="field_ccpuriri_addressfield[und][0][sub_administrative_area]"]').val(
 					otherVaule.sub_administrative_area);
 		}
 
 		// update administrativearea
 		if (otherVaule.administrative_area) {
-			$('#edit-field-ccpuriri-addressfield-und-0-administrative-area').val(
+			$('[name="field_ccpuriri_addressfield[und][0][administrative_area]"]').val(
 					otherVaule.administrative_area);
 		}
 		
 		
 		// update country
 		if (otherVaule.country) {
-			$('#edit-field-ccpuriri-addressfield-und-0-country').val(
+			$('[name="field_ccpuriri_addressfield[und][0][country]"]').val(
 					otherVaule.country);
 		}
-
+		
+		// update lat
+		if (otherVaule.lat) {
+			$('[name="field_ccpuriri_addressfield[und][0][lat]"]').val(
+					otherVaule.lat);
+		}
+		
+		// update lon
+		if (otherVaule.lon) {
+			$('[name="field_ccpuriri_addressfield[und][0][lon]"]').val(
+					otherVaule.lon);
+		}
 	};
 
 	/**

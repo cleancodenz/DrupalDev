@@ -248,7 +248,10 @@ function ccpuriri_user_address_form($form, &$form_state, $account)
  * */
 function ccpuriri_user_address_form_validate(&$form, &$form_state)
 {
-   $account = $form['#user'];
+   
+  module_load_include('inc', 'ccpuriri', 'ccpuriri.common');
+  
+  $account = $form['#user'];
         
    
    if($form_state["#formfield"] &&
@@ -270,6 +273,8 @@ function ccpuriri_user_address_form_validate(&$form, &$form_state)
 * */
 function ccpuriri_user_address_form_submit(&$form, &$form_state)
 {
+  module_load_include('inc', 'ccpuriri', 'ccpuriri.common');
+  
   // to get field values from form
   $account = $form['#user'];
   

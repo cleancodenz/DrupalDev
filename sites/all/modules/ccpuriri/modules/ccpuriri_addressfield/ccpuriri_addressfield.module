@@ -245,6 +245,9 @@ function ccpuriri_addressfield_default_value()
       'premise' => '',
       'sub_premise' => '',
       'data' => '',
+      'lat' => 0,
+      'lon' => 0,
+      
   );
 
   return $default;
@@ -314,12 +317,23 @@ function ccpuriri_addressfield_search_update($searchResult)
 
     foreach ($searchResult['matches'] as $key=> $macth) {
 
-      $record = array_merge($macth,
+      $record = $macth+
           array(
               'skey' => $skey,
               'formatted_address' => $key,
+              'country'=>'',
+              'administrative_area'=>'',
+              'sub_administrative_area'=>'',
+              'locality'=>'',
+              'dependent_locality'=>'',
+              'postal_code'=>'',
+              'thoroughfare'=>'',
+              'premise'=>'',
+              'sub_premise'=>'',
+              'lat'=>0,
+              'lon'=>0,
               'created'=> REQUEST_TIME,
-          )) ;
+          ) ;
 
       $query->values($record);
     }

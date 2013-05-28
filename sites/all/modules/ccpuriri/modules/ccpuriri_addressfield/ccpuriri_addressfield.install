@@ -99,11 +99,13 @@ function ccpuriri_addressfield_field_schema() {
       'lat' => array(
           'description' => 'Latitude',
           'type' => 'float',
+          'size' => 'big',
           'not null' => FALSE,
       ),
       'lon' => array(
           'description' => 'Longitude',
           'type' => 'float',
+          'size' => 'big',
           'not null' => FALSE,
       ),
       'data' => array(
@@ -222,11 +224,13 @@ function ccpuriri_addressfield_schema() {
           'lat' => array(
               'description' => 'Latitude',
               'type' => 'float',
+              'size' => 'big',
               'not null' => FALSE,
           ),
           'lon' => array(
               'description' => 'Longitude',
               'type' => 'float',
+              'size' => 'big',
               'not null' => FALSE,
           ),
           'data' => array(
