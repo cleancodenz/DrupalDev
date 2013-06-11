@@ -57,7 +57,7 @@ function ccpuriri_addressfield_element_info() {
       '#theme_wrappers' => array('ccpuriri_addressfield_container'),
       '#process' => array('ccpuriri_addressfield_widget_process'),
       '#attributes' => array(),
-      '#tag' => 'div',
+      '#tag' => 'div', // custom property
   );
   return $types;
 }
@@ -194,7 +194,7 @@ function ccpuriri_addressfield_field_formatter_view($entity_type, $entity, $fiel
  * Form API process function: set the #parents of the children of this element so they appear at the same level as the parent.
  * coluns are grouped under block, this will allow columns to bypass block wrapper to satisfy Feild API
  */
-function ccpuriri_addressfield_widget_process($element) {
+function ccpuriri_addressfield_widget_process($element, &$form_state, $form) {
 
   foreach (element_children($element) as $key) {
     $element[$key]['#parents'] = $element['#parents'];

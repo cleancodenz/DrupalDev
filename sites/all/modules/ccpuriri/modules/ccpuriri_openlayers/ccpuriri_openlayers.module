@@ -1,0 +1,119 @@
+<?php 
+
+
+
+
+/**
+ * Implements hook_menu().
+ *
+ */
+
+function ccpuriri_openlayers_menu() {
+  
+  $items['admin/config/ccpuriri_openlayers'] = array(
+      'title' => 'Configuation settings for CCPURIRI openlayers',
+      'description' =>  'Configuation settings',
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array('ccpuriri_openlayers_admin_settings'),
+      'file' => 'ccpuriri_openlayers.admin.inc',
+      'access arguments' => array('administer site configuration'),
+  );
+  
+  return $items;
+  
+}
+
+
+/**
+ * Implementation of hook_element_info(). this is a container form element for displaying lat lon
+ * 
+ */
+function ccpuriri_openlayers_element_info() {
+
+  $file_path = drupal_get_path('module', 'ccpuriri_openlayers');
+  
+  
+  $types['ccpuriri_openlayers_coordinate'] = array(
+      '#process' => array('_ccpuriri_openlayers_coordinate_generate'),
+      '#theme_wrappers' => array('ccpuriri_openlayers_coordinate_wrapper'),
+      '#attached' => array(
+        //  'css' => array($file_path . '/file.css'),
+        'js' => array(
+            $file_path . '/openlayers/lib/OpenLayers.js' =>array('group' => JS_DEFAULT, 'weight'=>100),
+            $file_path . '/ccpuriri_openlayers.js' =>array('group' => JS_DEFAULT, 'weight'=>100),
+            ),
+      ),
+      '#attributes' => array(), // classes used by container div
+      '#map_attributes' => array(), //custom property, used by map div
+      '#default_lat' => 0, // custom property
+      '#default_lon' => 0, // custom property
+        
+  );
+  return $types;
+
+}
+
+
+/**
+ * Implementation of hook_theme().
+ */
+function ccpuriri_openlayers_theme() {
+  $hooks['ccpuriri_openlayers_coordinate_wrapper'] = array(
+      'render element' => 'element',
+  );
+  return $hooks;
+}
+
+/*
+ * #process function for element ccpuriri_openlayers_coordinate
+ * */
+function _ccpuriri_openlayers_coordinate_generate($element, &$form_state, $form)
+{
+  // add openlayers.js
+  
+
+  // create two value elements 
+  $element['lat'] = array(
+      '#type' => 'hidden',
+      // '#required' => TRUE,
+      '#default_value' =>$element['#default_lat'],
+  );
+  
+  $element['lon'] = array(
+      '#type' => 'hidden',
+      // '#required' => TRUE,
+      '#default_value' =>$element['#default_lon'],
+  );
+    
+  return $element;
+  
+}
+
+/**
+ * Render a form element for coordinates.
+ * theme wrapper for ccpuriri_openlayers_coordinate element
+ */
+function theme_ccpuriri_openlayers_coordinate_wrapper($variables) {
+
+  $element = $variables['element'];
+
+  $element['#children'] = trim($element['#children']);
+  
+  if (strlen($element['#children']) > 0) {
+    $output = '<div '. drupal_attributes($element['#attributes']) . '>';
+    //add a map div
+    $output .='<div id="map"'.drupal_attributes($element['#map_attributes']) . '></div>' ;
+    // two hidden columns lat and lon
+    $output .= $element['#children'];
+    $output .= '</div>';
+    return $output;
+  }
+  else {
+    return '';
+  }
+  
+}
+
+
+
+

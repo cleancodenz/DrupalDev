@@ -1,0 +1,9 @@
+; $Id$
+name = CleanCode Puriri Openlayers 
+description = "CleanCode Puriri own Openlayers implementation mainly javascript for mapping functions"
+
+;dependencies[] = pathauto
+
+package = CleanCode Puriri modules
+version = "7.x-1.0-beta1"
+core = 7.x

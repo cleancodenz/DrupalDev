@@ -1,5 +1,9 @@
 <?php 
 
+/*
+ * This is not a hook, but a callback from menu item admin/config/ccpuriri
+*
+*/
 
 function ccpuriri_admin_settings() {
   

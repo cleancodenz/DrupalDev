@@ -186,22 +186,17 @@ function ccpuriri_addressfield_street(&$elements, $address, $context)
       '#disabled'=> true,
   );
 
+  
   $elements['map_block'] = array(
-      '#type' => 'ccpuriri_addressfield_container',
+      '#type' => 'ccpuriri_openlayers_coordinate',
       '#attributes' => array('class' => array('map-block')),
+      '#map_attributes' => array('style' => array('width: 512px; height: 256px; border: 1px solid #ccc;')),
       '#weight' => 40,
+      '#default_lat' => $address['lat'], 
+      '#default_lon' => $address['lon'],
   );
   
-  $elements['map_block']['lat'] = array(
-      '#type' => 'hidden',
-      // '#required' => TRUE,
-      '#default_value' =>$address['lat'],
-  );
-  $elements['map_block']['lon'] = array(
-      '#type' => 'hidden',
-      // '#required' => TRUE,
-      '#default_value' =>$address['lon'],
-  );
+
 }
 
 /*
