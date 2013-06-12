@@ -9,7 +9,7 @@
  */
 
 function ccpuriri_openlayers_menu() {
-  
+
   $items['admin/config/ccpuriri_openlayers'] = array(
       'title' => 'Configuation settings for CCPURIRI openlayers',
       'description' =>  'Configuation settings',
@@ -18,36 +18,35 @@ function ccpuriri_openlayers_menu() {
       'file' => 'ccpuriri_openlayers.admin.inc',
       'access arguments' => array('administer site configuration'),
   );
-  
+
   return $items;
-  
+
 }
 
 
 /**
  * Implementation of hook_element_info(). this is a container form element for displaying lat lon
- * 
+ *
  */
 function ccpuriri_openlayers_element_info() {
 
   $file_path = drupal_get_path('module', 'ccpuriri_openlayers');
-  
-  
+
+
   $types['ccpuriri_openlayers_coordinate'] = array(
       '#process' => array('_ccpuriri_openlayers_coordinate_generate'),
       '#theme_wrappers' => array('ccpuriri_openlayers_coordinate_wrapper'),
       '#attached' => array(
-        //  'css' => array($file_path . '/file.css'),
-        'js' => array(
-            $file_path . '/openlayers/lib/OpenLayers.js' =>array('group' => JS_DEFAULT, 'weight'=>100),
-            $file_path . '/ccpuriri_openlayers.js' =>array('group' => JS_DEFAULT, 'weight'=>100),
-            ),
+          'js' => array(
+              $file_path . '/openlayers/lib/OpenLayers.js' =>array('group' => JS_DEFAULT, 'weight'=>200),
+              $file_path . '/ccpuriri_openlayers.js' =>array('group' => JS_DEFAULT, 'weight'=>205),
+          ),
       ),
       '#attributes' => array(), // classes used by container div
       '#map_attributes' => array(), //custom property, used by map div
       '#default_lat' => 0, // custom property
       '#default_lon' => 0, // custom property
-        
+
   );
   return $types;
 
@@ -66,27 +65,72 @@ function ccpuriri_openlayers_theme() {
 
 /*
  * #process function for element ccpuriri_openlayers_coordinate
- * */
+* */
 function _ccpuriri_openlayers_coordinate_generate($element, &$form_state, $form)
 {
-  // add openlayers.js
+  _ccpuriri_openlayers_map_initialize($element['#default_lon'], $element['#default_lat']);
   
-
-  // create two value elements 
+  // specific javascript for this feature
+  $file_path = drupal_get_path('module', 'ccpuriri_openlayers');
+  
+  // create two value elements
   $element['lat'] = array(
       '#type' => 'hidden',
       // '#required' => TRUE,
       '#default_value' =>$element['#default_lat'],
   );
-  
+
   $element['lon'] = array(
       '#type' => 'hidden',
       // '#required' => TRUE,
       '#default_value' =>$element['#default_lon'],
   );
-    
+
   return $element;
-  
+
+}
+
+/*
+ * Prepare javascript to initilize map into map div
+*
+* */
+function _ccpuriri_openlayers_map_initialize($lon,$lat)
+{
+
+  $file_path = drupal_get_path('module', 'ccpuriri_openlayers');
+
+  // add map initiliazation javascript for different providers
+
+  // to get the map setting
+  $mapprovider = variable_get('ccpuriri_openlayers_mapprovider', "Google");
+
+  switch ($mapprovider)
+  {
+    case "OSM":
+      drupal_add_js($file_path.'/baselayers/osm.js',array('group' => JS_DEFAULT, 'weight'=>206));
+
+      break;
+
+    default: // Google
+      // add google.js
+      drupal_add_js("http://maps.google.com/maps/api/js?v=3&sensor=false",array('type'=>'external', 'group' => JS_DEFAULT, 'weight'=>202));
+    // add openlayer
+    drupal_add_js($file_path.'/baselayers/google.js',array('group' => JS_DEFAULT, 'weight'=>206));
+
+    break;
+
+  }
+
+  // set the central point
+
+  $lonlat = array(
+      'lon' => $lon,
+      'lat' => $lat,
+  );
+
+  drupal_add_js(array('ccpuriri_openlayers' => array('center'=> $lonlat)), array('type' => 'setting'));
+
+
 }
 
 /**
@@ -98,7 +142,7 @@ function theme_ccpuriri_openlayers_coordinate_wrapper($variables) {
   $element = $variables['element'];
 
   $element['#children'] = trim($element['#children']);
-  
+
   if (strlen($element['#children']) > 0) {
     $output = '<div '. drupal_attributes($element['#attributes']) . '>';
     //add a map div
@@ -111,7 +155,7 @@ function theme_ccpuriri_openlayers_coordinate_wrapper($variables) {
   else {
     return '';
   }
-  
+
 }
 
 
