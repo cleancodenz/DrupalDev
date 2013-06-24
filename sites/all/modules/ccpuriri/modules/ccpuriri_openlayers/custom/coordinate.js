@@ -1,5 +1,5 @@
 (function($) {
-
+	
 	/**
 	 * Attaches the openlayers behavior
 	 * This will display a marker in the control, when map moves the coordinate is updated  
@@ -8,59 +8,61 @@
 	  attach: function (context, settings) {
 		  
 		// get the container project
-		 var container =  Drupal.ccpuriri.openlayers.container;
+		var layers =  Drupal.ccpuriri.openlayers.layers;
 		 
-		 var map = Drupal.ccpuriri.openlayers.container.map ;
+		var map = Drupal.ccpuriri.openlayers.layers.map ;
 		
-	    var mapCenter = map.getCenter();
-	    
+		var mapCenter = map.getCenter();
+		    
+        var myLocation = new OpenLayers.Geometry.Point(mapCenter.lon, mapCenter.lat);
+        
+		  
 	      // The overlay layer for our marker, with a simple diamond as symbol
-	    container.overlay = new OpenLayers.Layer.Vector('Overlay', {
+	    layers.overlay = new OpenLayers.Layer.Vector('Overlay', {
               styleMap: new OpenLayers.StyleMap({
-                  externalGraphic: '../img/marker.png',
+                  externalGraphic: 'http://www.openlayers.org/dev/img/marker-gold.png',
                   graphicWidth: 20, graphicHeight: 24, graphicYOffset: -24,
                   title: '${tooltip}'
               })
           });
 
           // We add the marker with a tooltip text to the overlay
-	    container.pointFeature = new OpenLayers.Feature.Vector(myLocation, { tooltip: 'OpenLayers' });
+	    layers.pointFeature = new OpenLayers.Feature.Vector(myLocation, { tooltip: 'OpenLayers' });
 
-	    container.overlay.addFeatures([container.pointFeature]);
+	    layers.overlay.addFeatures([layers.pointFeature]);
                    
 
-        map.addLayer(container.overlay);
+        map.addLayer(layers.overlay);
 
+	    
  
           // A popup with some information about our location
-        container.popup = new OpenLayers.Popup.FramedCloud("Popup",
-                  mapCenter, null,
+        layers.popup = new OpenLayers.Popup.Anchored("Popup",
+                  mapCenter, new OpenLayers.Size(100,100),
                       '<a target="_blank" href="http://openlayers.org/">We</a> ' +
                       'could be here.<br>Or elsewhere.', null,
                   true // <-- true if we want a close (X) button, false otherwise
            );
 
-
+    
           // and add the popup to it.
-          map.addPopup(container.popup);
+          map.addPopup(layers.popup);
 
           // register events
 
-          map.events.register("move", null, Drupal.ccpuriri.openlayers.displayCenter);
-		  
+          map.events.register("move", null, function(){
+        	  // update 
+        	  mapCenter = map.getCenter();
+        	  
+        	  // update point feature 
+    		  layers.pointFeature.move(mapCenter);
+              // update popup
+    		  layers.popup.lonlat = mapCenter;
+    		  layers.popup.updatePosition();
+        	  
+          }  );
+          
 	  }
 	};
-	
-	Drupal.ccpuriri.openlayers.displayCenter = function()
-	{
-		  var mapCenter = map.getCenter();
-		  var container =  Drupal.ccpuriri.openlayers.container;
-		  
-          // update point feature 
-		  container.pointFeature.move(mapCenter);
-          // update popup
-		  container.popup.lonlat = mapCenter;
-		  container.popup.updatePosition();
-		
-	}
+
 })(jQuery);

@@ -1,6 +1,6 @@
-(function($) {
+(function() {
 		
-	Drupal.ccpuriri.openlayers.prototype.CreateBaseLayer =function(){
+	Drupal.ccpuriri.openlayers.Map.prototype.CreateBaseLayer =function(){
 		// This needs to be implemented by different map provider 
 		// set the base layer and default zoom
 		
@@ -11,4 +11,4 @@
 	}
 	
 	
-})(jQuery);
+})();

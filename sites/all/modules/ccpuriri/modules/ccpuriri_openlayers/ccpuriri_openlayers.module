@@ -35,18 +35,21 @@ function ccpuriri_openlayers_element_info() {
 
   $types['ccpuriri_openlayers_coordinate'] = array(
       '#process' => array('_ccpuriri_openlayers_coordinate_generate'),
-      '#theme_wrappers' => array('ccpuriri_openlayers_coordinate_wrapper'),
+      '#theme_wrappers' => array('ccpuriri_openlayers_coordinate_wrapper', 'form_element',),
       '#attached' => array(
           'js' => array(
               $file_path . '/openlayers/lib/OpenLayers.js' =>array('group' => JS_DEFAULT, 'weight'=>200),
               $file_path . '/ccpuriri_openlayers.js' =>array('group' => JS_DEFAULT, 'weight'=>205),
+              // 206 is used by base map in run time
+              $file_path . '/custom/coordinate.js' =>array('group' => JS_DEFAULT, 'weight'=>207),
+              
           ),
       ),
       '#attributes' => array(), // classes used by container div
       '#map_attributes' => array(), //custom property, used by map div
       '#default_lat' => 0, // custom property
       '#default_lon' => 0, // custom property
-
+      '#description' =>'This is the description',
   );
   return $types;
 

@@ -1,4 +1,4 @@
-(function($) {
+(function() {
 
 	// declare a global object which is initialized by attach
 	Drupal.ccpuriri = Drupal.ccpuriri || {};
@@ -14,12 +14,12 @@
 		 var central = settings.ccpuriri_openlayers.center;
 		  
 		 // create the container project
-		 Drupal.ccpuriri.openlayers.container = new Drupal.ccpuriri.openlayers(central.lon,central.lat);
+		 Drupal.ccpuriri.openlayers.layers = new Drupal.ccpuriri.openlayers.Map(central.lon,central.lat);
 		  
 	  }
 	};
 	
-	Drupal.ccpuriri.openlayers = function (lon,lat){
+	Drupal.ccpuriri.openlayers.Map = function (lon,lat){
 		var _openlayers =this;
 		
 		_openlayers.map =  new OpenLayers.Map("map");
@@ -33,7 +33,8 @@
 		_openlayers.MapShow(lon, lat);
 		
 	}
-	Drupal.ccpuriri.openlayers.prototype.CreateProjections = function(){
+	
+	Drupal.ccpuriri.openlayers.Map.prototype.CreateProjections = function(){
 		
 		var _openlayers =this;
 	     
@@ -42,13 +43,13 @@
 		
 	};
 	
-	Drupal.ccpuriri.openlayers.prototype.CreateBaseLayer = function(){
+	Drupal.ccpuriri.openlayers.Map.prototype.CreateBaseLayer = function(){
 		
 		// This needs to be implemented by different map provider 
 		
 	};
 	
-	Drupal.ccpuriri.openlayers.prototype.MapShow =function(lon,lat){
+	Drupal.ccpuriri.openlayers.Map.prototype.MapShow =function(lon,lat){
 		
 		   var myLocation = 
 			   new OpenLayers.LonLat(lon, lat).transform(
@@ -58,4 +59,4 @@
            
 	};
 
-})(jQuery);
+})();
