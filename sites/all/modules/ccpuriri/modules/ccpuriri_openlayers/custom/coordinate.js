@@ -59,6 +59,15 @@
               // update popup
     		  layers.popup.lonlat = mapCenter;
     		  layers.popup.updatePosition();
+    		  
+    		  // update form fields
+    		  mapCenter.transform(layers.baseProjection,
+    				  layers.defaultProjection);
+  	  
+					   
+    		  $('#ccpuriri_openlayers_lat').val(mapCenter.lat);
+    		  $('#ccpuriri_openlayers_lon').val(mapCenter.lon);
+    		  
         	  
           }  );
           

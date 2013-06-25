@@ -76,17 +76,33 @@ function _ccpuriri_openlayers_coordinate_generate($element, &$form_state, $form)
   // specific javascript for this feature
   $file_path = drupal_get_path('module', 'ccpuriri_openlayers');
   
+  $parents = $element['#parents'];
+    
   // create two value elements
+  // by pass the container, as the last item is the container
+  $parents[count($parents) - 1]= 'lat';
+  
   $element['lat'] = array(
       '#type' => 'hidden',
+      //needed for javascript, #id does not work as hidden doesnot support #id
+      '#attributes' => array('id'=>'ccpuriri_openlayers_lat'),
+      
       // '#required' => TRUE,
       '#default_value' =>$element['#default_lat'],
+      '#parents' => $parents, 
   );
 
+  // by pass the container, as the last item is the container
+  $parents[count($parents) - 1]= 'lon';
+  
   $element['lon'] = array(
       '#type' => 'hidden',
+      //needed for javascript, #id does not work as hidden doesnot support #id
+      '#attributes' => array('id'=>'ccpuriri_openlayers_lon'),
+      
       // '#required' => TRUE,
       '#default_value' =>$element['#default_lon'],
+      '#parents' => $parents,
   );
 
   return $element;
