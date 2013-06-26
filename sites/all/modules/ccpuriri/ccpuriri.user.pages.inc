@@ -308,7 +308,7 @@ function ccpuriri_user_address_form_submit(&$form, &$form_state)
     // do not do cache_clear_all() as in this case the edit form is 
     
     // rebuild the form again
-    $form_state["rebuild"]= true;
+   // $form_state["rebuild"]= true;
     
   }
 }
