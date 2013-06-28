@@ -12,10 +12,51 @@
 	  attach: function (context, settings) {
 		  
 		 var central = settings.ccpuriri_openlayers.center;
-		  
+		
+		 var lat = central.lat;
+		 var lon = central.lon;
+		/* use of getCurrentPosition asks for permission
+		if (lon==0 && lat ==0)
+		{
+			// this means geo is not set yet, always give it a default
+			// first check browser geo 
+			
+			 if(navigator.geolocation)
+			 {
+				 var options = {
+						  enableHighAccuracy: true,
+						  timeout: 5000,
+						  maximumAge: 0
+						};
+								
+				navigator.geolocation.getCurrentPosition(
+						 function(position){
+							 lat = position.coords.latitude;
+				             lon = position.coords.longitude;
+						 },
+						 function(err){
+							 console.warn('ERROR(' + err.code + '): ' + err.message);
+						 },
+						 
+						 options
+				 );
+				 
+			 }
+			
+		}
+		*/
+		 
+		if (lon==0 && lat ==0)
+		{
+			 // use the default system geo
+			 lat = settings.ccpuriri_openlayers.default_center.lat;
+			 
+			 lon = settings.ccpuriri_openlayers.default_center.lon;
+		
+		}
 		 // create the container project
-		 Drupal.ccpuriri.openlayers.layers = new Drupal.ccpuriri.openlayers.Map(central.lon,central.lat);
-		  
+		 Drupal.ccpuriri.openlayers.layers = new Drupal.ccpuriri.openlayers.Map(lon,lat);
+		 
 	  }
 	};
 	

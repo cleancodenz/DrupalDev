@@ -140,15 +140,20 @@ function _ccpuriri_openlayers_map_initialize($lon,$lat)
 
   }
  
-  $openLayersSettings =  'ccpuriri_openlayers';
- 
-  // set the central point
-  $lonlat = array(
-      'lon' => $lon,
-      'lat' => $lat,
-  );
+  $openLayersSettings = 
 
-  drupal_add_js(array($openLayersSettings => array('center'=> $lonlat)), array('type' => 'setting'));
+  array('ccpuriri_openlayers'=>array(
+      'center' => array(
+                    'lon' => $lon,
+                    'lat' => $lat,
+                  ),
+      'default_center' => array(
+                    'lon' => variable_get('ccpuriri_openlayers_defaultlon', '174.7666700'),
+                    'lat' => variable_get('ccpuriri_openlayers_defaultlat', '-36.8666700'),
+                  ), 
+      ) );
+ 
+  drupal_add_js($openLayersSettings, array('type' => 'setting'));
   
 }
 
