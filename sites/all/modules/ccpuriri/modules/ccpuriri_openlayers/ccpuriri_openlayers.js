@@ -57,6 +57,7 @@
 		 // create the container project
 		 Drupal.ccpuriri.openlayers.layers = new Drupal.ccpuriri.openlayers.Map(lon,lat);
 		 
+	
 	  }
 	};
 	

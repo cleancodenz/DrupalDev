@@ -1,5 +1,18 @@
 (function($) {
 
+	// declare a global object which is initialized by attach
+	Drupal.ccpuriri = Drupal.ccpuriri || {};
+	Drupal.ccpuriri.addressfield = Drupal.ccpuriri.addressfield || {};
+
+	// declare an event address changed event
+	// interface is
+	// $(Drupal.ccpuriri).trigger(Drupal.ccpuriri.AddressChangeEvent,
+	// otherVaule.lon,// lon
+	// otherVaule.lat,// lat
+	// );
+	Drupal.ccpuriri.AddressChangeEvent = 'ccpuriri_address_changed';
+	
+
 	/**
 	 * Fills the suggestion popup with any matches received. This is override of
 	 * default implementation as the data structure is changed
@@ -97,13 +110,14 @@
 
 		// update street
 		if (otherVaule.thoroughfare) {
-			$('[name="field_ccpuriri_addressfield[und][0][thoroughfare]"]').val(
-					otherVaule.thoroughfare);
+			$('[name="field_ccpuriri_addressfield[und][0][thoroughfare]"]')
+					.val(otherVaule.thoroughfare);
 		}
 
 		// update suburb
 		if (otherVaule.dependent_locality) {
-			$('[name="field_ccpuriri_addressfield[und][0][dependent_locality]"]')
+			$(
+					'[name="field_ccpuriri_addressfield[und][0][dependent_locality]"]')
 					.val(otherVaule.dependent_locality);
 		}
 
@@ -121,34 +135,43 @@
 
 		// update subadministrativearea
 		if (otherVaule.sub_administrative_area) {
-			$('[name="field_ccpuriri_addressfield[und][0][sub_administrative_area]"]').val(
-					otherVaule.sub_administrative_area);
+			$(
+					'[name="field_ccpuriri_addressfield[und][0][sub_administrative_area]"]')
+					.val(otherVaule.sub_administrative_area);
 		}
 
 		// update administrativearea
 		if (otherVaule.administrative_area) {
-			$('[name="field_ccpuriri_addressfield[und][0][administrative_area]"]').val(
-					otherVaule.administrative_area);
+			$(
+					'[name="field_ccpuriri_addressfield[und][0][administrative_area]"]')
+					.val(otherVaule.administrative_area);
 		}
-		
-		
+
 		// update country
 		if (otherVaule.country) {
 			$('[name="field_ccpuriri_addressfield[und][0][country]"]').val(
 					otherVaule.country);
 		}
-		
+
+		// lat and lon will be updated by map
+
 		// update lat
-		if (otherVaule.lat) {
-			$('[name="field_ccpuriri_addressfield[und][0][lat]"]').val(
-					otherVaule.lat);
-		}
-		
+		// if (otherVaule.lat) {
+		// $('[name="field_ccpuriri_addressfield[und][0][lat]"]').val(
+		// otherVaule.lat);
+		// }
+
 		// update lon
-		if (otherVaule.lon) {
-			$('[name="field_ccpuriri_addressfield[und][0][lon]"]').val(
-					otherVaule.lon);
-		}
+		// if (otherVaule.lon) {
+		// $('[name="field_ccpuriri_addressfield[und][0][lon]"]').val(
+		// otherVaule.lon);
+		// }
+
+		// trigger event
+
+		$(Drupal.ccpuriri).trigger(Drupal.ccpuriri.AddressChangeEvent,
+				{'lon' :otherVaule.lon, 'lat' :otherVaule.lat});
+
 	};
 
 	/**

@@ -49,7 +49,7 @@ function ccpuriri_openlayers_element_info() {
       '#map_attributes' => array(), //custom property, used by map div
       '#default_lat' => 0, // custom property
       '#default_lon' => 0, // custom property
-      '#description' =>'This is the description',
+      '#description' =>'If the center of map is not where the physical address is, you can pan the map to point the center to the right place so that accurate coordinates can be saved and used to provid geo services.',
   );
   return $types;
 
