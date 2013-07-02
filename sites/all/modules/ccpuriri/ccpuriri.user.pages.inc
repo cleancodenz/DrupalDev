@@ -314,4 +314,146 @@ function ccpuriri_user_address_form_submit(&$form, &$form_state)
 }
 
 
+/*
+ * The form to change address
+* */
+function ccpuriri_user_contact_form($form, &$form_state,  $account)
+{
+  // do not worry about admin, admin is still using the old user/%/edit
+
+  module_load_include('inc', 'ccpuriri', 'ccpuriri.common');
+
+  if (!isset($form_state['user'])) {
+    $form_state['user'] = $account;
+  }
+  else {
+    $account = $form_state['user'];
+  }
+
+  $form['#user'] = $account;
+
+  $form['#user_category'] = 'account'; // to satisfy shared validation functions
+
+  //field_attach_form on one field address field
+
+  // only available after 5.15
+  // $langcode = entity_language('user', $account);
+  $langcode = NULL;
+  // to get all instances
+
+  // Determine the list of instances to iterate on.
+  list(, , $bundle) = entity_extract_ids('user', $account);
+  $options = array(
+      'deleted' => FALSE,
+  );
+
+  $instances = _field_invoke_get_instances('user', $bundle, $options);
+
+  if($instances['field_ccpuriri_contactfield'])
+  {
+    // get the form element for that field
+
+    // Set #parents to 'top-level' by default.
+    $form += array('#parents' => array());
+
+    // add desction 
+    $form['description'] = array(
+        '#type'=> 'markup',
+        '#value'=>'<div>This can be copied to contacts of a listing</div>',
+        );
+    
+    $instance = $instances['field_ccpuriri_contactfield'];
+
+    $field = field_info_field_by_id($instance['field_id']);
+
+    // save it in $form_state
+    $form_state["#formfield"] = $field;
+
+    $form_state["#formfieldinstance"] = $instance;
+
+    ccpuriri_field_attach_one_form('user',
+        $account, $bundle, $field,
+        $instance, $form, $form_state, $langcode);
+
+
+    $form['actions'] = array('#type' => 'actions');
+    $form['actions']['submit'] = array(
+        '#type' => 'submit',
+        '#value' => t('Save'),
+    );
+
+  }
+
+  return $form;
+
+}
+
+/*
+ * Validate handler for contact form
+* */
+function ccpuriri_user_contact_form_validate(&$form, &$form_state)
+{
+
+  module_load_include('inc', 'ccpuriri', 'ccpuriri.common');
+
+  $account = $form['#user'];
+
+
+  if($form_state["#formfield"] &&
+      $form_state["#formfieldinstance"])
+  {
+
+    ccpuriri_field_attach_one_form_validate('user',
+        $account,
+        $form_state["#formfield"],
+        $form_state["#formfieldinstance"],
+        $form, $form_state);
+
+  }
+
+}
+
+/*
+ * Submit handler  for contact form
+* */
+function ccpuriri_user_contact_form_submit(&$form, &$form_state)
+{
+  module_load_include('inc', 'ccpuriri', 'ccpuriri.common');
+
+  // to get field values from form
+  $account = $form['#user'];
+
+
+  if($form_state["#formfield"] &&
+      $form_state["#formfieldinstance"])
+  {
+    // field_attach_submit
+    ccpuriri_field_attach_one_form_submit('user',
+        $account,
+        $form_state["#formfield"],
+        $form_state["#formfieldinstance"],
+        $form, $form_state);
+
+    //field_attach_presave
+    ccpuriri_field_attach_one_presave('user',
+        $account,
+        $form_state["#formfield"],
+        $form_state["#formfieldinstance"]);
+
+
+    // field_attach_update, to actually save field to db
+    ccpuriri_field_attach_one_update('user',
+        $account,
+        $form_state["#formfield"],
+        $form_state["#formfieldinstance"]);
+
+    drupal_set_message(t('The contacts changes have been saved.'));
+
+    // no need to clear the edited entity cache as it has been done in field_attach_update
+    // do not do cache_clear_all() as in this case the edit form is
+
+ 
+  }
+}
+
 

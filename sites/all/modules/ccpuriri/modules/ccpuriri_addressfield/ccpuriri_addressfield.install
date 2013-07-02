@@ -253,8 +253,8 @@ function ccpuriri_addressfield_schema() {
       
   );
 
- // $schema1=array(); hack to avoid table being dropped during uninstall
-  return $schema;
+ return array(); //hack to avoid table being dropped during uninstall
+ // return $schema;
 }
 
 

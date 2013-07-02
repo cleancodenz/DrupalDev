@@ -1,0 +1,9 @@
+; $Id$
+name = CleanCode Puriri Contact Field
+description = "Wraps all normal contact fields like name, phone, and email etc into one field."
+
+//dependencies[] = ccpuriri_openlayers
+
+package = CleanCode Puriri modules
+version = "7.x-1.0-beta1"
+core = 7.x

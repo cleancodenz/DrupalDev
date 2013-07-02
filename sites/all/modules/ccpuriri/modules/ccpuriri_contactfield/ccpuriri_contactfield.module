@@ -1,0 +1,119 @@
+<?php 
+
+/**
+ * Implements hook_field_info()
+ */
+function ccpuriri_contactfield_field_info() {
+  $fields = array();
+
+  $fields['ccpuriri_contactfield'] = array(
+      'label' => t('Contact'),
+      'description' => t('A field type used for storing contact details.'),
+      'settings' => array(),
+      'instance_settings' => array(),
+      'default_widget' => 'ccpuriri_contactfield_standard',
+      'default_formatter' => 'ccpuriri_contactfield_default',
+  );
+
+  return $fields;
+}
+
+/**
+ * Implements hook_field_is_empty()
+ */
+function ccpuriri_contactfield_field_is_empty($item, $field) {
+  if (!is_array($item) || (
+      empty($item['first_name']) 
+          && empty($item['last_name']) 
+          && empty($item['organisation_name']))) {
+    return TRUE;
+  }
+  return FALSE;
+  
+}
+
+
+/**
+ * Implements hook_field_widget_info()
+ */
+function ccpuriri_contactfield_field_widget_info() {
+  $widgets = array();
+
+  $widgets['ccpuriri_contactfield_standard'] = array(
+      'label' => t('CCPuriri contact form'),
+      'field types' => array('ccpuriri_contactfield'),
+      'settings' => array(),
+      'behaviors' => array(
+         'multiple values' => FIELD_BEHAVIOR_CUSTOM, // allow multiple copies
+      ),
+  );
+
+  return $widgets;
+
+}
+
+/**
+ * Implements  hook_field_widget_settings_form
+ */
+function ccpuriri_contactfield_field_widget_settings_form($field, $instance)
+{
+  $widget = $instance['widget'];
+  $settings = $widget['settings'];
+
+
+  return $form;
+
+}
+
+
+/**
+ * Implements hook_field_widget_form()
+ */
+function ccpuriri_contactfield_field_widget_form(&$form, &$form_state, $field, $instance, $langcode, $items, $delta, $element) {
+  
+  // container
+  //$element 
+  return $element;
+}
+
+
+
+
+/**
+ * Implements hook_field_formatter_info().
+ */
+function ccpuriri_contactfield_field_formatter_info() {
+  return array(
+      'ccpuriri_contactfield_default' => array(
+          'label' => t('Default'),
+          'field types' => array('ccpuriri_contactfield'),
+          'settings' => array(),
+      ),
+  );
+}
+
+
+/**
+ * Implements hook_field_formatter_view().
+ */
+function ccpuriri_contactfield_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
+  $settings = $display['settings'];
+  $element = array();
+
+  switch ($display['type']) {
+    case 'ccpuriri_contactfield_default':
+
+      foreach ($items as $delta => $contact) {
+
+        //$element[$delta] = addressfield_generate($address, $handlers, $context);
+      }
+      break;
+  }
+
+  return $element;
+}
+
+
+
+
+

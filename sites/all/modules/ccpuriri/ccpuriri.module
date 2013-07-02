@@ -172,6 +172,17 @@ function ccpuriri_menu() {
       'file' =>'ccpuriri.user.pages.inc'
   );
   
+  $items['user/%user_uid_optional/contacts'] = array(
+      'title' => 'Contacts',
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array('ccpuriri_user_contact_form', 1),
+      'access callback' => 'user_edit_access',
+      'access arguments' => array(1),
+      'menu_name' => 'ccpuririusernavigation',
+      'weight' =>20,
+      'file' =>'ccpuriri.user.pages.inc'
+  );
+  
   $items['admin/config/ccpuriri'] = array(
       'title' => 'Configuation settings for CCPURIRI',
       'description' =>  'Configuation settings',
