@@ -359,7 +359,7 @@ function ccpuriri_user_contact_form($form, &$form_state,  $account)
     // add desction 
     $form['description'] = array(
         '#type'=> 'markup',
-        '#value'=>'<div>This can be copied to contacts of a listing</div>',
+        '#markup'=>'<div>The contacts set here can be copied to contacts of a listing</div>',
         );
     
     $instance = $instances['field_ccpuriri_contactfield'];

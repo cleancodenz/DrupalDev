@@ -44,7 +44,7 @@ function ccpuriri_contactfield_field_widget_info() {
       'field types' => array('ccpuriri_contactfield'),
       'settings' => array(),
       'behaviors' => array(
-         'multiple values' => FIELD_BEHAVIOR_CUSTOM, // allow multiple copies
+         'multiple values' => FIELD_BEHAVIOR_DEFAULT, // allow multiple copies and multiple widgets
       ),
   );
 
