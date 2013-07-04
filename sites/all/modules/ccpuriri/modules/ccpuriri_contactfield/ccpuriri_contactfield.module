@@ -71,8 +71,47 @@ function ccpuriri_contactfield_field_widget_settings_form($field, $instance)
  */
 function ccpuriri_contactfield_field_widget_form(&$form, &$form_state, $field, $instance, $langcode, $items, $delta, $element) {
   
-  // container
-  //$element 
+  // Get the default contact used to build the widget form elements, looking
+  // first in the stored value for the field, and then in the default values of the instance.
+  $contact = array();
+  
+  if (!empty($items[$delta])) {
+    // Else use the saved value for the field.
+    $contact = $items[$delta];
+  }
+  elseif( isset($instance['default_value']))  {
+    // Otherwise use the instance default.
+    $contact = (array) $instance['default_value'][0];
+  }
+  
+  // Merge in default values to provide a value for every expected array key.
+  // address does not include delta
+  $contact += _ccpuriri_contactfield_default_value();
+  
+  // Add the form elements for the standard widget, which includes a country
+  // select list at the top that reloads the available address elements when the
+  // country is changed.
+  if ($instance['widget']['type'] == 'ccpuriri_contactfield_standard') {
+    // Wrap everything in a fieldset. This is not the best looking element,
+    // but it's the only wrapper available in Drupal we can properly use
+    // in that context, and it is overridable if necessary.
+    $element['#type'] = 'fieldset';
+  
+    // Generate the address form.
+    $context = array(
+    'field' => $field,
+    'instance' => $instance,
+    'langcode' => $langcode,
+    'delta' => $delta,
+    );
+  
+    module_load_include('inc', 'ccpuriri_contactfield', 'ccpuriri_contactfield.widget');
+  
+    $element += ccpuriri_contactfield_generate($form, $form_state, $contact, $context);
+  
+  
+  }
+  
   return $element;
 }
 
@@ -114,6 +153,24 @@ function ccpuriri_contactfield_field_formatter_view($entity_type, $entity, $fiel
 }
 
 
+function _ccpuriri_contactfield_default_value(){
+  
+  $default = array(
+      'title' => '',
+      'first_name' => '',
+      'last_name' => '',
+      'mobile' => '',
+      'workphone' => '',
+      'ahphone' => '',
+      'bestway' => '',
+      'email' => '',
+      'organisation_name' => '',
+      'contacttype' => 10,
+  );
+  
+  return $default;
+  
+}
 
 
 

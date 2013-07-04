@@ -2,6 +2,7 @@
 name = CleanCode Puriri Address Field
 description = "Wraps all normal address fields into one field."
 
+dependencies[] = ccpuriri_common
 dependencies[] = ccpuriri_openlayers
 
 package = CleanCode Puriri modules

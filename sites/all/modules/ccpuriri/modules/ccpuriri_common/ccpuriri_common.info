@@ -1,0 +1,7 @@
+; $Id$
+name = CleanCode Puriri Common
+description = "Provides shared functionalities accross ccpuriri modules."
+
+package = CleanCode Puriri modules
+version = "7.x-1.0-beta1"
+core = 7.x

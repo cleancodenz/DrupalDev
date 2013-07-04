@@ -3,17 +3,17 @@
 function ccpuriri_country_list()
 {
   return array(
-          'NZ' => t('New Zealand'),
-          'AU' => t('Australia'),
-          'US' => t('United States'),
-          'UK' => t('United Kingdom'),
-      );
+      'NZ' => t('New Zealand'),
+      'AU' => t('Australia'),
+      'US' => t('United States'),
+      'UK' => t('United Kingdom'),
+  );
 }
 
 
 function ccpuriri_addressfield_country_config()
 {
-    
+
   return array(
       'NZ' => array(
           'sub_premise'=> array(
@@ -40,8 +40,9 @@ function ccpuriri_addressfield_country_config()
           'administrative_area'=> array(
               'label'=> 'administrative_area',
               'enabled' => false),
-          ),
-       
-      );  
-  
+      ),
+
+  );
+
 }
+

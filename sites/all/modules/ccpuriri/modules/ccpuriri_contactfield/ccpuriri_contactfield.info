@@ -2,7 +2,7 @@
 name = CleanCode Puriri Contact Field
 description = "Wraps all normal contact fields like name, phone, and email etc into one field."
 
-//dependencies[] = ccpuriri_openlayers
+dependencies[] = ccpuriri_common
 
 package = CleanCode Puriri modules
 version = "7.x-1.0-beta1"

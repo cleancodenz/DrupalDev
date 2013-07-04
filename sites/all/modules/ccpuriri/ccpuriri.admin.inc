@@ -11,7 +11,8 @@ function ccpuriri_admin_settings() {
 
   $description = t('This module only supports one country at moment, and it is set here');
   
-  module_load_include('inc', 'ccpuriri', 'ccpuriri.utility');
+  module_load_include('inc', 'ccpuriri_common', 'ccpuriri_common.utility');
+  
   
   $form['countries']['ccpuriri_country'] = array(
       '#type' => 'select',

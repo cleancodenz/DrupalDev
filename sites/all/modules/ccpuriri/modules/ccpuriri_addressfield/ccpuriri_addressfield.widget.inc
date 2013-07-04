@@ -37,7 +37,7 @@ function ccpuriri_addressfield_generate($address, $context)
 * */
 function ccpuriri_addressfield_street(&$elements, $address, $context)
 {
-  module_load_include('inc', 'ccpuriri', 'ccpuriri.utility');
+  module_load_include('inc', 'ccpuriri_common', 'ccpuriri_common.utility');
 
   $fieldconfig = ccpuriri_addressfield_country_config();
   $country = variable_get('ccpuriri_country', "NZ");
@@ -69,7 +69,7 @@ function ccpuriri_addressfield_street(&$elements, $address, $context)
 
   // The street block.
   $elements['street_block'] = array(
-      '#type' => 'ccpuriri_addressfield_container',
+      '#type' => 'ccpuriri_container',
       '#attributes' => array('class' => array('street-block')),
       '#weight' => 10,
   );
@@ -115,7 +115,7 @@ function ccpuriri_addressfield_street(&$elements, $address, $context)
   );
 
   $elements['locality_block'] = array(
-      '#type' => 'ccpuriri_addressfield_container',
+      '#type' => 'ccpuriri_container',
       '#attributes' => array('class' => array('addressfield-container-inline', 'locality-block')),
       '#weight' => 20,
   );
@@ -204,7 +204,7 @@ function ccpuriri_addressfield_street(&$elements, $address, $context)
 * */
 function ccpuriri_addressfield_name_full(&$elements, $address, $context) {
   $elements['name_block'] = array(
-      '#type' => 'ccpuriri_addressfield_container',
+      '#type' => 'ccpuriri_container',
       '#attributes' => array('class' => array('addressfield-container-inline', 'name-block')),
       '#weight' => -100,
   );
@@ -233,7 +233,7 @@ function ccpuriri_addressfield_name_full(&$elements, $address, $context) {
  */
 function ccpuriri_addressfield_organisation(&$elements, $address, $context) {
   $elements['organisation_block'] = array(
-      '#type' => 'ccpuriri_addressfield_container',
+      '#type' => 'ccpuriri_container',
       '#attributes' => array('class' => array('addressfield-container-inline', 'name-block')),
       '#weight' => -50,
   );

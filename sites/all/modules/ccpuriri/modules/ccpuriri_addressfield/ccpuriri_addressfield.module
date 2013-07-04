@@ -49,28 +49,6 @@ function ccpuriri_addressfield_field_widget_info() {
 }
 
 
-/**
- * Implementation of hook_element_info(). this is for widget form block element
- */
-function ccpuriri_addressfield_element_info() {
-  $types['ccpuriri_addressfield_container'] = array(
-      '#theme_wrappers' => array('ccpuriri_addressfield_container'),
-      '#process' => array('ccpuriri_addressfield_widget_process'),
-      '#attributes' => array(),
-      '#tag' => 'div', // custom property
-  );
-  return $types;
-}
-
-/**
- * Implementation of hook_theme().
- */
-function ccpuriri_addressfield_theme() {
-  $hooks['ccpuriri_addressfield_container'] = array(
-      'render element' => 'element',
-  );
-  return $hooks;
-}
 
 
 /**
@@ -94,7 +72,7 @@ function ccpuriri_addressfield_field_widget_form(&$form, &$form_state, $field, $
 
   // Merge in default values to provide a value for every expected array key.
   // address does not include delta
-  $address += ccpuriri_addressfield_default_value();
+  $address += _ccpuriri_addressfield_default_value();
 
   // Add the form elements for the standard widget, which includes a country
   // select list at the top that reloads the available address elements when the
@@ -118,10 +96,8 @@ function ccpuriri_addressfield_field_widget_form(&$form, &$form_state, $field, $
     module_load_include('inc', 'ccpuriri_addressfield', 'ccpuriri_addressfield.widget');
 
     $element += ccpuriri_addressfield_generate($address, $context);
-
      
-    // Mark the form element as required if necessary.
-    $element['#required'] = $delta == 0 && $instance['required'];
+
   }
 
   return $element;
@@ -190,43 +166,14 @@ function ccpuriri_addressfield_field_formatter_view($entity_type, $entity, $fiel
   return $element;
 }
 
-/**
- * Form API process function: set the #parents of the children of this element so they appear at the same level as the parent.
- * coluns are grouped under block, this will allow columns to bypass block wrapper to satisfy Feild API
- */
-function ccpuriri_addressfield_widget_process($element, &$form_state, $form) {
 
-  foreach (element_children($element) as $key) {
-    $element[$key]['#parents'] = $element['#parents'];
-    $element[$key]['#parents'][count($element[$key]['#parents']) - 1] = $key;
-  }
 
-  return $element;
-}
 
-/**
- * Render a container for a set of address fields.
- * theme wrapper for block container
- */
-function theme_ccpuriri_addressfield_container($variables) {
-  $element = $variables['element'];
-
-  $element['#children'] = trim($element['#children']);
-  if (strlen($element['#children']) > 0) {
-    $output = '<' . $element['#tag'] . drupal_attributes($element['#attributes']) . '>';
-    $output .= $element['#children'];
-    $output .= '</' . $element['#tag'] . ">";
-    return $output;
-  }
-  else {
-    return '';
-  }
-}
 
 /**
  * Only set the country column of a field.
  */
-function ccpuriri_addressfield_default_value()
+function _ccpuriri_addressfield_default_value()
 {
   $country = variable_get('ccpuriri_country', "NZ");
 

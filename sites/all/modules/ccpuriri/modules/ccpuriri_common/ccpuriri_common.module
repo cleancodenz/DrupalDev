@@ -1,0 +1,64 @@
+<?php 
+
+/**
+ * Implementation of hook_element_info(). this is for widget form block element
+ */
+function ccpuriri_common_element_info() {
+  $types['ccpuriri_container'] = array(
+      '#theme_wrappers' => array('ccpuriri_container'),
+      '#process' => array('ccpuriri_container_process'),
+      '#attributes' => array(),
+      '#tag' => 'div', // custom tag
+      '#id' => '',// set a id for this wrapper
+  );
+  return $types;
+}
+
+/**
+ * Implementation of hook_theme().
+ */
+function ccpuriri_common_theme() {
+  $hooks['ccpuriri_container'] = array(
+      'render element' => 'element',
+  );
+  return $hooks;
+}
+
+
+
+/**
+ * Render a container for a set of address fields.
+ * theme wrapper for block container
+ */
+function theme_ccpuriri_container($variables) {
+  $element = $variables['element'];
+
+  $element['#children'] = trim($element['#children']);
+  if (strlen($element['#children']) > 0) {
+    $output = '<' . $element['#tag'] .
+      (empty($element['#id'])? '': ' id='.$element['#id'])
+     . drupal_attributes($element['#attributes']) . '>';
+    $output .= $element['#children'];
+    $output .= '</' . $element['#tag'] . ">";
+    return $output;
+  }
+  else {
+    return '';
+  }
+}
+
+/**
+ * Form API process function: set the #parents of the children of this element so they appear at the same level as the parent.
+ * coluns are grouped under block, this will allow columns to bypass block wrapper to satisfy Feild API
+ */
+function ccpuriri_container_process($element, &$form_state, $form) {
+
+  foreach (element_children($element) as $key) {
+    $element[$key]['#parents'] = $element['#parents'];
+    $element[$key]['#parents'][count($element[$key]['#parents']) - 1] = $key;
+  }
+
+  return $element;
+}
+
+

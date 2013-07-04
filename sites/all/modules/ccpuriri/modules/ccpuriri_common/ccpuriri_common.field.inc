@@ -2,7 +2,7 @@
 
 /*
  * field_attach_form for one field
- * */
+* */
 function ccpuriri_field_attach_one_form($entity_type,
     $entity,$bundle, $field, $instance,
     &$form, &$form_state,$langcode = NULL,
@@ -20,7 +20,7 @@ function ccpuriri_field_attach_one_form($entity_type,
   $form+= _ccpuriri_field_one_field_invoke(
       'form', $entity_type, $entity,
       $field, $instance, $form, $form_state, $options);
-   
+
 
   //extra fields do not apply to a one field form
   // $form['#pre_render'][] = '_field_extra_fields_pre_render';
@@ -39,7 +39,7 @@ function ccpuriri_field_attach_one_form($entity_type,
 
 /*
  * field_attach_form_validate for only one field
- * */
+* */
 function ccpuriri_field_attach_one_form_validate($entity_type,
     $entity, $field, $instance,
     &$form, &$form_state, $options = array())
@@ -98,20 +98,20 @@ function ccpuriri_field_attach_one_form_validate($entity_type,
 
 /*
  * field_attach_form_submit for one field
- * */
+* */
 function ccpuriri_field_attach_one_form_submit($entity_type,
     $entity, $field, $instance,
     &$form, &$form_state, $options = array())
 {
   $options = is_array($options) ? $options : array();
   $options['default'] = true;
-  
+
   _ccpuriri_field_one_field_invoke(
       'extract_form_values', $entity_type, $entity,
       $field, $instance,  $form, $form_state, $options);
-  
+
   $options['default'] = false;
-  
+
   // field specific submit
   _ccpuriri_field_one_field_invoke(
       'submit', $entity_type, $entity,
@@ -123,31 +123,31 @@ function ccpuriri_field_attach_one_form_submit($entity_type,
     $function = $module . '_field_attach_submit';
     $function($entity_type, $entity, $form, $form_state);
   }
-  
+
 }
 
 /*
- * field_attach_one_presave for one field only 
- * */
+ * field_attach_one_presave for one field only
+* */
 function ccpuriri_field_attach_one_presave($entity_type, $entity,$field, $instance)
 {
-   _ccpuriri_field_one_field_invoke(
+  _ccpuriri_field_one_field_invoke(
       'presave', $entity_type, $entity,
       $field,$instance);
-  
-   // Let other modules act on presaving the entity.
-   module_invoke_all('field_attach_presave', $entity_type, $entity);
+
+  // Let other modules act on presaving the entity.
+  module_invoke_all('field_attach_presave', $entity_type, $entity);
 }
 
 // update is done by deleting first, so if it is inserting, calling update should be the same
 function ccpuriri_field_attach_one_update($entity_type, $entity,$field, $instance)
 {
   list($id, $vid, $bundle) = entity_extract_ids($entity_type, $entity);
-  
+
   _ccpuriri_field_one_field_invoke(
       'update', $entity_type, $entity,
       $field,$instance);
-  
+
   // Let any module update field data before the storage engine, accumulating
   // saved fields along the way.
   $skip_fields = array();
@@ -155,13 +155,13 @@ function ccpuriri_field_attach_one_update($entity_type, $entity,$field, $instanc
     $function = $module . '_field_storage_pre_update';
     $function($entity_type, $entity, $skip_fields);
   }
-  
+
   // Collect the storage backends used by the remaining fields in the entities.
   $storages = array();
-  
+
   $field_id = $field['id'];
   $field_name = $field['field_name'];
-  
+
   // Leave the field untouched if $entity comes with no $field_name property,
   // but empty the field if it comes as a NULL value or an empty array.
   // Function property_exists() is slower, so we catch the more frequent
@@ -172,21 +172,21 @@ function ccpuriri_field_attach_one_update($entity_type, $entity,$field, $instanc
       $storages[$field['storage']['type']][$field_id] = $field_id;
     }
   }
-  
+
   // Field storage backends save any remaining unsaved fields.
   foreach ($storages as $storage => $fields) {
     $storage_info = field_info_storage_types($storage);
     module_invoke($storage_info['module'], 'field_storage_write', $entity_type, $entity, FIELD_STORAGE_UPDATE, $fields);
   }
-  
+
   // Let other modules act on updating the entity.
   module_invoke_all('field_attach_update', $entity_type, $entity);
-  
+
   $entity_info = entity_get_info($entity_type);
   if ($entity_info['field cache']) {
     cache_clear_all("field:$entity_type:$id", 'cache_field');
   }
-  
+
 }
 
 
@@ -241,4 +241,3 @@ function _ccpuriri_field_one_field_invoke(
   return $return;
 
 }
-

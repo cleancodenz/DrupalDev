@@ -1,8 +1,10 @@
 ; $Id$
 name = CleanCode Puriri
-description = "Enables the creation of cleancode real estate listings."
+description = "Enables the creation of cleancode real estate listings. this module is the project module"
 
-;dependencies[] = pathauto
+dependencies[] = ccpuriri_common
+dependencies[] = ccpuriri_addressfield
+dependencies[] = ccpuriri_contactfield
 
 package = CleanCode Puriri modules
 

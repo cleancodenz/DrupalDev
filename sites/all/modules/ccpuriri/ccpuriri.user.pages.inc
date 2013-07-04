@@ -181,7 +181,7 @@ function ccpuriri_user_address_form($form, &$form_state, $account)
 {
   // do not worry about admin, admin is still using the old user/%/edit
    
-  module_load_include('inc', 'ccpuriri', 'ccpuriri.common');
+  module_load_include('inc', 'ccpuriri_common', 'ccpuriri_common.field');
   
   if (!isset($form_state['user'])) {
     $form_state['user'] = $account;
@@ -249,7 +249,8 @@ function ccpuriri_user_address_form($form, &$form_state, $account)
 function ccpuriri_user_address_form_validate(&$form, &$form_state)
 {
    
-  module_load_include('inc', 'ccpuriri', 'ccpuriri.common');
+  module_load_include('inc', 'ccpuriri_common', 'ccpuriri_common.field');
+  
   
   $account = $form['#user'];
         
@@ -273,7 +274,7 @@ function ccpuriri_user_address_form_validate(&$form, &$form_state)
 * */
 function ccpuriri_user_address_form_submit(&$form, &$form_state)
 {
-  module_load_include('inc', 'ccpuriri', 'ccpuriri.common');
+   module_load_include('inc', 'ccpuriri_common', 'ccpuriri_common.field');
   
   // to get field values from form
   $account = $form['#user'];
@@ -321,7 +322,7 @@ function ccpuriri_user_contact_form($form, &$form_state,  $account)
 {
   // do not worry about admin, admin is still using the old user/%/edit
 
-  module_load_include('inc', 'ccpuriri', 'ccpuriri.common');
+   module_load_include('inc', 'ccpuriri_common', 'ccpuriri_common.field');
 
   if (!isset($form_state['user'])) {
     $form_state['user'] = $account;
@@ -394,7 +395,7 @@ function ccpuriri_user_contact_form($form, &$form_state,  $account)
 function ccpuriri_user_contact_form_validate(&$form, &$form_state)
 {
 
-  module_load_include('inc', 'ccpuriri', 'ccpuriri.common');
+   module_load_include('inc', 'ccpuriri_common', 'ccpuriri_common.field');
 
   $account = $form['#user'];
 
@@ -418,7 +419,7 @@ function ccpuriri_user_contact_form_validate(&$form, &$form_state)
 * */
 function ccpuriri_user_contact_form_submit(&$form, &$form_state)
 {
-  module_load_include('inc', 'ccpuriri', 'ccpuriri.common');
+   module_load_include('inc', 'ccpuriri_common', 'ccpuriri_common.field');
 
   // to get field values from form
   $account = $form['#user'];
