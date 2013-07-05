@@ -1,22 +1,48 @@
 <?php 
 
 
-function ccpuriri_contactfield_generate(&$form, &$form_state,$contact, $context)
+function ccpuriri_contactfield_generate(
+    &$form, &$form_state, $field, $instance, $langcode, 
+    $items, $delta, $element)
 {
-  $settings =$context['instance']['widget']['settings'];
+    
+  // Get the default contact used to build the widget form elements, looking
+  // first in the stored value for the field, and then in the default values of the instance.
+  $contact = array();
+  
+  if (!empty($items[$delta])) {
+    // Else use the saved value for the field.
+    $contact = $items[$delta];
+  }
 
-  $elements = array();
-
+   // ajax calls, there might be contactype set, we need to restore
+   
+     $parents = $form['#parents'];
+     $field_name= $field['field_name'];
+     // use field_form_get_state to get current field state
+     $field_state = field_form_get_state($parents, $field_name, $langcode, $form_state);
+     
+     if($delta < $field_state['items_count'])
+     {       
+       // try to get contacttype from form_state
+       // $contactTypeparents =  
+     }
+     
+  
+  
+  // Merge in default values to provide a value for every expected array key.
+  // address does not include delta
+  $contact += _ccpuriri_contactfield_default_value();
+  
+  
+  
   // always having a tree structure for UI
-  $elements['#tree'] = true;
-
-
-  $delta = $context['delta'];
+  $element['#tree'] = true;
 
   $contactype =  $contact['contacttype'];
 
   // add the type
-  $elements['contacttype'] = array(
+  $element['contacttype'] = array(
       '#type' => 'select',
       '#title' => t('Type'),
       '#weight' => 10,
@@ -39,7 +65,7 @@ function ccpuriri_contactfield_generate(&$form, &$form_state,$contact, $context)
   );
 
   // The names block.
-  $elements['names_block'] = array(
+  $element['names_block'] = array(
       '#type' => 'ccpuriri_container',
       '#attributes' => array('class' => array('names-block')),
       '#id' => 'names_block_div'.$delta, // this will be controlled by ajax
@@ -67,13 +93,14 @@ function ccpuriri_contactfield_generate(&$form, &$form_state,$contact, $context)
       }
     }
   }
-
+  
+ 
   // then render names_block depending on which contact type is
   switch ($contactype)
   {
     case 10:
       // it is a person
-      $elements['names_block']['first_name'] = array(
+      $element['names_block']['first_name'] = array(
       '#type' => 'textfield',
       '#title' => t('First name'),
       '#size' => 50,
@@ -83,7 +110,7 @@ function ccpuriri_contactfield_generate(&$form, &$form_state,$contact, $context)
       '#required' => TRUE,
       );
 
-      $elements['names_block']['last_name'] = array(
+      $element['names_block']['last_name'] = array(
           '#type' => 'textfield',
           '#title' => t('Last name'),
           '#size' => 50,
@@ -96,7 +123,7 @@ function ccpuriri_contactfield_generate(&$form, &$form_state,$contact, $context)
       break;
     case 20:
       // it is a company
-      $elements['names_block']['organisation_name'] = array(
+      $element['names_block']['organisation_name'] = array(
         '#type' => 'textfield',
         '#title' => t('Company'),
         '#size' => 50,
@@ -115,7 +142,7 @@ function ccpuriri_contactfield_generate(&$form, &$form_state,$contact, $context)
 
 
 
-  $elements['mobile'] = array(
+  $element['mobile'] = array(
       '#type' => 'textfield',
       '#title' => t('Mobile'),
       '#size' => 50,
@@ -124,7 +151,7 @@ function ccpuriri_contactfield_generate(&$form, &$form_state,$contact, $context)
       '#attributes' => array('class' => array('contact-mobile')),
   );
 
-  $elements['workphone'] = array(
+  $element['workphone'] = array(
       '#type' => 'textfield',
       '#title' => t('Work'),
       '#size' => 50,
@@ -133,7 +160,7 @@ function ccpuriri_contactfield_generate(&$form, &$form_state,$contact, $context)
       '#attributes' => array('class' => array('contact-workphone')),
   );
 
-  $elements['ahphone'] = array(
+  $element['ahphone'] = array(
       '#type' => 'textfield',
       '#title' => t('After hours'),
       '#size' => 50,
@@ -142,7 +169,7 @@ function ccpuriri_contactfield_generate(&$form, &$form_state,$contact, $context)
       '#attributes' => array('class' => array('contact-ahphone')),
   );
 
-  $elements['email'] = array(
+  $element['email'] = array(
       '#type' => 'textfield',
       '#title' => t('Email'),
       '#size' => 50,
@@ -151,7 +178,7 @@ function ccpuriri_contactfield_generate(&$form, &$form_state,$contact, $context)
       '#attributes' => array('class' => array('contact-email')),
   );
 
-  $elements['bestway'] = array(
+  $element['bestway'] = array(
       '#type' => 'textfield',
       '#title' => t('Notes'),
       '#size' => 50,
@@ -161,7 +188,7 @@ function ccpuriri_contactfield_generate(&$form, &$form_state,$contact, $context)
   );
    
 
-  return $elements;
+  return $element;
 }
 
 function ccpuriri_contact_type_callback($form, $form_state) {
