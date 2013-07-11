@@ -97,9 +97,9 @@ function ccpuriri_field_attach_one_form_validate($entity_type,
 }
 
 /*
- * field_attach_form_submit for one field
+ * field_attach_submit for one field
 * */
-function ccpuriri_field_attach_one_form_submit($entity_type,
+function ccpuriri_field_attach_one_submit($entity_type,
     $entity, $field, $instance,
     &$form, &$form_state, $options = array())
 {
@@ -110,9 +110,8 @@ function ccpuriri_field_attach_one_form_submit($entity_type,
       'extract_form_values', $entity_type, $entity,
       $field, $instance,  $form, $form_state, $options);
 
-  $options['default'] = false;
-
-  // field specific submit
+  
+  // field default submit
   _ccpuriri_field_one_field_invoke(
       'submit', $entity_type, $entity,
       $field, $instance,  $form, $form_state, $options);

@@ -284,7 +284,7 @@ function ccpuriri_user_address_form_submit(&$form, &$form_state)
       $form_state["#formfieldinstance"])
   {
     // field_attach_submit
-    ccpuriri_field_attach_one_form_submit('user',
+    ccpuriri_field_attach_one_submit('user',
         $account,
         $form_state["#formfield"],
         $form_state["#formfieldinstance"],
@@ -429,7 +429,7 @@ function ccpuriri_user_contact_form_submit(&$form, &$form_state)
       $form_state["#formfieldinstance"])
   {
     // field_attach_submit
-    ccpuriri_field_attach_one_form_submit('user',
+    ccpuriri_field_attach_one_submit('user',
         $account,
         $form_state["#formfield"],
         $form_state["#formfieldinstance"],
