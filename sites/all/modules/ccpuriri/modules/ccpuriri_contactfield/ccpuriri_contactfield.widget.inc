@@ -16,21 +16,21 @@ function ccpuriri_contactfield_generate(
   }
 
 
-  // get feidl_state
+  // get field_state
   $parents = $form['#parents'];
   $field_name= $field['field_name'];
   // use field_form_get_state to get current field state
   $field_state = field_form_get_state($parents, $field_name, $langcode, $form_state);
 
   // control blank item
-  // only render one when items_coount 0 which is first initial rendering 
-    if ($field_state['items_count']> 0 && $delta ==$field_state['items_count'])
-    {
-      $element=array();
+  // only render one when items_coount 0 which is first initial rendering
+  if ($field_state['items_count']> 0 && $delta ==$field_state['items_count'])
+  {
+    $element=array();
 
-      return $element; // not rendering anything
-    }
-  
+    return $element; // not rendering anything
+  }
+
   // check if the call is ajax, for form sumission, this will not be run, as process will go to submit handlers straight away
   if (!empty($form_state['triggering_element'])
       && !empty($form_state['triggering_element']['#parents']))
@@ -45,7 +45,7 @@ function ccpuriri_contactfield_generate(
     if($button_name=='contacttype')
     {
       // we always have $delta matching with form_state,
-      // so everytime the one extra blank will be back 
+      // so everytime the one extra blank will be back
       if($delta < $field_state['items_count'])
       {
         // to get object from form_state['values']
@@ -63,7 +63,7 @@ function ccpuriri_contactfield_generate(
 
         }
 
-      } 
+      }
 
     }else if ($button_name=='add_more')
     {
@@ -100,7 +100,7 @@ function ccpuriri_contactfield_generate(
 
 
       }// if($delta < $field_state['items_count']-1)
-  
+
 
     } //if($button_name=='contacttype')
   } //  if (!empty($form_state['triggering_element']) && !empty($form_state['triggering_element']['#parents']))
@@ -229,12 +229,36 @@ function ccpuriri_contactfield_generate(
       '#type' => 'textfield',
       '#title' => t('Notes'),
       '#size' => 50,
-      '#weight' => 60,
+      '#weight' => 70,
       '#default_value' =>$contact['bestway'],
       '#attributes' => array('class' => array('contact-bestway')),
   );
-   
 
+  // not to render remove button when the rendered is the default blank
+  if ($field_state['items_count']>0 ||
+      ($field_state['items_count']==0 &&
+          !ccpuriri_contactfield_field_is_empty($contact)))
+  {
+    $buttonparents = array_merge($form['#parents'],array( $field_name, $langcode, $delta,'remove'));
+    
+    // this drupal style naming in field
+    $name = array_shift($buttonparents);
+    
+    $name.= implode('_', $buttonparents);
+   // $name .= '[' . implode('][', $buttonparents) . ']'; // in this way button will not be recognized
+   
+  
+    
+     
+    $element['remove'] = array(
+        '#type' => 'submit',
+        '#value' => t('Remove'),
+        '#name' => $name, 
+        '#weight' => 80,
+        '#limit_validation_errors' => array(array_merge($parents, array($field_name, $langcode, $delta))),
+        '#submit' => array('ccpuriri_contactfield_remove_submit'),
+    );
+  }
   return $element;
 }
 
@@ -259,4 +283,70 @@ function ccpuriri_contact_type_callback($form, $form_state) {
 
   return  $names_block;
 
+}
+
+function ccpuriri_contactfield_remove_submit($form, &$form_state)
+{
+
+  $button = $form_state['triggering_element'];
+
+  $length =  sizeof($button['#parents']);
+
+  $field_name= $button['#parents'][$length-4];
+
+  $langcode = $button['#parents'][$length -3];
+
+  $delta =  $button['#parents'][$length-2];
+
+  // get field_state
+  $parents = $form['#parents'];
+
+  // use field_form_get_state to get current field state
+  $field_state = field_form_get_state($parents, $field_name, $langcode, $form_state);
+
+  // delete row in form_state
+  if ($field_state['items_count']>0)
+  {
+    if ($delta <$field_state['items_count']-1)
+    {
+      for ($i = $delta;$i<$field_state['items_count']-1;$i++)
+      {
+        $itemParent = array_merge(array_slice($button['#parents'],0, $length-1), array($i));
+
+        // get the next item
+        $nextParent = array_merge(array_slice($button['#parents'],0, $length-1), array($i+1));
+
+        $key_exists = NULL;
+
+        $value = drupal_array_get_nested_value($form_state['values'],
+            $nextParent, $key_exists);
+        if ($key_exists) {
+
+          $nextItem = $value;
+
+          // replace this item with next item
+          drupal_array_set_nested_value($form_state['values'],  $itemParent, $nextItem);
+
+        }
+      }
+
+    }
+
+    //no need delete the last item as items_count decreasing will cause it
+
+    // decrease items_count
+    $field_state['items_count']--;
+    field_form_set_state($parents, $field_name, $langcode, $form_state, $field_state);
+
+  }
+  else
+  {
+    // the only one, and has not been saved yet, to make it to empty
+    $contact = _ccpuriri_contactfield_default_value();
+
+    // and set it to form_state
+
+  }
+
+  $form_state['rebuild'] = TRUE;
 }

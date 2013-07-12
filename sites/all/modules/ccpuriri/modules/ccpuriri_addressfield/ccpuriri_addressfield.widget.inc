@@ -3,6 +3,8 @@
 define('CCPURIRI_ADDRESSFIELD_AUTOCOMPLETE_URL', 'http://maps.google.com/maps/api/geocode');
 define('CCPURIRI_ADDRESSFIELD_AUTOCOMPLETE_FORMAT', 'json');
 
+
+
 function ccpuriri_addressfield_generate($address, $context)
 {
 

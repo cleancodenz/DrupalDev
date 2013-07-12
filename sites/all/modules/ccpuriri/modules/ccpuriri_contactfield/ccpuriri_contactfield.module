@@ -1,5 +1,7 @@
 <?php 
 
+require_once (dirname(__FILE__) . '/ccpuriri_contactfield.widget.inc');
+
 /**
  * Implements hook_field_info()
  */
@@ -80,7 +82,6 @@ function ccpuriri_contactfield_field_widget_form(&$form, &$form_state, $field, $
     // in that context, and it is overridable if necessary.
     $element['#type'] = 'fieldset';
   
-    module_load_include('inc', 'ccpuriri_contactfield', 'ccpuriri_contactfield.widget');
   
     $element = ccpuriri_contactfield_generate(
         $form, $form_state, $field, $instance, $langcode,
@@ -147,6 +148,4 @@ function _ccpuriri_contactfield_default_value(){
   return $default;
   
 }
-
-
 
