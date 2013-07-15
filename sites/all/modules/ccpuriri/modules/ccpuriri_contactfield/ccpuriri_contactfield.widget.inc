@@ -42,8 +42,9 @@ function ccpuriri_contactfield_generate(
 
 
     // load the $contact from form_state
-    if($button_name=='contacttype')
-    {
+   // if($button_name=='contacttype' ||
+   //     $button_name=='contacttype' )
+   // {
       // we always have $delta matching with form_state,
       // so everytime the one extra blank will be back
       if($delta < $field_state['items_count'])
@@ -65,7 +66,9 @@ function ccpuriri_contactfield_generate(
 
       }
 
-    }else if ($button_name=='add_more')
+    //}
+/*
+    else if ($button_name=='add_more')
     {
       // add_more button click
       //-> 'field_add_more_submit'
@@ -103,6 +106,7 @@ function ccpuriri_contactfield_generate(
 
 
     } //if($button_name=='contacttype')
+    */
   } //  if (!empty($form_state['triggering_element']) && !empty($form_state['triggering_element']['#parents']))
 
   // Merge in default values to provide a value for every expected array key.
@@ -247,15 +251,24 @@ function ccpuriri_contactfield_generate(
     $name.= implode('_', $buttonparents);
    // $name .= '[' . implode('][', $buttonparents) . ']'; // in this way button will not be recognized
    
-  
-    
+   $limitvalidationerrors = array();
+   
+   // only limit validation errors to items on other row
+    for($i=0;$i<$field_state['items_count'];$i++)
+    {
+      if ($i!= $delta)
+      {
+        $limitvalidationerrors[] = array_merge($parents, array($field_name, $langcode, $i));
+      }
+    }
      
     $element['remove'] = array(
         '#type' => 'submit',
         '#value' => t('Remove'),
         '#name' => $name, 
         '#weight' => 80,
-        '#limit_validation_errors' => array(array_merge($parents, array($field_name, $langcode, $delta))),
+       // '#limit_validation_errors' => array(array_merge($parents, array($field_name, $langcode, $delta))),
+        '#limit_validation_errors' =>$limitvalidationerrors, 
         '#submit' => array('ccpuriri_contactfield_remove_submit'),
     );
   }
@@ -311,10 +324,10 @@ function ccpuriri_contactfield_remove_submit($form, &$form_state)
     {
       for ($i = $delta;$i<$field_state['items_count']-1;$i++)
       {
-        $itemParent = array_merge(array_slice($button['#parents'],0, $length-1), array($i));
+        $itemParent = array_merge(array_slice($button['#parents'],0, $length-2), array($i));
 
         // get the next item
-        $nextParent = array_merge(array_slice($button['#parents'],0, $length-1), array($i+1));
+        $nextParent = array_merge(array_slice($button['#parents'],0, $length-2), array($i+1));
 
         $key_exists = NULL;
 
@@ -326,7 +339,9 @@ function ccpuriri_contactfield_remove_submit($form, &$form_state)
 
           // replace this item with next item
           drupal_array_set_nested_value($form_state['values'],  $itemParent, $nextItem);
-
+          // need to replace $form_state['input'] and all, otherwise values will be read from input by form_builder()
+          drupal_array_set_nested_value($form_state['input'],  $itemParent, $nextItem);
+          
         }
       }
 
