@@ -5,39 +5,64 @@ define('CCPURIRI_ADDRESSFIELD_AUTOCOMPLETE_FORMAT', 'json');
 
 
 
-function ccpuriri_addressfield_generate($address, $context)
+function ccpuriri_addressfield_generate(
+    &$form, &$form_state, $field, $instance, $langcode,
+    $items, $delta, $element)
 {
 
-  $settings =$context['instance']['widget']['settings'];
+  // Add the form elements for the standard widget, which includes a country
+  // select list at the top that reloads the available address elements when the
+  // country is changed.
+  
+  
+  
+  // Get the default address used to build the widget form elements, looking
+  // first in the form state, then in the stored value for the field, and then
+  // in the default values of the instance.
+  $address = array();
+  
+  if (isset($items[$delta]) && !empty($items[$delta]['country'])) {
+    $address = $items[$delta];
+  }
+  elseif( isset($instance['default_value']))  {
+    // Otherwise use the instance default.
+    $address = (array) $instance['default_value'][0];
+  }
+  
+  // Merge in default values to provide a value for every expected array key.
+  // address does not include delta
+  $address += _ccpuriri_addressfield_default_value();
+  
+  
+  $settings =$instance['widget']['settings'];
 
   $country = variable_get('ccpuriri_country', "NZ");
    
-  $elements = array();
-
+ 
   // always having a tree structure for UI
   $elements['#tree'] = true;
 
   // name
   if ($settings['showname'])
   {
-    ccpuriri_addressfield_name_full($elements, $address, $context);
+    ccpuriri_addressfield_name_full($element, $address);
   }
   // organizartion
   if ($settings['showorganization'])
   {
-    ccpuriri_addressfield_organisation($elements, $address, $context);
+    ccpuriri_addressfield_organisation($element, $address);
   }
 
-  ccpuriri_addressfield_street($elements, $address, $context);
+  ccpuriri_addressfield_street($element, $address);
 
 
-  return $elements;
+  return $element;
 }
 
 /*
  * Street block, locality block
 * */
-function ccpuriri_addressfield_street(&$elements, $address, $context)
+function ccpuriri_addressfield_street(&$elements, $address)
 {
   module_load_include('inc', 'ccpuriri_common', 'ccpuriri_common.utility');
 
@@ -54,7 +79,7 @@ function ccpuriri_addressfield_street(&$elements, $address, $context)
       '#description' =>'If autocomplete does not work, use fields below',
       '#autocomplete_path' => 'ccpuriri_addressfield/autocomplete',
       // remember the search between post
-      '#default_value' =>$context['searchstr'],
+     // '#default_value' =>$context['searchstr'],
       // to not include this as a field column
       '#parents' => array(0=>'extrernal_autocomplete'),
       // give it #id and #name as it does not have #parents
@@ -204,7 +229,7 @@ function ccpuriri_addressfield_street(&$elements, $address, $context)
 /*
  * name_block
 * */
-function ccpuriri_addressfield_name_full(&$elements, $address, $context) {
+function ccpuriri_addressfield_name_full(&$elements, $address) {
   $elements['name_block'] = array(
       '#type' => 'ccpuriri_container',
       '#attributes' => array('class' => array('addressfield-container-inline', 'name-block')),
@@ -233,7 +258,7 @@ function ccpuriri_addressfield_name_full(&$elements, $address, $context) {
  *
  * Organization_block
  */
-function ccpuriri_addressfield_organisation(&$elements, $address, $context) {
+function ccpuriri_addressfield_organisation(&$elements, $address) {
   $elements['organisation_block'] = array(
       '#type' => 'ccpuriri_container',
       '#attributes' => array('class' => array('addressfield-container-inline', 'name-block')),

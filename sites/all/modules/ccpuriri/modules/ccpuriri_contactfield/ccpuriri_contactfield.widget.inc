@@ -5,7 +5,10 @@ function ccpuriri_contactfield_generate(
     &$form, &$form_state, $field, $instance, $langcode,
     $items, $delta, $element)
 {
-
+  // Add the form elements for the standard widget, which includes a country
+  // select list at the top that reloads the available address elements when the
+  // country is changed.
+  
   // Get the default contact used to build the widget form elements, looking
   // first in the stored value for the field, and then in the default values of the instance.
   $contact = array();
@@ -24,11 +27,27 @@ function ccpuriri_contactfield_generate(
 
   // control blank item
   // only render one when items_coount 0 which is first initial rendering
-  if ($field_state['items_count']> 0 && $delta ==$field_state['items_count'])
+ // if ($field_state['items_count']> 0 && $delta ==$field_state['items_count'])
+  if ($delta ==$field_state['items_count'])
   {
-    $element=array();
+    if ($field_state['items_count']==0 && 
+        !(isset($form_state['process_input'])&&$form_state['process_input']))
+    {
+      // this is the first rendering of field(must exclude remove scenario), no item
+      // we must gaurantee at least one item is displayed
+      // set $field_state['items_count']==1 in order to work with add more button
+      // in this case, minimu of $field_state['items_count'] is one
+      
+      $field_state['items_count']++;
+      field_form_set_state($parents, $field_name, $langcode, $form_state, $field_state);
+      
+    }
+    else
+    {
+         $element=array();
 
-    return $element; // not rendering anything
+        return $element; // not rendering anything
+    }
   }
 
   // check if the call is ajax, for form sumission, this will not be run, as process will go to submit handlers straight away
@@ -42,11 +61,7 @@ function ccpuriri_contactfield_generate(
 
 
     // load the $contact from form_state
-   // if($button_name=='contacttype' ||
-   //     $button_name=='contacttype' )
-   // {
-      // we always have $delta matching with form_state,
-      // so everytime the one extra blank will be back
+  
       if($delta < $field_state['items_count'])
       {
         // to get object from form_state['values']
@@ -65,48 +80,16 @@ function ccpuriri_contactfield_generate(
         }
 
       }
-
-    //}
-/*
-    else if ($button_name=='add_more')
-    {
-      // add_more button click
-      //-> 'field_add_more_submit'
-      //-> items_count in field_state increased one
-      //-> form rebuild
-      //-> coming to here
-      //-> no form_state, no $items of course
-      //-> do not render the last blank one as we do not want two blank ones
-       
-      if($delta < $field_state['items_count']-1)
+      else if ($delta==0 && sizeof($items)>0)
       {
-        // to get object from form_state['values']
-         
-        $key_exists = NULL;
-
-        $deltaParent = array_slice($ajaxParent, 0,sizeof($ajaxParent)-1);
-
-        $deltaParent[] = $delta;
-
-        $value = drupal_array_get_nested_value($form_state['values'],
-            $deltaParent, $key_exists);
-        if ($key_exists) {
-          // replace contact type with new value
-          $contact = $value;
-        }
-
+        // only when $delta and $field_state['items_count'] both zero and triggered by delete the last item
+        
+        $element=array();
+        
+        return $element; // not rendering anything
+        
       }
-      else if ($delta == $field_state['items_count']-1) {
-        // this is new blank one
-
-        //an empty item, as it is asked by add_more, do not set it now, leave it to last data population step to use default values
-
-
-      }// if($delta < $field_state['items_count']-1)
-
-
-    } //if($button_name=='contacttype')
-    */
+    
   } //  if (!empty($form_state['triggering_element']) && !empty($form_state['triggering_element']['#parents']))
 
   // Merge in default values to provide a value for every expected array key.
@@ -239,9 +222,9 @@ function ccpuriri_contactfield_generate(
   );
 
   // not to render remove button when the rendered is the default blank
-  if ($field_state['items_count']>0 ||
-      ($field_state['items_count']==0 &&
-          !ccpuriri_contactfield_field_is_empty($contact)))
+  if ($field_state['items_count']>1 ||
+      ($field_state['items_count']==1 &&
+          !ccpuriri_contactfield_field_is_empty($contact,$field)))
   {
     $buttonparents = array_merge($form['#parents'],array( $field_name, $langcode, $delta,'remove'));
     
@@ -318,8 +301,6 @@ function ccpuriri_contactfield_remove_submit($form, &$form_state)
   $field_state = field_form_get_state($parents, $field_name, $langcode, $form_state);
 
   // delete row in form_state
-  if ($field_state['items_count']>0)
-  {
     if ($delta <$field_state['items_count']-1)
     {
       for ($i = $delta;$i<$field_state['items_count']-1;$i++)
@@ -346,6 +327,21 @@ function ccpuriri_contactfield_remove_submit($form, &$form_state)
       }
 
     }
+    else if ($field_state['items_count']==1)
+    {
+      // that is the only one, that is to be deleted
+      $contact = _ccpuriri_contactfield_default_value();
+      
+      // must provide an empty value item, as saving looks for form state values to update, if not found, no update
+      $itemParent = array_merge(array_slice($button['#parents'],0, $length-2), array(0));
+      
+      // replace this item with blank
+      drupal_array_set_nested_value($form_state['values'],  $itemParent, $contact);
+      
+      // remove current values from input
+      unset($form_state['input'][$field_name]);
+      
+    }
 
     //no need delete the last item as items_count decreasing will cause it
 
@@ -353,15 +349,7 @@ function ccpuriri_contactfield_remove_submit($form, &$form_state)
     $field_state['items_count']--;
     field_form_set_state($parents, $field_name, $langcode, $form_state, $field_state);
 
-  }
-  else
-  {
-    // the only one, and has not been saved yet, to make it to empty
-    $contact = _ccpuriri_contactfield_default_value();
-
-    // and set it to form_state
-
-  }
+  
 
   $form_state['rebuild'] = TRUE;
 }

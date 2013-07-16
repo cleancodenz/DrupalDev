@@ -61,3 +61,20 @@ body
 #childmenu {
     list-style-type: none;	
 }
+
+div.messages {
+  background-position: 8px 8px; /* LTR */
+  background-repeat: no-repeat;
+  border: 1px solid;
+  margin: 6px 0;
+  padding: 10px 10px 10px 50px; /* LTR */
+}
+
+
+/* using .alert.info */
+div.warning {
+
+  color: #3a87ad;
+  background-color: #d9edf7;
+  border-color: #bce8f1;
+}

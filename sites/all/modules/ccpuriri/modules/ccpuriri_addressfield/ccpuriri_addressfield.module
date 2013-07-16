@@ -59,48 +59,15 @@ function ccpuriri_addressfield_field_widget_info() {
  */
 function ccpuriri_addressfield_field_widget_form(&$form, &$form_state, $field, $instance, $langcode, $items, $delta, $element) {
 
-  // Get the default address used to build the widget form elements, looking
-  // first in the form state, then in the stored value for the field, and then
-  // in the default values of the instance.
-  $address = array();
-
-  if (!empty($items[$delta]['country'])) {
-    // Else use the saved value for the field.
-    $address = $items[$delta];
-  }
-  elseif( isset($instance['default_value']))  {
-    // Otherwise use the instance default.
-    $address = (array) $instance['default_value'][0];
-  }
-
-  // Merge in default values to provide a value for every expected array key.
-  // address does not include delta
-  $address += _ccpuriri_addressfield_default_value();
-
-  // Add the form elements for the standard widget, which includes a country
-  // select list at the top that reloads the available address elements when the
-  // country is changed.
-  if ($instance['widget']['type'] == 'ccpuriri_addressfield_standard') {
-    // Wrap everything in a fieldset. This is not the best looking element,
-    // but it's the only wrapper available in Drupal we can properly use
-    // in that context, and it is overridable if necessary.
-    $element['#type'] = 'fieldset';
-
-    // Generate the address form.
-    $context = array(
-        'field' => $field,
-        'instance' => $instance,
-        'langcode' => $langcode,
-        'delta' => $delta,
-        'searchstr' =>isset($form_state['values']['extrernal_autocomplete'])?
-        $form_state['values']['extrernal_autocomplete']:'',
-    );
-
+ 
+  // if it is wrapped in fieldset, it will have a legend
+  //$element['#type'] = 'fieldset';
   
-    $element += ccpuriri_addressfield_generate($address, $context);
+  
+  $element += ccpuriri_addressfield_generate($form, $form_state, $field, $instance, $langcode,
+    $items, $delta, $element);
      
-
-  }
+  
 
   return $element;
 }
