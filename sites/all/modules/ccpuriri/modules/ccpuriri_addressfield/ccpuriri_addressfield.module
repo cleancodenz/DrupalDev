@@ -263,9 +263,4 @@ function ccpuriri_addressfield_search_update($searchResult)
     watchdog_exception('ccpuriri_db', $e);
   }
 
-
-
-
-
-
 }
