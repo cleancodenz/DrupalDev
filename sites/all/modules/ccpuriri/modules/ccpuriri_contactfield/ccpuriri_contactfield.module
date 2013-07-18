@@ -170,17 +170,18 @@ function ccpuriri_contactfield_field_attach_form($entity_type, $entity, &$form, 
       $value = drupal_array_get_nested_value($form, $parents, $key_exists);
       if ($key_exists) {
       
-        foreach($value as $lan=>$fieldvalue)
+        foreach(element_children($value) as $key)
            
-         if(isset($fieldvalue['#max_delta']))
+         if(isset($value[$key]['#max_delta']))
          {
-            if ($fieldvalue['#max_delta']>0)
+            if ($value[$key]['#max_delta']>0)
             {
-               $fieldvalue['#max_delta']-- ;
-               
-               $newparents = array_merge($parents,array($lan));
-               drupal_array_set_nested_value($form, $newparents, $fieldvalue);
+               $value[$key]['#max_delta']-- ;
              
+               $newparents = array_merge($parents,array($key));
+               drupal_array_set_nested_value($form, $newparents, $value[$key]);
+               
+               
             }
            
          }
@@ -189,39 +190,11 @@ function ccpuriri_contactfield_field_attach_form($entity_type, $entity, &$form, 
       break;
     }
   }
-  
-  
-  
 
 }
 
 
-/**
- * Implements hook_field_attach_submit().
- */
-function ccpuriri_contactfield_field_attach_submit($entity_type, $entity, $form, &$form_state) {
-  // this is to support clearning the items
-  // as this is single field form, the field is stored in $form_state
-  $field = $form_state["#formfield"];
 
-  // Sample case of an 'Empty the field' checkbox added on the form, allowing
-  // a given field to be emptied.
-  $values = drupal_array_get_nested_value($form_state['values'], array_merge($form['#parents'], array($field['field_name'])));
-  if (empty($values)) {
-    // it means all values have been removed
-
-    // do not unset whole field as it will not do any update at all
-    // give it a null  or empty array
-    // unset($entity->{$field['field_name']});
-    $entity->{$field['field_name']} =array();
-
-  }
-  else
-  {
-    // remove 'remove' button vlaue
-
-  }
-}
 
 
 
