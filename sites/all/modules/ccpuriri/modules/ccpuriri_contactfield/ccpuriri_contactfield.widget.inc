@@ -5,12 +5,9 @@ function ccpuriri_contactfield_generate(
     &$form, &$form_state, $field, $instance, $langcode,
     $items, $delta, $element)
 {
-  // Add the form elements for the standard widget, which includes a country
-  // select list at the top that reloads the available address elements when the
-  // country is changed.
-
+  
   // Get the default contact used to build the widget form elements, looking
-  // first in the stored value for the field, and then in the default values of the instance.
+  // first in the stored value for the field, and then in the form_values.
   $contact = array();
 
   if (!empty($items[$delta])) {
@@ -272,11 +269,11 @@ function ccpuriri_contact_type_callback($form, $form_state) {
 
 function ccpuriri_contactfield_remove_submit($form, &$form_state)
 {
-// the way the removed button is designed with #limit_validation_errors
-// so all form values of that item is not filtered out of form_state
-// but what we do here is to move the next one forward, 
-// for the last one we do not have any form_state values except button value
-
+  // the way the removed button is designed with #limit_validation_errors
+  // so all form values except the removed item are available in form_state
+  // but what we do here is to move the next one forward,
+  // for the last one we do not have any form_state values except button value
+  
   
   $button = $form_state['triggering_element'];
 
@@ -321,25 +318,12 @@ function ccpuriri_contactfield_remove_submit($form, &$form_state)
     }
 
   }
-  else if ($field_state['items_count']==1)
-  {
-    // that is the only one, that is to be deleted
-    
-    // remove current values from input
-  //  unset($form_state['values'][$field_name]);
-    
-    // remove current values from input
-   // unset($form_state['input'][$field_name]);
-
-  }
 
   //no need delete the last item as items_count decreasing will cause it
 
   // decrease items_count
   $field_state['items_count']--;
   field_form_set_state($parents, $field_name, $langcode, $form_state, $field_state);
-
-
 
   $form_state['rebuild'] = TRUE;
 }

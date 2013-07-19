@@ -49,15 +49,6 @@
 					new OpenLayers.Size(60, 60),
 					'It is right here', // this can be any html
 					null, true // <--
-																			// true
-																			// if
-																			// we
-																			// want
-																			// a
-																			// close
-																			// (X)
-																			// button,
-																			// false
 																			// otherwise
 			);
 
@@ -66,19 +57,9 @@
 
 			// register events
 
-			map.events.register("move", null, function() {
-				// update
-				mapCenter = map.getCenter();
-
-				mapCentralMoveTo(mapCenter);		
-				// update form fields
-				mapCenter.transform(layers.baseProjection,
-						layers.defaultProjection);
-
-				$('#ccpuriri_openlayers_lat').val(mapCenter.lat);
-				$('#ccpuriri_openlayers_lon').val(mapCenter.lon);
-
-			});
+			map.events.register("move", null, updateEventHandler);
+			map.events.register("zoomend", null, updateEventHandler);
+			
 			
 			$(Drupal.ccpuriri).on(
 					Drupal.ccpuriri.AddressChangeEvent,
@@ -94,6 +75,19 @@
 					
 			);
 			
+			var updateEventHandler = function(){
+				// update
+				mapCenter = map.getCenter();
+
+				mapCentralMoveTo(mapCenter);		
+				// update form fields
+				mapCenter.transform(layers.baseProjection,
+						layers.defaultProjection);
+
+				$('#ccpuriri_openlayers_lat').val(mapCenter.lat);
+				$('#ccpuriri_openlayers_lon').val(mapCenter.lon);
+				
+			}
 			var mapCentralMoveTo = function (mapcenter) {
 			
 				// update point feature

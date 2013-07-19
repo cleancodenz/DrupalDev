@@ -74,6 +74,12 @@
 		
 		_openlayers.MapShow(lon, lat);
 		
+		//disable zoomwheel
+		
+		var controls = _openlayers.map.getControlsByClass('OpenLayers.Control.Navigation');
+		for(var i = 0; i < controls.length; ++i)
+		     controls[i].disableZoomWheel();
+		
 	}
 	
 	Drupal.ccpuriri.openlayers.Map.prototype.CreateProjections = function(){
