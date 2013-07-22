@@ -5,6 +5,8 @@ description = "Enables the creation of cleancode real estate listings. this modu
 dependencies[] = ccpuriri_common
 dependencies[] = ccpuriri_addressfield
 dependencies[] = ccpuriri_contactfield
+dependencies[] = ccpuriri_rental
+
 
 package = CleanCode Puriri modules
 

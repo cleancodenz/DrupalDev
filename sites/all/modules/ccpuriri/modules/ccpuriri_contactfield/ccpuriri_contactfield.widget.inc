@@ -123,6 +123,20 @@ function ccpuriri_contactfield_generate(
   {
     case 10:
       // it is a person
+      $element['names_block']['title'] = array(
+          '#type' => 'select',
+          '#title' => t('Title'),
+          '#weight' => 22,
+          '#options' => array(
+              10=>t('Mr'),
+              20=>t('Mrs'),
+              30=>t('Ms'),
+              40=>t('Miss'),
+              ),
+          '#default_value' =>$contact['title'],
+          '#attributes' => array('class' => array('contact-title')),
+      );
+      
       $element['names_block']['first_name'] = array(
       '#type' => 'textfield',
       '#title' => t('First name'),

@@ -11,11 +11,29 @@ function ccpuriri_install() {
   
   _ccpuriri_add_custom_menu();
       
+ }
+
+
+/**
+ * Implementation of hook_enable().
+ */
+function ccpuriri_enable() {
+ 
   // add address field
   _ccpuriri_add_addressfield() ;
-  
+
   // add contact field
   _ccpuriri_add_contactfield() ;
+}
+
+/**
+ * Implementation of hook_disable().
+ */
+function ccpuriri_disable() {
+
+  _ccpuriri_remove_addressfield();
+
+  _ccpuriri_remove_contactfield();
 }
 
 
@@ -26,9 +44,6 @@ function ccpuriri_uninstall() {
   
   _ccpuriri_remove_custom_menu();
   
-  _ccpuriri_remove_addressfield();
-    
-  _ccpuriri_remove_contactfield();
 }
 
 /*
@@ -64,7 +79,7 @@ function  _ccpuriri_add_addressfield()
       field_attach_create_bundle('user', 'user');
   
       $settings= array(
-          'showname'=> true,
+          'showname'=> false,
           'showorganization' => false,
           ); 
       
@@ -74,6 +89,24 @@ function  _ccpuriri_add_addressfield()
           'entity_type' => 'user',
           'widget' => array('settings'=> $settings),
           'bundle' => 'user',
+      );
+      field_create_instance($instance);
+    }
+    
+    // add the field to rental
+    if (!field_read_instance('node', $fieldname , 'rental', array('include_inactive' => TRUE))) {
+    
+      $settings= array(
+          'showname'=> false,
+          'showorganization' => false,
+      );
+    
+      $instance = array(
+          'field_name' => $fieldname,
+          'label' => 'Address',
+          'entity_type' => 'node',
+          'widget' => array('settings'=> $settings),
+          'bundle' => 'ccpuriri_rental',
       );
       field_create_instance($instance);
     }
@@ -125,6 +158,22 @@ function  _ccpuriri_add_contactfield()
       field_create_instance($instance);
     }
 
+    // add to rental
+    if (!field_read_instance('node', $fieldname , 'rental', array('include_inactive' => TRUE))) {
+    
+     
+      $settings= array();
+    
+      $instance = array(
+          'field_name' => $fieldname,
+          'label' => 'Contacts',
+          'entity_type' => 'node',
+          'widget' => array('settings'=> $settings),
+          'bundle' => 'ccpuriri_rental',
+      );
+      field_create_instance($instance);
+    }
+    
   }
 
 }
