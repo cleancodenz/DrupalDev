@@ -2,9 +2,9 @@
 
 
 /**
- * Implementation of hook_uninstall().
+ * Implementation of hook_disable().
  */
-function ccpuriri_rental_uninstall() {
+function ccpuriri_rental_disable() {
 
   node_type_delete('ccpuriri_rental');
   

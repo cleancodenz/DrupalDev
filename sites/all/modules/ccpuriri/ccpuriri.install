@@ -67,7 +67,8 @@ function  _ccpuriri_add_addressfield()
     $field = array(
         'field_name' => $fieldname,
         'type' => 'ccpuriri_addressfield',
-        'entity_types' => array('user'),
+       // 'entity_types' => array('user'), // do not limit entity types using this field
+    
     );
   
     field_create_field($field);
@@ -133,7 +134,8 @@ function  _ccpuriri_add_contactfield()
     $field = array(
         'field_name' => $fieldname,
         'type' => 'ccpuriri_contactfield',
-        'entity_types' => array('user'),
+        // 'entity_types' => array('user'), // do not limit entity types using this field
+    
         'cardinality' => FIELD_CARDINALITY_UNLIMITED,
        
     );
