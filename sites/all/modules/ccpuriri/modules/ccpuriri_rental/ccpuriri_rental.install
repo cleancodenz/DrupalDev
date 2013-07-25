@@ -2,10 +2,24 @@
 
 
 /**
+ * Implementation of hook_enable().
+ */
+function ccpuriri_rental_enable() {
+
+  // set pathauto pattern
+  variable_set('pathauto_node_ccpuriri_rental_pattern', 'rental/[node:title]');
+
+}
+
+
+/**
  * Implementation of hook_disable().
  */
 function ccpuriri_rental_disable() {
 
+  //delete pathauto pattern
+  variable_del('pathauto_node_ccpuriri_rental_pattern');
+  
   node_type_delete('ccpuriri_rental');
   
 }
