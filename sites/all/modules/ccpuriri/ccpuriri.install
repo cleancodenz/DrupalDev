@@ -289,3 +289,12 @@ function  _ccpuriri_remove_custom_menu(){
   menu_delete($ccpuririusernavigation);
   
 }
+
+/*
+ * Add top lists  
+* */
+function  _ccpuriri_setup_lists()
+{
+}
+
+

@@ -1,0 +1,118 @@
+<?php 
+
+/**
+ * Implementation of hook_entity_info().
+ */
+function ccpuriri_list_entity_info() {
+  $return = array(
+      'ccpuriri_list' => array(
+          'label' => t('List'),
+          //   'controller class' => 'CCPuririListController',
+          'base table' => 'ccpuriri_list',
+          'uri callback' => 'ccpuriri_list_uri',
+          'fieldable' => TRUE,
+          'entity keys' => array(
+              'id' => 'lid',
+          ),
+          'bundles' => array(
+              'list' => array(
+                  'label' => t('List'),
+              ),
+          ),
+          'view modes' => array(
+              'full' => array(
+                  'label' => t('Full content'),
+                  'custom settings' => FALSE,
+              ),
+              'teaser' => array(
+                  'label' => t('Teaser'),
+                  'custom settings' => TRUE,
+              ),
+          ),
+      ),
+  );
+  return $return;
+
+}
+
+function ccpuriri_list_save($list, $users =array()) {
+  $transaction = db_transaction();
+  try {
+     
+    // Load the stored entity, if any.
+    if (!empty($list->lid) && !isset($list->original)) {
+      $list->original = entity_load_unchanged('ccpuriri_list', $list->lid);
+    }
+
+    field_attach_presave('ccpuriri_list', $list);
+
+    // Determine if we will be inserting a new list.
+    if (!isset($list->is_new)) {
+      $list->is_new = empty($list->lid);
+    }
+     
+    // Set the timestamp fields.
+    if (empty($list->created)) {
+      $list->created = REQUEST_TIME;
+    }
+     
+    // Let modules modify the node before it is saved to the database.
+    module_invoke_all('entity_presave', $list, 'ccpuriri_list');
+     
+    // Save the list .
+    if ($list->is_new) {
+
+      drupal_write_record('ccpuriri_list', $list);
+      $op = 'insert';
+    }
+    else {
+      // For existing list, update the list record which matches the value of
+      // $list->lid.
+      drupal_write_record('ccpuriri_list', $list, 'lid');
+
+      // delete existing access
+      db_delete('ccpuriri_list_access')
+      ->condition('lid',$list->lid)
+      ->execute();
+      
+      $op = 'update';
+      
+    }
+     
+    // save access
+    $insert =  db_insert('ccpuriri_list_access')
+    ->fields(array(
+        'lid',
+        'uid',
+        ));
+     
+    foreach ($users as $uid)
+    {
+      $insert->values(array(
+          'lid' => $list->lid,
+          'uid' => $uid,
+          ));
+      
+    }
+    
+    $insert->execute();
+    
+    
+    module_invoke_all('entity_' . $op, $list, 'ccpuriri_list');
+ 
+    // Clear internal properties.
+    unset($list->is_new);
+    unset($list->original);
+    // Clear the static loading cache.
+    entity_get_controller('ccpuriri_list')->resetCache(array($list->lid));
+     
+    // Ignore slave server temporarily to give time for the
+    db_ignore_slave();
+  }
+  catch (Exception $e) {
+    $transaction->rollback();
+    watchdog_exception('ccpuriri_list', $e);
+    throw $e;
+  }
+}
+

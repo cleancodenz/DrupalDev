@@ -1,0 +1,7 @@
+; $Id$
+name = CleanCode Puriri List
+description = "Provides lists to group entities."
+
+package = CleanCode Puriri modules
+version = "7.x-1.0-beta1"
+core = 7.x

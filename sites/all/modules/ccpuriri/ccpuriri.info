@@ -6,7 +6,7 @@ dependencies[] = ccpuriri_common
 dependencies[] = ccpuriri_addressfield
 dependencies[] = ccpuriri_contactfield
 dependencies[] = ccpuriri_rental
-
+dependencies[] = ccpuriri_list
 
 package = CleanCode Puriri modules
 

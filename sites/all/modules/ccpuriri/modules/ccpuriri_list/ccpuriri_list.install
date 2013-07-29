@@ -1,0 +1,157 @@
+<?php 
+
+
+/**
+ * Implements hook_schema().
+ */
+function ccpuriri_list_schema() {
+  
+  $schema['ccpuriri_list'] = array(
+      'description' => 'The base table for ccpuriri list.',
+      'fields' => array(
+          'lid' => array(
+              'description' => 'The primary identifier for a list.',
+              'type' => 'serial',
+              'unsigned' => TRUE,
+              'not null' => TRUE,
+          ),
+          'language' => array(
+              'description' => 'The {languages}.language of this list.',
+              'type' => 'varchar',
+              'length' => 12,
+              'not null' => TRUE,
+              'default' => '',
+          ),
+          'title' => array(
+              'description' => 'The title of this list, always treated as non-markup plain text.',
+              'type' => 'varchar',
+              'length' => 255,
+              'not null' => TRUE,
+              'default' => '',
+          ),
+          'plid' => array(
+              'description' => 'The parent list id, the top level has 0 as parent list id',
+              'type' => 'int',
+              'not null' => TRUE,
+              'default' => 0,
+          ),
+          
+          'uid' => array(
+              'description' => 'The {users}.uid that owns this node; initially, this is the user that created it.',
+              'type' => 'int',
+              'not null' => TRUE,
+              'default' => 0,
+          ),
+          'created' => array(
+              'description' => 'The Unix timestamp when the node was created.',
+              'type' => 'int',
+              'not null' => TRUE,
+              'default' => 0,
+          ),
+          'tnid' => array(
+              'description' => 'The translation set id for this list, which equals the list id of the source post in each set.',
+              'type' => 'int',
+              'unsigned' => TRUE,
+              'not null' => TRUE,
+              'default' => 0,
+          ),
+          'translate' => array(
+              'description' => 'A boolean indicating whether this translation page needs to be updated.',
+              'type' => 'int',
+              'not null' => TRUE,
+              'default' => 0,
+          ),
+          
+      ),
+      'indexes' => array(
+          'ccpuriri_list_plid_lid'     => array('plid', 'lid'),
+          'ccpuriri_list_tnid'         => array('tnid'),
+          'ccpuriri_list_translate'    => array('translate'),
+      ),
+      'primary key' => array('lid'),
+  );
+  
+  $schema['ccpuriri_list_access'] = array(
+      'description' => 'The table for users who can access of list ',
+      'fields' => array(
+          'laid' => array(
+              'description' => 'The primary identifier for a list access.',
+              'type' => 'serial',
+              'unsigned' => TRUE,
+              'not null' => TRUE,
+          ),
+          'lid' => array(
+              'description' => 'The list id of this list access ',
+              'type' => 'int',
+              'not null' => TRUE,
+              'default' => 0,
+          ),
+  
+          'uid' => array(
+              'description' => 'The {users}.uid that is allowed to access this list, default is the list creator, when it is zero, it will be open to every one',
+              'type' => 'int',
+              'not null' => TRUE,
+              'default' => 0,
+          ),
+      ),
+      'indexes' => array(
+          'ccpuriri_list_access_lid_uid'     => array('lid', 'uid'),
+      ),
+      'primary key' => array('laid'),
+  );
+  
+  $schema['ccpuriri_list_node'] = array(
+      'description' => 'The detailed nodes table that are grouped by list',
+      'fields' => array(
+          'lnid' => array(
+              'description' => 'The primary identifier for a list nodes group',
+              'type' => 'serial',
+              'unsigned' => TRUE,
+              'not null' => TRUE,
+          ),
+          'lid' => array(
+              'description' => 'The list id of this list group',
+              'type' => 'int',
+              'not null' => TRUE,
+              'default' => 0,
+          ),
+  
+          'nid' => array(
+              'description' => 'The {node}.nid that is grouped into this list',
+              'type' => 'int',
+              'not null' => TRUE,
+              'default' => 0,
+          ),
+      ),
+      'indexes' => array(
+          'ccpuriri_list_node_lid_nid'     => array('lid', 'nid'),
+      ),
+      'primary key' => array('lnid'),
+  );
+  
+  return $schema; 
+}
+
+/**
+ * Implementation of hook_enable().
+ */
+function ccpuriri_list_enable() {
+
+ // add two default lists to it
+ 
+}
+
+
+/**
+ * Implementation of hook_disable().
+ */
+function ccpuriri_list_disable() {
+
+  //delete pathauto pattern
+ // variable_del('pathauto_node_ccpuriri_rental_pattern');
+  
+ // node_type_delete('ccpuriri_rental');
+  
+}
+
+
