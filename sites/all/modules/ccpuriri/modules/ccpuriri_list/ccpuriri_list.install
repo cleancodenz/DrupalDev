@@ -15,6 +15,13 @@ function ccpuriri_list_schema() {
               'unsigned' => TRUE,
               'not null' => TRUE,
           ),
+          'machine_name' => array(
+              'type' => 'varchar',
+              'length' => 255,
+              'not null' => TRUE,
+              'default' => '',
+              'description' => 'The list machine name.',
+          ),
           'language' => array(
               'description' => 'The {languages}.language of this list.',
               'type' => 'varchar',
@@ -65,6 +72,7 @@ function ccpuriri_list_schema() {
       ),
       'indexes' => array(
           'ccpuriri_list_plid_lid'     => array('plid', 'lid'),
+          'ccpuriri_list_machine_name' => array('machine_name'),
           'ccpuriri_list_tnid'         => array('tnid'),
           'ccpuriri_list_translate'    => array('translate'),
       ),
@@ -132,26 +140,6 @@ function ccpuriri_list_schema() {
   return $schema; 
 }
 
-/**
- * Implementation of hook_enable().
- */
-function ccpuriri_list_enable() {
 
- // add two default lists to it
- 
-}
-
-
-/**
- * Implementation of hook_disable().
- */
-function ccpuriri_list_disable() {
-
-  //delete pathauto pattern
- // variable_del('pathauto_node_ccpuriri_rental_pattern');
-  
- // node_type_delete('ccpuriri_rental');
-  
-}
 
 

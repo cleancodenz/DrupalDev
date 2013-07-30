@@ -10,20 +10,37 @@
 function ccpuriri_install() {
   
   _ccpuriri_add_custom_menu();
+  
+  // add address field
+  _ccpuriri_add_addressfield() ;
+  
+  // add contact field
+  _ccpuriri_add_contactfield() ;
+  
       
  }
 
-
+ /**
+  * Implementation of hook_uninstall().
+  */
+ function ccpuriri_uninstall() {
+ 
+   _ccpuriri_remove_custom_menu();
+ 
+   _ccpuriri_remove_addressfield();
+   
+   _ccpuriri_remove_contactfield();
+   
+ }
+ 
+ 
+ 
 /**
  * Implementation of hook_enable().
  */
 function ccpuriri_enable() {
  
-  // add address field
-  _ccpuriri_add_addressfield() ;
-
-  // add contact field
-  _ccpuriri_add_contactfield() ;
+ 
 }
 
 /**
@@ -31,20 +48,11 @@ function ccpuriri_enable() {
  */
 function ccpuriri_disable() {
 
-  _ccpuriri_remove_addressfield();
-
-  _ccpuriri_remove_contactfield();
-}
-
-
-/**
- * Implementation of hook_uninstall().
- */
-function ccpuriri_uninstall() {
-  
-  _ccpuriri_remove_custom_menu();
   
 }
+
+
+
 
 /*
  * Module setup functions
@@ -295,6 +303,39 @@ function  _ccpuriri_remove_custom_menu(){
 * */
 function  _ccpuriri_setup_lists()
 {
+  $users = array(-1);
+  // watchlist, accessible by every one who logged in, user id is -1
+  $watchlist= new stdClass();
+
+  $watchlist->machine_name = 'watchlist';
+  
+  $watchlist->title = t('watchlist');
+  
+  $watchlist->plid = 0; // top level
+  
+  $watchlist->uid = 1; // owned by administrator
+  
+  ccpuriri_list_save($watchlist, $users);
+  
+  
+  // listings, accessible by every one who logged in, user id is -1
+  $listing= new stdClass();
+  
+  $listing->machine_name = 'listings';
+  
+  $listing->title = t('listings');
+  
+  $listing->plid = 0; // top level
+  
+  $listing->uid = 1; // owned by administrator
+  
+  ccpuriri_list_save($watchlist, $users);
+  
 }
 
+// remove top lists from db
+function  _ccpuriri_teardown_lists()
+{
+  
+}
 

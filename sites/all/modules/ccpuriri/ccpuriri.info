@@ -2,11 +2,11 @@
 name = CleanCode Puriri
 description = "Enables the creation of cleancode real estate listings. this module is the project module"
 
-dependencies[] = ccpuriri_common
-dependencies[] = ccpuriri_addressfield
-dependencies[] = ccpuriri_contactfield
-dependencies[] = ccpuriri_rental
-dependencies[] = ccpuriri_list
+;dependencies[] = ccpuriri_common
+;dependencies[] = ccpuriri_addressfield
+;dependencies[] = ccpuriri_contactfield
+;dependencies[] = ccpuriri_rental
+;dependencies[] = ccpuriri_list
 
 package = CleanCode Puriri modules
 
