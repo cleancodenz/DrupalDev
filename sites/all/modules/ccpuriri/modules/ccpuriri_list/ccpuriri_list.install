@@ -141,5 +141,50 @@ function ccpuriri_list_schema() {
 }
 
 
+/**
+ * Implementation of hook_install().
+ */
+function ccpuriri_list_install() {
+
+  _ccpuriri_setup_lists();
+  
+}
+
+/*
+ * Add top lists
+* */
+function  _ccpuriri_setup_lists()
+{
+  $users = array(0); // uid=0 means shared  
+  
+  // watchlist, accessible by every one who logged in, user id is -1
+  $watchlist= new stdClass();
+
+  $watchlist->machine_name = 'watchlist';
+
+  $watchlist->title = t('watchlist');
+
+  $watchlist->plid = 0; // top level
+
+  $watchlist->uid = 0; // shared
+
+  ccpuriri_list_save($watchlist, $users);
+
+
+  // listings, accessible by every one who logged in, user id is -1
+  $listing= new stdClass();
+
+  $listing->machine_name = 'listings';
+
+  $listing->title = t('listings');
+
+  $listing->plid = 0; // top level
+
+  $listing->uid = 0; // shared
+
+  ccpuriri_list_save($listing, $users);
+
+}
+
 
 

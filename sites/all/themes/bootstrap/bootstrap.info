@@ -10,19 +10,14 @@ regions[sidebar_first]  = 'Primary'
 regions[sidebar_second] = 'Secondary'
 regions[footer]         = 'Footer'
 
-stylesheets[all][] = bootstrap/css/bootstrap.css
-stylesheets[all][] = bootstrap/css/bootstrap-responsive.css
-stylesheets[all][] = css/style.css
-
 settings[toggle_name] = 0
 settings[toggle_search] = 1
-settings[cdn_bootstrap] = 0
-settings[cdn_jquery] = 0
+settings[cdn_bootstrap] = 1
+settings[cdn_bootstrap_version] = 2.3.2
 
 ;Exclude
 ;javascript
 ;exclude[js][] = 'modules/contextual/contextual.js'
-;exclude[js][] = 'misc/jquery.js'
 
 ;css
 ;exclude[css][] = 'misc/vertical-tabs.css'
@@ -56,9 +51,9 @@ exclude[css][] = 'modules/tracker/tracker.css'
 exclude[css][] = 'modules/update/update.css'
 exclude[css][] = 'modules/user/user.css'
 
-; Information added by drupal.org packaging script on 2013-02-19
-version = "7.x-2.0-beta2+16-dev"
+; Information added by drupal.org packaging script on 2013-06-25
+version = "7.x-2.1"
 core = "7.x"
 project = "bootstrap"
-datestamp = "1361234513"
+datestamp = "1372204551"
 

@@ -7,7 +7,7 @@ function ccpuriri_list_entity_info() {
   $return = array(
       'ccpuriri_list' => array(
           'label' => t('List'),
-          //   'controller class' => 'CCPuririListController',
+          'controller class' => 'CCPuririListController',
           'base table' => 'ccpuriri_list',
           'uri callback' => 'ccpuriri_list_uri',
           'fieldable' => TRUE,
@@ -35,6 +35,34 @@ function ccpuriri_list_entity_info() {
 
 }
 
+class CCPuririListController extends DrupalDefaultEntityController {
+
+  function attachLoad(&$queried_lists, $revision_id = FALSE) {
+    
+    foreach ($queried_lists as  $key => $list) {
+      // set up is_shared
+      $list->is_shared = $list->uid==0;
+      // set up has_childfolders
+      $childfoldercount = db_query('SELECT count(l.lid) FROM {ccpuriri_list} l  WHERE l.plid = :plid', array(':plid' =>$list->lid))->fetchField();
+            
+      $list->has_childfolders = isset($childfoldercount) && ($childfoldercount > 0);
+      // set up has_items
+      $itemscount = db_query('SELECT count(l.lnid) FROM {ccpuriri_list_node} l  WHERE l.lid = :lid', array(':lid' =>$list->lid))-> fetchField();
+      
+      $list->has_items = isset($itemscount) && ($itemscount > 0);
+      
+    }
+    
+    // Call the default attachLoad() method. This will add fields and call
+    parent::attachLoad($queried_lists, $revision_id);
+  }
+}
+
+
+/*
+ * Save a list with accesses, if user id is 0, means it is a shared folder by everyone
+ * Normally it is private folder, visible to owner 
+ * */
 function ccpuriri_list_save($list, $users =array()) {
   $transaction = db_transaction();
   try {
@@ -111,8 +139,30 @@ function ccpuriri_list_save($list, $users =array()) {
   }
   catch (Exception $e) {
     $transaction->rollback();
-    watchdog_exception('ccpuriri_list', $e);
+    watchdog_exception('ccpuriri_list_save', $e);
     throw $e;
   }
 }
 
+/*
+ * Delete a list when it is empty, no items and no child folders, no shared folder
+ * Deletion includes list, access  
+ * 
+ * */
+
+function ccpuriri_list_delete($list)
+{
+  if ($list->is_shared || $list->has_childfolders ||$list->has_items)
+    return;
+  
+  $transaction = db_transaction();
+  try {
+    
+    
+  }
+  catch (Exception $e) {
+    $transaction->rollback();
+    watchdog_exception('ccpuriri_list_delete', $e);
+    throw $e;
+  }
+}

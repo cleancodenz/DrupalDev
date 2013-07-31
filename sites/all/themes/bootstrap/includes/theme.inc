@@ -11,7 +11,6 @@ function theme_bootstrap_links($variables) {
   $links = $variables['links'];
   $attributes = $variables['attributes'];
   $heading = $variables['heading'];
-  //$dropdown = $variables['dropdown'];
 
   global $language_url;
   $output = '';
@@ -160,11 +159,10 @@ function theme_bootstrap_btn_dropdown($variables) {
 
   return $output;
 }
-/*
- * heming functions overwrites
- *
- */
 
+/*
+ * Overwrites the default item list to make it prettier
+ */
 function bootstrap_item_list($variables) {
   $items = $variables['items'];
   $title = $variables['title'];
@@ -179,10 +177,12 @@ function bootstrap_item_list($variables) {
   if (!empty($items)) {
     $output .= "<$type" . drupal_attributes($attributes) . '>';
     $num_items = count($items);
-    foreach ($items as $i => $item) {
+    $i = 0;
+    foreach ($items as $item) {
       $attributes = array();
       $children = array();
       $data = '';
+      $i++;
       if (is_array($item)) {
         foreach ($item as $key => $value) {
           if ($key == 'data') {
@@ -203,10 +203,10 @@ function bootstrap_item_list($variables) {
         // Render nested list.
         $data .= theme_item_list(array('items' => $children, 'title' => NULL, 'type' => $type, 'attributes' => $attributes));
       }
-      if ($i == 0) {
+      if ($i == 1) {
         $attributes['class'][] = 'first';
       }
-      if ($i == $num_items - 1) {
+      if ($i == $num_items) {
         $attributes['class'][] = 'last';
       }
       $output .= '<li' . drupal_attributes($attributes) . '>' . $data . "</li>\n";
@@ -228,6 +228,7 @@ function bootstrap_status_messages($variables) {
     'status' => t('Status message'),
     'error' => t('Error message'),
     'warning' => t('Warning message'),
+    'info' => t('Informative message'),
   );
 
   // Map Drupal message types to their corresponding Bootstrap classes.
@@ -235,16 +236,20 @@ function bootstrap_status_messages($variables) {
   $status_class = array(
     'status' => 'success',
     'error' => 'error',
-    'warning' => 'info',
+    'warning' => 'warning',
+    // Not supported, but in theory a module could send any type of message.
+    // @see drupal_set_message()
+    // @see theme_status_messages()
+    'info' => 'info',
   );
 
   foreach (drupal_get_messages($display) as $type => $messages) {
     $class = (isset($status_class[$type])) ? ' alert-' . $status_class[$type] : '';
     $output .= "<div class=\"alert alert-block$class\">\n";
-    $output .= "  <a class=\"close\" data-dismiss=\"alert\" href=\"#\">x</a>\n";
+    $output .= "  <a class=\"close\" data-dismiss=\"alert\" href=\"#\">&times;</a>\n";
 
     if (!empty($status_heading[$type])) {
-      $output .= '<h2 class="element-invisible">' . $status_heading[$type] . "</h2>\n";
+      $output .= '<h4 class="element-invisible">' . $status_heading[$type] . "</h4>\n";
     }
 
     if (count($messages) > 1) {
@@ -268,24 +273,34 @@ function bootstrap_status_messages($variables) {
  */
 function bootstrap_css_alter(&$css) {
   $theme_path = drupal_get_path('theme', 'bootstrap');
-
+  // Load excluded CSS files from theme.
   $excludes = _bootstrap_alter(bootstrap_theme_get_info('exclude'), 'css');
-
+  // Add Bootstrap CDN file and overrides.
   if (theme_get_setting('cdn_bootstrap')){
-    //first add the existing bootstrap css to the exclude
-    $excludes[$theme_path . '/bootstrap/css/bootstrap.css'] = FALSE;
-    $excludes[$theme_path . '/bootstrap/css/bootstrap-responsive.css'] = FALSE ;
-    
-    //and then add the cdn css
-    $cdn_url = '//netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css';
-    $css[$cdn_url]['data'] = $cdn_url;
-    $css[$cdn_url]['type'] = 'external';
-    $css[$cdn_url]['every_page'] = TRUE;
-    $css[$cdn_url]['media'] = 'all';
-    $css[$cdn_url]['preprocess'] = TRUE;
-    $css[$cdn_url]['group'] = CSS_THEME;
-    $css[$cdn_url]['weight'] = -1;
-    $css[$cdn_url]['browsers'] = array('IE' => TRUE, '!IE' => TRUE);
+    // Add CDN.
+    $cdn = '//netdna.bootstrapcdn.com/twitter-bootstrap/'. theme_get_setting('cdn_bootstrap_version')  .'/css/bootstrap-combined.min.css';
+    $css[$cdn] = array(
+      'data' => $cdn,
+      'type' => 'external',
+      'every_page' => TRUE,
+      'media' => 'all',
+      'preprocess' => TRUE,
+      'group' => CSS_THEME,
+      'browsers' => array('IE' => TRUE, '!IE' => TRUE),
+      'weight' => -2,
+    );
+    // Add overrides.
+    $override = $theme_path . '/css/overrides.css';
+    $css[$override] = array(
+      'data' => $override,
+      'type' => 'file',
+      'every_page' => TRUE,
+      'media' => 'all',
+      'preprocess' => TRUE,
+      'group' => CSS_THEME,
+      'browsers' => array('IE' => TRUE, '!IE' => TRUE),
+      'weight' => -1,
+    );
   }
   $css = array_diff_key($css, $excludes);
 }
@@ -294,37 +309,41 @@ function bootstrap_css_alter(&$css) {
  * Implements hook_js_alter().
  */
 function bootstrap_js_alter(&$js) {
-  $theme_path = drupal_get_path('theme', 'bootstrap');
   $files = array();
 
+  // Load excluded JS files from theme.
   $excludes = _bootstrap_alter(bootstrap_theme_get_info('exclude'), 'js');
 
   // If bootstrap_ui available, we should not add js from theme info file.
   if (module_exists('bootstrap_ui')) {
     libraries_load('bootstrap', 'minified');
-    $excludes[drupal_get_path('theme', 'bootstrap') . '/bootstrap/js/bootstrap.js'] = array();
+  }
+
+  $theme_path = drupal_get_path('theme', 'bootstrap');
+
+  // Replace core progress bar JS with the Bootstrap equivilent.
+  if (isset($js['misc/progress.js']) && !empty($js['misc/progress.js'])) {
+    unset($js['misc/progress.js']);
+    $progress = $theme_path . '/js/progress.js';
+    $js[$progress] = drupal_js_defaults($progress);
+  }
+
+  // Fix broken Views AJAX pagers.
+  if (module_exists('views') && !empty($js[drupal_get_path('module', 'views') . '/js/ajax_view.js'])) {
+    // Override core ajax prototype function to append throbber inside links,
+    // instead of after it (floating issues).
+    $ajax = $theme_path . '/js/bootstrap_ajax.js';
+    $js[$ajax] = drupal_js_defaults($ajax);
+    $js[$ajax]['group'] = JS_THEME;
+    // Override views prototype function to bind to Bootstrap pagination.
+    $ajax_view = $theme_path . '/js/bootstrap_ajax_view.js';
+    $js[$ajax_view] = drupal_js_defaults($ajax_view);
+    $js[$ajax_view]['group'] = JS_THEME;
   }
 
   $js = array_diff_key($js, $excludes);
-  if (theme_get_setting('cdn_jquery')) {
-    // Add jQuery and the switch script to the $files array
-    $files[] = '//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js';
-
-    if (theme_get_setting('cdn_bootstrap')) {
-      $files[] = '//netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/js/bootstrap.min.js';
-    }
-    else {
-      $files[] = $theme_path . '/bootstrap/js/bootstrap.js';
-    }
-    $files[] = $theme_path . '/js/switch.js';
-  }
-  else {
-    if (theme_get_setting('cdn_bootstrap')) {
-      $files[] = '//netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/js/bootstrap.min.js';
-    }
-    else {
-      $files[] = $theme_path . '/bootstrap/js/bootstrap.js';
-    }
+  if (theme_get_setting('cdn_bootstrap')) {
+    $files[] = '//netdna.bootstrapcdn.com/twitter-bootstrap/'. theme_get_setting('cdn_bootstrap_version')  .'/js/bootstrap.min.js';
   }
 
   // Rearrange / Add JS
@@ -353,6 +372,78 @@ function _bootstrap_alter($files, $type) {
   }
   return $output;
 }
+
+/**
+ * Returns HTML for Bootstrap's progress bar.
+ */
+function bootstrap_progress_bar($variables) {
+  $output .= '<div id="progress" class="progress-wrapper">';
+  $output .= '  <div class="progress progress-striped progress-info active">';
+  $output .= '    <div class="bar" style="width: ' . $variables['percent'] . '%"></div>';
+  $output .= '  </div>';
+  $output .= '  <div class="percentage pull-right">' . $variables['percent'] . '%</div>';
+  $output .= '  <div class="message">' . $variables['message'] . '</div>';
+  $output .= '</div>';
+  return $output;
+}
+
+/**
+ * Returns HTML for Bootstrap's modal.
+ */
+function bootstrap_bootstrap_modal($variables) {
+  $body = $variables['body'];
+  $links = $variables['footer'];
+  $heading = $variables['heading'];
+  $attributes = $variables['attributes'];
+
+  if (isset($variables['attributes']['class']) && is_string($variables['attributes']['class'])) { // Convert classes to an array.
+    $variables['attributes']['class'] = explode(' ', $variables['attributes']['class']);
+  }
+
+  $variables['attributes']['class'][] = 'modal';
+
+  $output = '<div'. drupal_attributes($variables['attributes']) .'>';
+  $output .= '<div class="modal-header"> <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>';
+  $output .= '<h3>'. $variables['html_heading']? $variables['heading'] : check_plain($variables['heading']) .'</h3>';
+  $output .= '</div>';
+  $output .= '<div class="modal-body">'. render($variables['body']) .'</div>';
+  $output .= '<div class="modal-footer">'. render($variables['footer']) .'</div>';
+  $output .= '</div>';
+
+  return $output;
+}
+
+/**
+ * Returns HTML for Bootstrap's Collapse/Accordion.
+ */
+function bootstrap_bootstrap_accordion($variables) {
+  $elements = $variables['elements'];
+
+  if (empty($variables['id'])) {
+    $accordion_id = 'accordion-'. md5($elements);
+  }
+  else {
+    $accordion_id = check_plain($variables['id']);
+  }
+
+  $output = '<div class="accordion" id="'.$accordion_id.'">';
+
+  foreach ($elements as $id => $item) {
+    $output .= '<div class="accordion-group"><div class="accordion-heading">';
+    $output .= '<a class="accordion-toggle" data-toggle="collapse" data-parent="#'. $accordion_id .'" href="#'. $id .'">'. check_plain($item['header']) .'</a></div>';
+    $output .= '<div id="'. $id .'" class="accordion-body collapse in"><div class="accordion-inner">';
+    $output .= render($item['content']);
+    $output .= '</div></div></div>';
+  }
+
+  $output .= '</div>';
+
+  return $output;
+}
+
+/**
+ * Add stripping to tables (in case they don't have .table-no-striping class)
+ */
 function bootstrap_preprocess_table(&$variables) {
 
   if (isset($variables['attributes']['class']) && is_string($variables['attributes']['class'])) {

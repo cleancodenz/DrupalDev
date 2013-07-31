@@ -298,40 +298,6 @@ function  _ccpuriri_remove_custom_menu(){
   
 }
 
-/*
- * Add top lists  
-* */
-function  _ccpuriri_setup_lists()
-{
-  $users = array(-1);
-  // watchlist, accessible by every one who logged in, user id is -1
-  $watchlist= new stdClass();
-
-  $watchlist->machine_name = 'watchlist';
-  
-  $watchlist->title = t('watchlist');
-  
-  $watchlist->plid = 0; // top level
-  
-  $watchlist->uid = 1; // owned by administrator
-  
-  ccpuriri_list_save($watchlist, $users);
-  
-  
-  // listings, accessible by every one who logged in, user id is -1
-  $listing= new stdClass();
-  
-  $listing->machine_name = 'listings';
-  
-  $listing->title = t('listings');
-  
-  $listing->plid = 0; // top level
-  
-  $listing->uid = 1; // owned by administrator
-  
-  ccpuriri_list_save($watchlist, $users);
-  
-}
 
 // remove top lists from db
 function  _ccpuriri_teardown_lists()
