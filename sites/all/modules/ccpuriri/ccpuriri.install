@@ -40,7 +40,8 @@ function ccpuriri_install() {
  */
 function ccpuriri_enable() {
  
- 
+  _ccpuriri_list_add_main_menu();
+  
 }
 
 /**
@@ -48,7 +49,7 @@ function ccpuriri_enable() {
  */
 function ccpuriri_disable() {
 
-  
+  _ccpuriri_list_remove_main_menu();
 }
 
 
@@ -211,7 +212,7 @@ function _ccpuriri_add_custom_menu(){
   $ccpuririusernavigationmenu = array(
       'menu_name' => 'ccpuririusernavigation',
       'title' => 'CCPuriri User Navigation',
-      'description' => 'User navigation menu',
+      'description' => 'CCPuriri User Navigation menu, do not add this to regions, as it is displayed by CCPuriri Navigation block',
   );
   
   menu_save($ccpuririusernavigationmenu);
@@ -298,10 +299,41 @@ function  _ccpuriri_remove_custom_menu(){
   
 }
 
-
-// remove top lists from db
-function  _ccpuriri_teardown_lists()
-{
+/*
+ * Add list to main menu, this must be in main module as it depends on list module
+ * 
+* */
+function _ccpuriri_list_add_main_menu(){
+  
+  //add the list to main menu
+  
+  $list_item = array(
+      'menu_name' => 'main-menu',
+      'weight' => 100,
+      'link_title' => 'My List',
+      'link_path' => 'list',
+      'router_path' => 'list',
+      'module' => 'ccpuriri_list',
+      'expanded' => 0,
+  
+  );
+  
+  menu_link_save($list_item);
   
 }
+
+/*
+ * remove list from main menu, this must be in main module as it depends on list module
+*
+ */
+function _ccpuriri_list_remove_main_menu(){
+  
+ db_query("DELETE FROM {menu_links} WHERE menu_name = :menu_name AND module =:module", array(
+     ':menu_name' => 'main-menu',
+     ':module' => 'ccpuriri_list',))->execute(); 
+  
+ 
+}
+
+
 

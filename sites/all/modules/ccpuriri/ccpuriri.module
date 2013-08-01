@@ -252,19 +252,25 @@ function _ccpuriri_get_navigation()
     // to get current router item
     $router_item = menu_get_item();
 
-    if ($router_item['map'] && count($router_item['map'])>0)
+    if (isset($router_item['map']) && count($router_item['map'])>0)
     {
       switch ($router_item['map'][0]) {
         case 'user':
           $tree = menu_tree_page_data('ccpuririusernavigation');
           break;
+        case 'list':
+          $tree = menu_tree_page_data('ccpuririlistnavigation');
+            break;
         default:
           $tree =  menu_tree_page_data('main-menu');
         break;
       }
     }
-
-    return  menu_tree_output($tree);
+   
+    if (isset($tree) && !empty($tree))
+    {
+      return  menu_tree_output($tree);
+    }
   }
   return '';
 

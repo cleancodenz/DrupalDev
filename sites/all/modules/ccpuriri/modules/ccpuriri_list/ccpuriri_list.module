@@ -166,3 +166,88 @@ function ccpuriri_list_delete($list)
     throw $e;
   }
 }
+
+/**
+ * Loads a list object.
+ *
+ * @param $lid
+ *   Integer specifying the list ID to load.
+ * @param $reset
+ *   TRUE to reset the internal cache and load from the database; FALSE
+ *   (default) to load from the internal cache, if set.
+ *
+ * @return
+ *   A fully-loaded list object upon successful list load, or FALSE if the list
+ *   cannot be loaded.
+ *
+ * @see ccpuriri_list_load_multiple()
+ */
+function ccpuriri_list_load($lid, $reset = FALSE) {
+  $lists = ccpuriri_list_load_multiple(array($lid), array(), $reset);
+  return reset($lists);
+}
+
+/**
+ * Load multiple lists based on certain conditions.
+ *
+ * This function should be used whenever you need to load more than one list
+ * from the database. Lists are loaded into memory and will not require
+ * database access if loaded again during the same page request.
+ *
+ * @param $lids
+ *   An array of list IDs.
+ * @param $conditions
+ *   (deprecated) An associative array of conditions on the {ccpuriri_list}
+ *   table, where the keys are the database fields and the values are the
+ *   values those fields must have. Instead, it is preferable to use
+ *   EntityFieldQuery to retrieve a list of entity IDs loadable by
+ *   this function.
+ * @param $reset
+ *   A boolean indicating that the internal cache should be reset. Use this if
+ *   loading a list object which has been altered during the page request.
+ *
+ * @return
+ *   An array of list objects, indexed by lid.
+ *
+ * @see entity_load()
+ * @see ccpuriri_list_load()
+ * @see ccpuriri_list_load_shared()
+ *
+ * @todo Remove $conditions in Drupal 8.
+ */
+function ccpuriri_list_load_multiple($lids = array(), $conditions = array(), $reset = FALSE) {
+  return entity_load('ccpuriri_list', $lids, $conditions, $reset);
+}
+
+
+/**
+ * Fetch top shared folders.
+ *
+ * @return
+ *   A fully-loaded $list objects upon successful list load or FALSE if list
+ *   cannot be loaded.
+ *
+* @see ccpuriri_list_load()
+ */
+function ccpuriri_list_load_shared() {
+  $lists = ccpuriri_list_load_multiple(array(), array('uid' =>0,'liid' =>0));
+  return reset($lists);
+}
+
+/**
+ * Implementation of hook_menu().
+ */
+function ccpuriri_list_menu() {
+ 
+  $items['list'] = array(
+      'title' => 'My list',
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array('ccpuriri_list_form'),
+      'access callback' => 'user_is_logged_in',
+      'menu_name' => 'ccpuririlistnavigation',
+      'weight' =>10,
+      'file' =>'ccpuriri_list.pages.inc'
+  );
+  
+  return $items;
+}
