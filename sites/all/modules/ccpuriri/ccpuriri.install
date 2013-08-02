@@ -17,7 +17,8 @@ function ccpuriri_install() {
   // add contact field
   _ccpuriri_add_contactfield() ;
   
-      
+  _ccpuriri_list_add_main_menu();
+  
  }
 
  /**
@@ -31,6 +32,8 @@ function ccpuriri_install() {
    
    _ccpuriri_remove_contactfield();
    
+   _ccpuriri_list_remove_main_menu();
+   
  }
  
  
@@ -40,7 +43,7 @@ function ccpuriri_install() {
  */
 function ccpuriri_enable() {
  
-  _ccpuriri_list_add_main_menu();
+
   
 }
 
@@ -49,7 +52,7 @@ function ccpuriri_enable() {
  */
 function ccpuriri_disable() {
 
-  _ccpuriri_list_remove_main_menu();
+
 }
 
 
@@ -328,10 +331,17 @@ function _ccpuriri_list_add_main_menu(){
  */
 function _ccpuriri_list_remove_main_menu(){
   
- db_query("DELETE FROM {menu_links} WHERE menu_name = :menu_name AND module =:module", array(
-     ':menu_name' => 'main-menu',
-     ':module' => 'ccpuriri_list',))->execute(); 
+ $menuname= "main-menu";
   
+ $module = "ccpuriri_list";
+  
+ // to use db_delete
+ $delete_query = db_delete('menu_links')
+   ->condition('menu_name', $menuname)
+  ->condition('module', $module);
+ 
+ $delete_query->execute();
+ 
  
 }
 

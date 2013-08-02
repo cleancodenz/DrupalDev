@@ -243,7 +243,7 @@ function ccpuriri_list_menu() {
       'title' => 'My list',
       'page callback' => 'drupal_get_form',
       'page arguments' => array('ccpuriri_list_form'),
-      'access callback' => 'user_is_logged_in',
+      'access callback' => true,//'user_is_logged_in',
       'menu_name' => 'ccpuririlistnavigation',
       'weight' =>10,
       'file' =>'ccpuriri_list.pages.inc'
