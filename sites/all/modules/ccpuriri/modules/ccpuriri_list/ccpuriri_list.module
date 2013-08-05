@@ -221,7 +221,7 @@ function ccpuriri_list_load_multiple($lids = array(), $conditions = array(), $re
 
 
 /**
- * Fetch top shared folders.
+ * Fetch publicly shared folders.
  *
  * @return
  *   A fully-loaded $list objects upon successful list load or FALSE if list
@@ -230,8 +230,8 @@ function ccpuriri_list_load_multiple($lids = array(), $conditions = array(), $re
 * @see ccpuriri_list_load()
  */
 function ccpuriri_list_load_shared() {
-  $lists = ccpuriri_list_load_multiple(array(), array('uid' =>0,'liid' =>0));
-  return reset($lists);
+  $lists = ccpuriri_list_load_multiple(array(), array('uid' =>0,'plid' =>0));
+  return $lists;
 }
 
 /**
@@ -240,7 +240,7 @@ function ccpuriri_list_load_shared() {
 function ccpuriri_list_menu() {
  
   $items['list'] = array(
-      'title' => 'My list',
+      'title' => t('My lists'),
       'page callback' => 'drupal_get_form',
       'page arguments' => array('ccpuriri_list_form'),
       'access callback' => true,//'user_is_logged_in',
@@ -249,5 +249,142 @@ function ccpuriri_list_menu() {
       'file' =>'ccpuriri_list.pages.inc'
   );
   
+  // list add
+  $items['list/add'] = array(
+      'title' => t('Add list'),
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array('ccpuriri_list_add_form'),
+      'access callback' => 'user_is_logged_in',
+      'description' => 'Add a user list',
+      'file' => 'ccpuriri_list.pages.inc',
+  );
+  
+  // list view
+  $items['list/%ccpuriri_list'] = array(
+      'title callback' => 'ccpuriri_list_page_title',
+      'title arguments' => array(1),
+      // The page callback also invokes drupal_set_title() in case
+      // the menu router's title is overridden by a menu link.
+      'page callback' => 'ccpuriri_list_page_view',
+      'page arguments' => array(1),
+      'access callback' => 'ccpuriri_list_access',
+      'access arguments' => array('view', 1),
+      'file' => 'ccpuriri_list.pages.inc',
+  );
+  
+  $items['list/%ccpuriri_list/edit'] = array(
+      'title' => t('Edit'),
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array('ccpuriri_list_edit', 1),
+      'access callback' => 'ccpuriri_list_access',
+      'access arguments' => array('update', 1),
+      'weight' => 0,
+      'file' => 'ccpuriri_list.pages.inc',
+  );
+  $items['list/%ccpuriri_list/delete'] = array(
+      'title' => t('Delete'),
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array('ccpuriri_list_delete_confirm', 1),
+      'access callback' => 'ccpuriri_list_access',
+      'access arguments' => array('delete', 1),
+      'weight' => 1,
+      'file' => 'ccpuriri_list.pages.inc',
+  );
+  
   return $items;
 }
+
+
+function ccpuriri_list_access($op, $list, $account = NULL) {
+  $rights = &drupal_static(__FUNCTION__, array());
+
+  if (!$list || !in_array($op, array('view', 'update', 'delete', 'create'), TRUE)) {
+    // If there was no list to check against, or the $op was not one of the
+    // supported ones, we return access denied.
+    return FALSE;
+  }
+  // If no user object is supplied, the access check is for the current user.
+  if (empty($account)) {
+    $account = $GLOBALS['user'];
+  }
+
+
+  $cid = $list->lid ;
+
+  // If we've already checked access for this list, user and op, return from
+  // cache.
+  if (isset($rights[$account->uid][$cid][$op])) {
+    return $rights[$account->uid][$cid][$op];
+  }
+
+  
+  // public shared list, can view only
+  if($list->is_shared)
+  {
+    if($op == 'view')
+    {
+      $rights[$account->uid][$cid][$op] = TRUE;
+      return TRUE;
+      
+    }
+    
+  } 
+  elseif($list->uid == $account->uid)
+  {
+    if($op == 'delete')
+    {      
+      $rights[$account->uid][$cid][$op] = !($list->has_childfolders||
+          $list->has_items) ;
+      
+      return $rights[$account->uid][$cid][$op] ;
+    }
+    $rights[$account->uid][$cid][$op] = TRUE;
+    return TRUE;
+  }
+  else
+  {
+    
+    if($op == 'view')
+    {
+      // to see if it is shared
+      $query = db_query('SELECT lid FROM ccpuriri_list_access where uid =:uid', array(':uid'=>$account->uid));
+      
+      foreach ($query as $lid)
+      {
+        // load all lists of this user and cache it
+        $rights[$account->uid][$lid][$op] = TRUE;
+      }
+      
+      if (isset($rights[$account->uid][$cid][$op])) {
+        return $rights[$account->uid][$cid][$op];
+      }
+      
+    }
+     
+  }
+     
+  $rights[$account->uid][$cid][$op] = FALSE;
+  return FALSE;
+  
+}
+
+/**
+ * Title callback.
+ */
+function ccpuriri_list_title($list) {
+  return $list->title;
+}
+
+/**
+ * Get the root menu link (/list on navigation).
+ */
+function ccpuriri_list_root_menu_link_id() {
+ 
+  $query = db_query('SELECT mlid FROM menu_links where link_path =:link_path AND menu_name=:menu_name', 
+      array(':link_path'=>'list',
+         ':menu_name'=>'ccpuririlistnavigation',));
+  
+  return $query->fetchField();
+  
+}
+
