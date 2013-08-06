@@ -332,7 +332,7 @@ function _ccpuriri_list_add_main_menu(){
 
   $menuname = 'ccpuririlistnavigation';
 
-  $i=100;
+  $i=-100;
 
   // do not use this item as parent for shared list menus
   // The parent should be the one on same menu which is ccpuririlistnavigation

@@ -11,7 +11,7 @@ regions[sidebar_second] = 'Secondary'
 regions[footer]         = 'Footer'
 
 stylesheets[all][] = css/bootstrapcc_style.css
-stylesheets[all][] = css/fontawesome/css/font-awesome.min.css
+;stylesheets[all][] = css/fontawesome/css/font-awesome.min.css
 
 ;Exclude
 ;javascript

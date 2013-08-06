@@ -36,13 +36,6 @@ function ccpuriri_list_schema() {
               'not null' => TRUE,
               'default' => '',
           ),
-          'plid' => array(
-              'description' => 'The parent list id, the top level has 0 as parent list id',
-              'type' => 'int',
-              'not null' => TRUE,
-              'default' => 0,
-          ),
-          
           'uid' => array(
               'description' => 'The {users}.uid that owns this node; initially, this is the user that created it.',
               'type' => 'int',
@@ -71,7 +64,7 @@ function ccpuriri_list_schema() {
           
       ),
       'indexes' => array(
-          'ccpuriri_list_plid_lid'     => array('plid', 'lid'),
+          'ccpuriri_list_plid_lid'     => array('lid'),
           'ccpuriri_list_machine_name' => array('machine_name'),
           'ccpuriri_list_tnid'         => array('tnid'),
           'ccpuriri_list_translate'    => array('translate'),
@@ -79,62 +72,49 @@ function ccpuriri_list_schema() {
       'primary key' => array('lid'),
   );
   
-  $schema['ccpuriri_list_access'] = array(
-      'description' => 'The table for users who can access of list ',
+ 
+  $schema['ccpuriri_list_item'] = array(
+      'description' => 'The detailed items table that are grouped by list',
       'fields' => array(
-          'laid' => array(
-              'description' => 'The primary identifier for a list access.',
-              'type' => 'serial',
-              'unsigned' => TRUE,
-              'not null' => TRUE,
-          ),
-          'lid' => array(
-              'description' => 'The list id of this list access ',
-              'type' => 'int',
-              'not null' => TRUE,
-              'default' => 0,
-          ),
-  
-          'uid' => array(
-              'description' => 'The {users}.uid that is allowed to access this list, default is the list creator, when it is zero, it will be open to every one',
-              'type' => 'int',
-              'not null' => TRUE,
-              'default' => 0,
-          ),
-      ),
-      'indexes' => array(
-          'ccpuriri_list_access_lid_uid'     => array('lid', 'uid'),
-      ),
-      'primary key' => array('laid'),
-  );
-  
-  $schema['ccpuriri_list_node'] = array(
-      'description' => 'The detailed nodes table that are grouped by list',
-      'fields' => array(
-          'lnid' => array(
-              'description' => 'The primary identifier for a list nodes group',
-              'type' => 'serial',
-              'unsigned' => TRUE,
-              'not null' => TRUE,
-          ),
           'lid' => array(
               'description' => 'The list id of this list group',
               'type' => 'int',
               'not null' => TRUE,
               'default' => 0,
           ),
-  
-          'nid' => array(
-              'description' => 'The {node}.nid that is grouped into this list',
+          'entity_type' => array(
+              'description' => 'The entity type this data is attached to.',
+              'type' => 'varchar',
+              'length' => 128,
+              'not null' => TRUE,
+              'default' => '',
+          ),
+          'bundle' => array(
+              'description' => 'The field instance bundle to which this row belongs, used when deleting a field instance.',
+              'type' => 'varchar',
+              'length' => 128,
+              'not null' => TRUE,
+              'default' => '',
+          ),
+          
+          'entity_id' => array(
+              'description' => 'The entity id this data is attached to.',
+              'type' => 'int',
+              'not null' => TRUE,
+              'default' => 0,
+          ),
+          
+          'uid' => array(
+              'description' => 'The user id who added the item to the list, useful for public shared list.',
               'type' => 'int',
               'not null' => TRUE,
               'default' => 0,
           ),
       ),
       'indexes' => array(
-          'ccpuriri_list_node_lid_nid'     => array('lid', 'nid'),
+          'ccpuriri_list_item_lid_uid' => array('lid', 'uid'),
       ),
-      'primary key' => array('lnid'),
+      'primary key' => array('lid','entity_type','bundle','entity_id','uid'),
   );
   
   return $schema; 
@@ -192,10 +172,9 @@ function  _ccpuriri_setup_lists()
 
   $watchlist->machine_name = 'watchlist';
 
-  $watchlist->title = t('watchlist');
+  $watchlist->title = t('Watchlist');
 
-  $watchlist->plid = 0; // top level
-
+ 
   $watchlist->uid = 0; // shared
 
   ccpuriri_list_save($watchlist, $users);
@@ -206,10 +185,9 @@ function  _ccpuriri_setup_lists()
 
   $listing->machine_name = 'listings';
 
-  $listing->title = t('listings');
+  $listing->title = t('Listings');
 
-  $listing->plid = 0; // top level
-
+ 
   $listing->uid = 0; // shared
 
   ccpuriri_list_save($listing, $users);
@@ -227,7 +205,6 @@ function _ccpuriri_list_add_custom_menu(){
   //This is group for list related menu items, only displayed when url is list/
   //It will be switched on by main navigation block CCPuriri Navigation
 
-
   $ccpuririlistnavigationmenu = array(
       'menu_name' => 'ccpuririlistnavigation',
       'title' => 'CCPuriri List Navigation',
@@ -235,8 +212,7 @@ function _ccpuriri_list_add_custom_menu(){
   );
 
   menu_save($ccpuririlistnavigationmenu);
-
-  
+ 
 
 }
 

@@ -40,16 +40,34 @@ class CCPuririListController extends DrupalDefaultEntityController {
   function attachLoad(&$queried_lists, $revision_id = FALSE) {
     
     foreach ($queried_lists as  $key => $list) {
+      
+      global $user;
+      
       // set up is_shared
       $list->is_shared = $list->uid==0;
-      // set up has_childfolders
-      $childfoldercount = db_query('SELECT count(l.lid) FROM {ccpuriri_list} l  WHERE l.plid = :plid', array(':plid' =>$list->lid))->fetchField();
-            
-      $list->has_childfolders = isset($childfoldercount) && ($childfoldercount > 0);
-      // set up has_items
-      $itemscount = db_query('SELECT count(l.lnid) FROM {ccpuriri_list_node} l  WHERE l.lid = :lid', array(':lid' =>$list->lid))-> fetchField();
       
-      $list->has_items = isset($itemscount) && ($itemscount > 0);
+      // set up has_childfolders
+      
+      // when adding folders to another folder it will form the hierachical structure, but 
+      // this is not implemented in this version      
+       
+      // set up items_count
+      if ($list->is_shared)
+      {
+        $items = db_query('SELECT l.entity_id FROM {ccpuriri_list_item} l  WHERE l.lid = :lid AND l.uid =:uid',
+             array(':lid' =>$list->lid, ':uid'=>$user->uid))->fetchAllAssoc('entity_id');
+      }
+      else
+      {
+        $items = db_query('SELECT l.entity_id FROM {ccpuriri_list_item} l  WHERE l.lid = :lid',
+            array(':lid' =>$list->lid))->fetchAllAssoc('entity_id');
+        
+      }
+      
+      $list->items=  isset($items)? $items:array();
+      
+      $list->items_count = count($list->items) ;
+      
       
     }
     
@@ -97,34 +115,11 @@ function ccpuriri_list_save($list, $users =array()) {
       // For existing list, update the list record which matches the value of
       // $list->lid.
       drupal_write_record('ccpuriri_list', $list, 'lid');
-
-      // delete existing access
-      db_delete('ccpuriri_list_access')
-      ->condition('lid',$list->lid)
-      ->execute();
       
       $op = 'update';
       
     }
-     
-    // save access
-    $insert =  db_insert('ccpuriri_list_access')
-    ->fields(array(
-        'lid',
-        'uid',
-        ));
-     
-    foreach ($users as $uid)
-    {
-      $insert->values(array(
-          'lid' => $list->lid,
-          'uid' => $uid,
-          ));
-      
-    }
-    
-    $insert->execute();
-    
+   
     
     module_invoke_all('entity_' . $op, $list, 'ccpuriri_list');
  
@@ -152,7 +147,7 @@ function ccpuriri_list_save($list, $users =array()) {
 
 function ccpuriri_list_delete($list)
 {
-  if ($list->is_shared || $list->has_childfolders ||$list->has_items)
+  if ($list->is_shared || $list->items_count>0)
     return;
   
   $transaction = db_transaction();
@@ -230,7 +225,7 @@ function ccpuriri_list_load_multiple($lids = array(), $conditions = array(), $re
 * @see ccpuriri_list_load()
  */
 function ccpuriri_list_load_shared() {
-  $lists = ccpuriri_list_load_multiple(array(), array('uid' =>0,'plid' =>0));
+  $lists = ccpuriri_list_load_multiple(array(), array('uid' =>0));
   return $lists;
 }
 
@@ -333,34 +328,12 @@ function ccpuriri_list_access($op, $list, $account = NULL) {
   {
     if($op == 'delete')
     {      
-      $rights[$account->uid][$cid][$op] = !($list->has_childfolders||
-          $list->has_items) ;
+      $rights[$account->uid][$cid][$op] = !($list->items_count>0);
       
       return $rights[$account->uid][$cid][$op] ;
     }
     $rights[$account->uid][$cid][$op] = TRUE;
     return TRUE;
-  }
-  else
-  {
-    
-    if($op == 'view')
-    {
-      // to see if it is shared
-      $query = db_query('SELECT lid FROM ccpuriri_list_access where uid =:uid', array(':uid'=>$account->uid));
-      
-      foreach ($query as $lid)
-      {
-        // load all lists of this user and cache it
-        $rights[$account->uid][$lid][$op] = TRUE;
-      }
-      
-      if (isset($rights[$account->uid][$cid][$op])) {
-        return $rights[$account->uid][$cid][$op];
-      }
-      
-    }
-     
   }
      
   $rights[$account->uid][$cid][$op] = FALSE;
@@ -371,8 +344,8 @@ function ccpuriri_list_access($op, $list, $account = NULL) {
 /**
  * Title callback.
  */
-function ccpuriri_list_title($list) {
-  return $list->title;
+function ccpuriri_list_page_title($list) {
+  return $list->title.'('.$list->items_count.')';
 }
 
 /**

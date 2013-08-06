@@ -1,13 +1,32 @@
 <?php
 
 /*
- * to replace jquery in misc with nwer version 
+ * to replace jquery in misc with newer version 
  */
 function bootstrapcc_js_alter(&$javascript) {
   
   $javascript['misc/jquery.js']['data'] = drupal_get_path('theme', 'bootstrapcc').'/jquery/jquery-1.9.1.js';
 }
 
+/*
+ * to add fontawesome to css
+*/
+function bootstrapcc_css_alter(&$css) {
+
+  $cdn = '//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css';
+  $css[$cdn] = array(
+      'data' => $cdn,
+      'type' => 'external',
+      'every_page' => TRUE,
+      'media' => 'all',
+      'preprocess' => TRUE,
+      'group' => CSS_THEME,
+      'browsers' => array('IE' => TRUE, '!IE' => TRUE),
+      'weight' => 10,
+  );
+
+  return $css;
+}
 
 /*
  * 
