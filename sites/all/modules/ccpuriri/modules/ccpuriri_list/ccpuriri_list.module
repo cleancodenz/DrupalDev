@@ -241,6 +241,10 @@ function ccpuriri_list_menu() {
       'access callback' => true,//'user_is_logged_in',
       'menu_name' => 'ccpuririlistnavigation',
       'weight' =>10,
+      'options'=>array(
+          'icon'=>'icon-folder-open',
+          'html'=>true,
+      ),
       'file' =>'ccpuriri_list.pages.inc'
   );
   
@@ -248,7 +252,7 @@ function ccpuriri_list_menu() {
   $items['list/add'] = array(
       'title' => t('Add list'),
       'page callback' => 'drupal_get_form',
-      'page arguments' => array('ccpuriri_list_add_form'),
+      'page arguments' => array('ccpuriri_list_edit_form','add'),
       'access callback' => 'user_is_logged_in',
       'description' => 'Add a user list',
       'file' => 'ccpuriri_list.pages.inc',
@@ -270,7 +274,7 @@ function ccpuriri_list_menu() {
   $items['list/%ccpuriri_list/edit'] = array(
       'title' => t('Edit'),
       'page callback' => 'drupal_get_form',
-      'page arguments' => array('ccpuriri_list_edit', 1),
+      'page arguments' => array('ccpuriri_list_edit_form','edit', 1),
       'access callback' => 'ccpuriri_list_access',
       'access arguments' => array('update', 1),
       'weight' => 0,

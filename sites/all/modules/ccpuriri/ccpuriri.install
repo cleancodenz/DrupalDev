@@ -319,6 +319,10 @@ function _ccpuriri_list_add_main_menu(){
       'router_path' => 'list',
       'module' => 'ccpuriri_list',
       'description' => 'My lists menu item on main menu',
+      'options'=>array(
+          'icon'=>'icon-folder-open',
+          'html'=>true,
+      ),
       'expanded' => 0,
 
   );
@@ -350,6 +354,10 @@ function _ccpuriri_list_add_main_menu(){
           'link_title' => $list->title,
           'link_path' => 'list/'.$list->lid,
           'description' => 'Shared list '.$list->title.' menu item on navigation menu',
+          'options'=>array(
+              'icon'=>'icon-reorder',
+              'html'=>true,
+          ),
           'plid' => $parentmid,
           'module' => 'ccpuriri_list',
       );

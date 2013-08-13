@@ -38,10 +38,13 @@ function ccpuriri_menu_alter(&$items)
   $items['user']['menu_name'] ='secondary_top';
   $items['user']['title callback'] = '_ccpuriri_user_menu_title';
   $items['user']['weight'] =10;
-
+  $items['user']['options']['icon'] = 'icon-user';
+  $items['user']['options']['html'] = true;
+  
   $items['user/logout']['menu_name'] ='secondary_top';
   $items['user/logout']['weight'] =20;
-
+  $items['user/logout']['options']['icon'] = 'icon-signout';
+  $items['user/logout']['options']['html'] = true;
   // items for not logged in
 
   //get the titile back by making it a normal menu item
@@ -49,6 +52,9 @@ function ccpuriri_menu_alter(&$items)
   $items['user/login']['type'] = MENU_NORMAL_ITEM;
   $items['user/login']['weight'] =10;
   $items['user/login']['menu_name'] ='secondary_top';
+  $items['user/login']['options']['icon'] = 'icon-signin';
+  $items['user/login']['options']['html'] = true;
+  
 
   //get the titile back by making it a normal menu item
   // need manual change to move it to top level
@@ -56,7 +62,8 @@ function ccpuriri_menu_alter(&$items)
   $items['user/register']['title'] ='Sign up';
   $items['user/register']['weight'] =15;
   $items['user/register']['menu_name'] ='secondary_top';
-
+  $items['user/register']['options']['icon'] = 'icon-upload-alt';
+  $items['user/register']['options']['html'] = true;
 
   // user navigation menu
 
@@ -73,6 +80,10 @@ function ccpuriri_menu_alter(&$items)
       'access callback' => 'user_view_access',
       'access arguments' => array(1),
       'menu_name' => 'ccpuririusernavigation',
+      'options'=>array(
+          'icon'=>'icon-user',
+          'html'=>true,
+          ),
       'weight' =>10,
   );
 
@@ -282,49 +293,4 @@ function _ccpuriri_get_navigation()
  */
 
 
-/**
- * @name ccpuriri menu change
- * @{
- */
 
-/**
- * Implements hook_menu_link_alter().
- */
-function ccpuriri_menu_link_alter(&$link) {
-
-  // add icon to user
-  if ($link['link_path'] == 'user/%' ||
-      $link['link_path'] == 'user') {
-    $link['options']['icon'] = 'icon-user';
-    $link['options']['html'] = true;
-  } elseif ($link['link_path'] == 'user/logout')
-  {
-    $link['options']['icon'] = 'icon-signout';
-    $link['options']['html'] = true;
-  }
-  elseif ($link['link_path'] == 'user/login')
-  {
-    $link['options']['icon'] = 'icon-signin';
-    $link['options']['html'] = true;
-  }
-  elseif ($link['link_path'] == 'user/register')
-  {
-    $link['options']['icon'] = 'icon-upload-alt';
-    $link['options']['html'] = true;
-  }
-
-}
-
-/**
- * Implements hook_translated_menu_link_alter().
- */
-function ccpuriri_translated_menu_link_alter(&$link) {
-  // Hide the "User account" link for anonymous users.
-  // if ($link['link_path'] == 'user' && $link['module'] == 'system' && user_is_anonymous()) {
-  //   $link['hidden'] = 1;
-    // }
-  }
-
-  /**
-   * @} End of "name ccpuriri_block".
-   */

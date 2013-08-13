@@ -47,14 +47,93 @@ function ccpuriri_list_page_view($list)
 }
 
 /**
- * Menu callback; presents the list editing form.
+ * Menu callback; presents the list editing and new list form.
+ * $type = add for new and edit for editing
  */
-function ccpuriri_list_edit($list) {
-  //$type_name = node_type_get_name($node);
-  drupal_set_title(t('<em>Edit </em> @title', array('@title' => $list->title)), PASS_THROUGH);
-  return '';
- // return drupal_get_form($node->type . '_node_form', $node);
+function ccpuriri_list_edit_form($form, &$form_state, $type,$list=array()) {
+
+  if ($type=='edit')
+  {
+    drupal_set_title(t('<em>Edit </em> @title', array('@title' => $list->title)), PASS_THROUGH);
+  }
+
+  $form['#optype'] = $type;
+  
+  $list += array(
+      'title' => '',
+  );
+  
+  $form['title'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Title'),
+      '#default_value' => $list['title'],
+      '#required' => TRUE,
+//      '#access' => TRUE,
+  );
+  
+  
+    
+  $form['actions'] = array('#type' => 'actions');
+  $form['actions']['submit'] = array(
+      '#type' => 'submit',
+      '#value' => t('Save'),
+  );
+  
+  // Only custom menus may be deleted.
+  $form['actions']['delete'] = array(
+      '#type' => 'submit',
+      '#value' => t('Delete'),
+      '#access' => $type == 'edit',
+  );
+  
+  return $form;
+
 }
+
+/**
+ * Submit function for adding or editing a custom list.
+ */
+function ccpuriri_list_edit_form_submit($form, &$form_state) {
+  $list = $form_state['values'];
+  
+  if ($form['#optype']=='add') {
+    // add list
+/*
+    $menu['menu_name'] = 'menu-' . $menu['menu_name'];
+    $link['link_title'] = $menu['title'];
+    $link['link_path'] = $path . $menu['menu_name'];
+    $link['router_path'] = $path . '%';
+    $link['module'] = 'menu';
+    $link['plid'] = db_query("SELECT mlid FROM {menu_links} WHERE link_path = :link AND module = :module", array(
+        ':link' => 'admin/structure/menu',
+        ':module' => 'system'
+    ))
+    ->fetchField();
+
+    menu_link_save($link);
+    menu_save($menu);
+    */
+    drupal_set_message(t('New list has been added.'));
+    
+  }
+  else {
+    /*
+    // update title of the list
+    
+    menu_save($menu);
+    $result = db_query("SELECT mlid FROM {menu_links} WHERE link_path = :path", array(':path' => $path . $menu['menu_name']), array('fetch' => PDO::FETCH_ASSOC));
+    foreach ($result as $m) {
+      $link = menu_link_load($m['mlid']);
+      $link['link_title'] = $menu['title'];
+      menu_link_save($link);
+    }
+    */
+    drupal_set_message(t('Your list change has been saved.'));
+  }
+ 
+ // $form_state['redirect'] = $path . $menu['menu_name'];
+}
+
 
 
 /**
