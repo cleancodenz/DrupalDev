@@ -158,7 +158,7 @@ function ccpuriri_list_disable() {
 * */
 function  _ccpuriri_setup_lists()
 {
-  $users = array(0); // uid=0 means shared  
+ 
   
   // watchlist, accessible by every one who logged in, user id is -1
   $watchlist= new stdClass();
@@ -168,7 +168,7 @@ function  _ccpuriri_setup_lists()
  
   $watchlist->uid = 0; // shared
 
-  ccpuriri_list_save($watchlist, $users);
+  ccpuriri_list_save($watchlist);
 
 
   // listings, accessible by every one who logged in, user id is -1
@@ -180,7 +180,7 @@ function  _ccpuriri_setup_lists()
  
   $listing->uid = 0; // shared
 
-  ccpuriri_list_save($listing, $users);
+  ccpuriri_list_save($listing);
 
 }
 

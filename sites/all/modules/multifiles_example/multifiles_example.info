@@ -3,7 +3,7 @@ description = Multi Files Upload Example using managed file type.
 package = Example modules
 core = 7.x
 dependencies[] = file
-files[] = multifiles_example.test
+;files[] = multifiles_example.test
 
 ; Information added by drupal.org packaging script on 2012-05-26
 version = "7.x-1.x-dev"

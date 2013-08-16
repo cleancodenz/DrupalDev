@@ -55,8 +55,14 @@ function ccpuriri_list_edit_form($form, &$form_state, $type,$list=array()) {
   if ($type=='edit')
   {
     drupal_set_title(t('<em>Edit </em> @title', array('@title' => $list->title)), PASS_THROUGH);
-  }
 
+    // save the list
+    $form_state['list'] = $list;
+    
+  }
+  
+  
+  
   $form['#optype'] = $type;
   
   $list += array(
@@ -70,6 +76,7 @@ function ccpuriri_list_edit_form($form, &$form_state, $type,$list=array()) {
       '#required' => TRUE,
 //      '#access' => TRUE,
   );
+  
   
   
     
@@ -96,44 +103,80 @@ function ccpuriri_list_edit_form($form, &$form_state, $type,$list=array()) {
 function ccpuriri_list_edit_form_submit($form, &$form_state) {
   $list = $form_state['values'];
   
+  global $user;
+  
   if ($form['#optype']=='add') {
-    // add list
-/*
-    $menu['menu_name'] = 'menu-' . $menu['menu_name'];
-    $link['link_title'] = $menu['title'];
-    $link['link_path'] = $path . $menu['menu_name'];
-    $link['router_path'] = $path . '%';
-    $link['module'] = 'menu';
-    $link['plid'] = db_query("SELECT mlid FROM {menu_links} WHERE link_path = :link AND module = :module", array(
-        ':link' => 'admin/structure/menu',
-        ':module' => 'system'
-    ))
-    ->fetchField();
-
-    menu_link_save($link);
-    menu_save($menu);
-    */
-    drupal_set_message(t('New list has been added.'));
     
+    $transaction = db_transaction();
+    
+    try {
+      // add list
+      $newlist = new stdClass();
+      $newlist->title = $list['title'];
+      $newlist->uid = $user->uid; 
+      ccpuriri_list_save($newlist);
+    
+      // create menu item as well
+      $menuname = 'ccpuririlistnavigation';
+      
+      $listitem = array(
+          'menu_name' => $menuname,
+      //    'weight' => $i +10,
+          'link_title' => $newlist->title,
+          'link_path' => 'list/'.$newlist->lid,
+          'description' => 'Shared list '.$newlist->title.' menu item on navigation menu',
+          'module' => 'ccpuriri_list',
+          );
+          
+       menu_link_save($listitem);
+      
+      drupal_set_message(t('New list has been added.'));
+    }
+    catch (Exception $e) {
+      $transaction->rollback();
+      watchdog_exception('ccpuriri_list', $e);
+    }
   }
   else {
-    /*
-    // update title of the list
-    
-    menu_save($menu);
-    $result = db_query("SELECT mlid FROM {menu_links} WHERE link_path = :path", array(':path' => $path . $menu['menu_name']), array('fetch' => PDO::FETCH_ASSOC));
-    foreach ($result as $m) {
-      $link = menu_link_load($m['mlid']);
-      $link['link_title'] = $menu['title'];
-      menu_link_save($link);
-    }
-    */
+    $updatelist = new stdClass();
+    $updatelist->title = $list['title'];
+    $updatelist->uid = $user->uid;
+    ccpuriri_list_save($updatelist);
+        
     drupal_set_message(t('Your list change has been saved.'));
   }
  
- // $form_state['redirect'] = $path . $menu['menu_name'];
 }
 
+
+/**
+ * Validate function for adding or editing a custom list.
+ */
+function ccpuriri_list_edit_form_validate($form, &$form_state) {
+  $list = $form_state['values'];
+
+  global $user;
+  
+  $noduplicate = false;
+  
+  if ($form['#optype']=='add') {
+        
+    $noduplicate =  _ccpuriri_list_title_noduplicate(
+        $list['title'],$user->uid,0);
+    
+    }else{
+    $noduplicate =  _ccpuriri_list_title_noduplicate(
+        $list['title'],$user->uid, $form_state['list']->lid);
+      
+  }
+  
+  
+  if (!$noduplicate)
+  {
+    form_set_error('info', t('List already exists.'));
+  }
+  
+}
 
 
 /**
@@ -150,4 +193,85 @@ function ccpuriri_list_delete_confirm($form, &$form_state, $list) {
       t('Delete'),
       t('Cancel')
   );
+}
+
+function _ccpuriri_list_title_noduplicate($title,$uid, $lid)
+{
+  $query = db_select('ccpuriri_list','l');
+   
+  $dband = db_and()->condition('l.title', $title);
+  
+      
+  if($lid!=0)
+  {
+    // existing list
+    $dband = $dband->condition('l.lid',$lid,'!=');
+       
+  }
+  
+  $dbor = db_or()->condition('l.uid', 0)->condition('l.uid',$uid);
+  
+  $query = $query->condition(db_and(),$dband,$dbor);
+  
+  $query->addExpression('COUNT(l.lid)', 'lcount');
+  $lcount =$query->execute()->fetchField();
+     
+  return $lcount===0 ;
+  
+}
+
+
+/**
+ * Array sorting callback; sorts lists by title.
+ */
+function  _ccpuriri_list_sort_by_title($a, $b) {
+  return strnatcasecmp($a->title, $b->title);
+}
+
+function _ccpuriri_list_add_list($title,$uid){
+
+  // get existing list
+  $userlists =ccpuriri_list_load_multiple(array(), array('uid' =>$uid));
+
+     
+  $transaction = db_transaction();
+  
+  try {
+    // add list
+    $newlist = new stdClass();
+    $newlist->title = $title;
+    $newlist->uid = $uid;
+    ccpuriri_list_save($newlist);
+      
+     
+    // create menu item as well
+    $menuname = 'ccpuririlistnavigation';
+  
+    $listitem = array(
+        'menu_name' => $menuname,
+        'weight' => 1000,
+        'link_title' => $newlist->title,
+        'link_path' => 'list/'.$newlist->lid,
+        'description' => 'User customized list',
+        'module' => 'ccpuriri_list',
+    );
+  
+    menu_link_save($listitem);
+  
+    // to get the weight of the list
+    
+    $userlists[$newlist->lid]= $newlist;
+    
+    // uasort
+    uasort($userlists,'_ccpuriri_list_sort_by_title');
+    
+    // update the weight of all items of this user
+    
+    drupal_set_message(t('New list has been added.'));
+  }
+  catch (Exception $e) {
+    $transaction->rollback();
+    watchdog_exception('ccpuriri_list', $e);
+  }
+  
 }

@@ -81,7 +81,7 @@ class CCPuririListController extends DrupalDefaultEntityController {
  * Save a list with accesses, if user id is 0, means it is a shared folder by everyone
  * Normally it is private folder, visible to owner 
  * */
-function ccpuriri_list_save($list, $users =array()) {
+function ccpuriri_list_save($list) {
   $transaction = db_transaction();
   try {
      
