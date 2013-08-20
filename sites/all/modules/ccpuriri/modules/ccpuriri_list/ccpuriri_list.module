@@ -255,11 +255,13 @@ function ccpuriri_list_menu() {
       'page arguments' => array('ccpuriri_list_edit_form','add'),
       'access callback' => 'user_is_logged_in',
       'description' => 'Add a user list',
+      'menu_name' => 'ccpuririlistnavigation',
       'file' => 'ccpuriri_list.pages.inc',
   );
   
   // list view
   $items['list/%ccpuriri_list'] = array(
+      'title' => 'My listsss',
       'title callback' => 'ccpuriri_list_page_title',
       'title arguments' => array(1),
       // The page callback also invokes drupal_set_title() in case
@@ -268,6 +270,7 @@ function ccpuriri_list_menu() {
       'page arguments' => array(1),
       'access callback' => 'ccpuriri_list_access',
       'access arguments' => array('view', 1),
+      'menu_name' => 'ccpuririlistnavigation',
       'file' => 'ccpuriri_list.pages.inc',
   );
   
@@ -278,6 +281,7 @@ function ccpuriri_list_menu() {
       'access callback' => 'ccpuriri_list_access',
       'access arguments' => array('update', 1),
       'weight' => 0,
+      'menu_name' => 'ccpuririlistnavigation',
       'file' => 'ccpuriri_list.pages.inc',
   );
   $items['list/%ccpuriri_list/delete'] = array(
@@ -287,6 +291,7 @@ function ccpuriri_list_menu() {
       'access callback' => 'ccpuriri_list_access',
       'access arguments' => array('delete', 1),
       'weight' => 1,
+      'menu_name' => 'ccpuririlistnavigation',
       'file' => 'ccpuriri_list.pages.inc',
   );
   
@@ -336,7 +341,9 @@ function ccpuriri_list_access($op, $list, $account = NULL) {
       
       return $rights[$account->uid][$cid][$op] ;
     }
+      
     $rights[$account->uid][$cid][$op] = TRUE;
+    
     return TRUE;
   }
      
@@ -363,5 +370,50 @@ function ccpuriri_list_root_menu_link_id() {
   
   return $query->fetchField();
   
+}
+
+/**
+ * Returns $arg or the user ID of the current list if $arg is '%' or empty.
+ *
+ *The list menu has some special characters
+ *
+ *when /list is the live path
+ *then list should display all possible list, in this case, list/% will not appear, nor its list/%/edit and list/%/delete
+ *
+ *when /list/1 is the live path
+ *
+ *then the list should display all possible list, and plus list/% , its list/%/edit and list/%/delete
+ * we also have a static list/1 item defined which we need to remove 
+ *
+ */
+function ccpuriri_list_to_arg($arg) {
+  
+  $current_router_item = menu_get_item();
+  
+  //list/% default not showing up by returning % 
+    
+  if ($current_router_item['path']=='list/%')
+  {
+    // as we have list/% and list/1 both menu links in menu_links
+    
+    // only play with particular list request
+    // this allows list/% to show, but list/1 no show
+    if ($arg=='%')
+    {
+      // make it visible by providing the visitted list id
+      if(isset($current_router_item['map'][1]) &&
+    property_exists($current_router_item['map'][1], 'lid')) 
+      {
+        return $current_router_item['map'][1]->lid;
+      }
+    }
+    else
+    {
+      return '%';
+    } 
+     
+  }
+ 
+  return $arg;
 }
 

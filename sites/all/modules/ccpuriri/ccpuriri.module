@@ -270,6 +270,7 @@ function _ccpuriri_get_navigation()
           $tree = menu_tree_page_data('ccpuririusernavigation');
           break;
         case 'list':
+                 
           $tree = menu_tree_page_data('ccpuririlistnavigation');
             break;
         default:

@@ -107,35 +107,8 @@ function ccpuriri_list_edit_form_submit($form, &$form_state) {
   
   if ($form['#optype']=='add') {
     
-    $transaction = db_transaction();
+    _ccpuriri_list_add_list( $list['title'],$user->uid);
     
-    try {
-      // add list
-      $newlist = new stdClass();
-      $newlist->title = $list['title'];
-      $newlist->uid = $user->uid; 
-      ccpuriri_list_save($newlist);
-    
-      // create menu item as well
-      $menuname = 'ccpuririlistnavigation';
-      
-      $listitem = array(
-          'menu_name' => $menuname,
-      //    'weight' => $i +10,
-          'link_title' => $newlist->title,
-          'link_path' => 'list/'.$newlist->lid,
-          'description' => 'Shared list '.$newlist->title.' menu item on navigation menu',
-          'module' => 'ccpuriri_list',
-          );
-          
-       menu_link_save($listitem);
-      
-      drupal_set_message(t('New list has been added.'));
-    }
-    catch (Exception $e) {
-      $transaction->rollback();
-      watchdog_exception('ccpuriri_list', $e);
-    }
   }
   else {
     $updatelist = new stdClass();
@@ -199,24 +172,23 @@ function _ccpuriri_list_title_noduplicate($title,$uid, $lid)
 {
   $query = db_select('ccpuriri_list','l');
    
-  $dband = db_and()->condition('l.title', $title);
+  $query->condition('l.title', $title);
   
       
   if($lid!=0)
   {
     // existing list
-    $dband = $dband->condition('l.lid',$lid,'!=');
+   $query->condition(db_and()->condition('l.lid',$lid,'!='));
        
   }
   
-  $dbor = db_or()->condition('l.uid', 0)->condition('l.uid',$uid);
   
-  $query = $query->condition(db_and(),$dband,$dbor);
+  $query->condition(db_or()->condition('l.uid', 0)->condition('l.uid',$uid));
   
   $query->addExpression('COUNT(l.lid)', 'lcount');
   $lcount =$query->execute()->fetchField();
      
-  return $lcount===0 ;
+  return !($lcount>=1) ;
   
 }
 
@@ -247,6 +219,8 @@ function _ccpuriri_list_add_list($title,$uid){
     // create menu item as well
     $menuname = 'ccpuririlistnavigation';
   
+    $plid = ccpuriri_list_root_menu_link_id();
+    
     $listitem = array(
         'menu_name' => $menuname,
         'weight' => 1000,
@@ -254,6 +228,7 @@ function _ccpuriri_list_add_list($title,$uid){
         'link_path' => 'list/'.$newlist->lid,
         'description' => 'User customized list',
         'module' => 'ccpuriri_list',
+        'plid'=>$plid,
     );
   
     menu_link_save($listitem);
