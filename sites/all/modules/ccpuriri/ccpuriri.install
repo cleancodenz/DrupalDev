@@ -314,7 +314,7 @@ function _ccpuriri_list_add_main_menu(){
   $list_item = array(
       'menu_name' => 'main-menu',
       'weight' => 100,
-      'link_title' => 'My Lists',
+      'link_title' => t('My Lists'), //use the router one, to activate callback
       'link_path' => 'list',
       'router_path' => 'list',
       'module' => 'ccpuriri_list',
@@ -351,11 +351,12 @@ function _ccpuriri_list_add_main_menu(){
       $sharedlistitem = array(
           'menu_name' => $menuname,
           'weight' => $i +10,
-          'link_title' => $list->title,
+          'link_title' => 'My listsss', // use router title to activate call back 
           'link_path' => 'list/'.$list->lid,
           'description' => 'Shared list '.$list->title.' menu item on navigation menu',
           'options'=>array(
-              'icon'=>'icon-reorder',
+              'alter'=> true, // to use link list/%
+             'icon'=>'icon-reorder',
               'html'=>true,
           ),
           'plid' => $parentmid,

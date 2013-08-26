@@ -25,11 +25,14 @@ function ccpuriri_list_add_form($form, &$form_state)
 
 
 /*
- * The page to display items of a list, url: list/add
+ * The page to display items of a list, url: list/1
 * */
 function ccpuriri_list_page_view($list)
 {
-  return '';
+  
+  // menu_tree_set_path('ccpuririlistnavigation','list/%');
+  
+  return 'dddddd';
 
   /*
    * 
@@ -224,11 +227,16 @@ function _ccpuriri_list_add_list($title,$uid){
     $listitem = array(
         'menu_name' => $menuname,
         'weight' => 1000,
-        'link_title' => $newlist->title,
+        'link_title' => 'My listsss', // use router title to activate call back, can not be empty as well 
         'link_path' => 'list/'.$newlist->lid,
         'description' => 'User customized list',
         'module' => 'ccpuriri_list',
-        'plid'=>$plid,
+        'options'=>array(
+            'alter'=> true, // to use link list/%
+     //       'icon'=>'icon-reorder',
+     //       'html'=>true,
+        ),
+        'plid'=>$plid, 
     );
   
     menu_link_save($listitem);

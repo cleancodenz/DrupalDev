@@ -235,7 +235,7 @@ function ccpuriri_list_load_shared() {
 function ccpuriri_list_menu() {
  
   $items['list'] = array(
-      'title' => t('My lists'),
+      'title' => t('My Lists'),
       'page callback' => 'drupal_get_form',
       'page arguments' => array('ccpuriri_list_form'),
       'access callback' => true,//'user_is_logged_in',
@@ -271,6 +271,7 @@ function ccpuriri_list_menu() {
       'access callback' => 'ccpuriri_list_access',
       'access arguments' => array('view', 1),
       'menu_name' => 'ccpuririlistnavigation',
+  
       'file' => 'ccpuriri_list.pages.inc',
   );
   
@@ -311,7 +312,7 @@ function ccpuriri_list_access($op, $list, $account = NULL) {
   if (empty($account)) {
     $account = $GLOBALS['user'];
   }
-
+   
 
   $cid = $list->lid ;
 
@@ -396,10 +397,11 @@ function ccpuriri_list_to_arg($arg) {
   {
     // as we have list/% and list/1 both menu links in menu_links
     
-    // only play with particular list request
-    // this allows list/% to show, but list/1 no show
+   
+    // this allows list/% to show
     if ($arg=='%')
     {
+      // this is menu_link list/%, feed it with current item lid
       // make it visible by providing the visitted list id
       if(isset($current_router_item['map'][1]) &&
     property_exists($current_router_item['map'][1], 'lid')) 
@@ -407,13 +409,28 @@ function ccpuriri_list_to_arg($arg) {
         return $current_router_item['map'][1]->lid;
       }
     }
-    else
-    {
-      return '%';
-    } 
-     
+      
   }
  
   return $arg;
+}
+
+
+function ccpuriri_list_translated_menu_link_alter(&$link) {
+  // hide list/1, but to display list/%
+  $current_router_item = menu_get_item();
+  
+  //list/% default not showing up by returning %
+  
+  if ($current_router_item['path']=='list/%')
+  {
+    // hide the list/1 menu link if it is current url, and use list/% instead
+    if ($link['link_path'] == $current_router_item['href']) {
+      $link['hidden'] = 1;
+    }
+  }
+ 
+  
+ 
 }
 
