@@ -206,19 +206,18 @@ function  _ccpuriri_list_sort_by_title($a, $b) {
 function _ccpuriri_list_add_list($title,$uid){
 
   // get existing list
-  $userlists =ccpuriri_list_load_multiple(array(), array('uid' =>$uid));
+ // $userlists =ccpuriri_list_load_multiple(array(), array('uid' =>$uid));
 
      
-  $transaction = db_transaction();
-  
-  try {
+ 
     // add list
     $newlist = new stdClass();
     $newlist->title = $title;
     $newlist->uid = $uid;
     ccpuriri_list_save($newlist);
       
-     
+
+    /*
     // create menu item as well
     $menuname = 'ccpuririlistnavigation';
   
@@ -245,16 +244,13 @@ function _ccpuriri_list_add_list($title,$uid){
     
     $userlists[$newlist->lid]= $newlist;
     
+    
     // uasort
     uasort($userlists,'_ccpuriri_list_sort_by_title');
-    
+    */
     // update the weight of all items of this user
     
     drupal_set_message(t('New list has been added.'));
-  }
-  catch (Exception $e) {
-    $transaction->rollback();
-    watchdog_exception('ccpuriri_list', $e);
-  }
+ 
   
 }

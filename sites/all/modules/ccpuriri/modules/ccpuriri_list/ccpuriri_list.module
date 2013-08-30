@@ -177,9 +177,27 @@ function ccpuriri_list_delete($list)
  *
  * @see ccpuriri_list_load_multiple()
  */
-function ccpuriri_list_load($lid, $reset = FALSE) {
-  $lists = ccpuriri_list_load_multiple(array($lid), array(), $reset);
-  return reset($lists);
+function ccpuriri_list_load($lid) {
+  
+  //to check if it shared
+  
+  $sharedlists= ccpuriri_list_load_shared();
+  if (isset($sharedlists[$lid]))
+  {
+    return $sharedlists[$lid];
+  } 
+  else
+  {
+    $userlists= ccpuriri_list_load_user();
+    
+    if (isset($userlists[$lid]))
+    {
+      return $userlists[$lid];
+    }
+      
+  }  
+  
+  return false;
 }
 
 /**
@@ -209,6 +227,23 @@ function ccpuriri_list_load($lid, $reset = FALSE) {
  * @see ccpuriri_list_load_shared()
  *
  * @todo Remove $conditions in Drupal 8.
+ * 
+ * structure is 
+ * $sharedlists	Array [2]	
+	1	stdClass	
+		lid	1	
+		language	
+		title	Watchlist	
+		uid	0	
+		created	1377573834	
+		tnid	0	
+		translate	0	
+		is_shared	true	
+		items	Array [0]	
+		items_count	0	
+		rdf_mapping	Array [0]	
+	2	stdClass	
+
  */
 function ccpuriri_list_load_multiple($lids = array(), $conditions = array(), $reset = FALSE) {
   return entity_load('ccpuriri_list', $lids, $conditions, $reset);
@@ -225,9 +260,68 @@ function ccpuriri_list_load_multiple($lids = array(), $conditions = array(), $re
 * @see ccpuriri_list_load()
  */
 function ccpuriri_list_load_shared() {
-  $lists = ccpuriri_list_load_multiple(array(), array('uid' =>0));
+  
+  $lists = &drupal_static(__FUNCTION__);
+  
+  if (!isset($lists))
+  {
+    global $user;
+  
+    // get the list from cache
+    $cid ='ccpuriri_list_shared'.$user->uid;
+  
+    if ($cached = cache_get($cid, 'cache_ccpuriri')) {
+      $lists = $cached->data;
+    }
+    else {
+      $lists = ccpuriri_list_load_multiple(array(), array('uid' =>0));
+  
+      cache_set($cid, $lists, 'cache_ccpuriri');
+    }
+  
+  }
+  
+  return $lists;
+ 
+}
+
+/**
+ * Fetch all folders for this user, it is cached, static too
+ * the lists include shared lists and user created lists as well
+ * the items count of per list is also loaded
+ *  
+ * @return
+ *   A fully-loaded $list objects upon successful list load or FALSE if list
+ *   cannot be loaded.
+ *
+ * @see ccpuriri_list_load()
+ */
+function ccpuriri_list_load_user() {
+  
+  $lists = &drupal_static(__FUNCTION__);
+  
+  if (!isset($lists))
+  {
+    global $user;
+    
+    // get the list from cache
+    $cid ='ccpuriri_list_user'.$user->uid;
+    
+    if ($cached = cache_get($cid, 'cache_ccpuriri')) {
+      $lists = $cached->data;
+    }
+    else {
+      $lists = ccpuriri_list_load_multiple(array(), array('uid' =>$user->uid));
+            
+      cache_set($cid, $lists, 'cache_ccpuriri');
+    }
+    
+  }
+  
   return $lists;
 }
+
+
 
 /**
  * Implementation of hook_menu().
@@ -374,39 +468,47 @@ function ccpuriri_list_root_menu_link_id() {
 }
 
 /**
- * Returns $arg or the user ID of the current list if $arg is '%' or empty.
  *
  *The list menu has some special characters
  *
- *when /list is the live path
- *then list should display all possible list, in this case, list/% will not appear, nor its list/%/edit and list/%/delete
+ * in one sentence, list/% is only visible when a custom list is currently requested,
+ * in other scenarios, % is returned, and no show
+ * 
+ *for custom lists :
+ * 
+ * they are not handled by menu system, 
+ * but will be inserted to menu tree separately, 
+ * and activate list/% when it is requested, this why here we need to return a valid id when a custom list is requested 
+ * 
+ *for shared lists (system lists)
+ *they have duplicated in menu links, as we have list/% and list/1 and list/2 as menu links
+ *when shared list is requested like /list/1, it returns % which will make list/% invisible, while list/1 is visible
  *
- *when /list/1 is the live path
- *
- *then the list should display all possible list, and plus list/% , its list/%/edit and list/%/delete
- * we also have a static list/1 item defined which we need to remove 
  *
  */
 function ccpuriri_list_to_arg($arg) {
   
   $current_router_item = menu_get_item();
   
-  //list/% default not showing up by returning % 
-    
   if ($current_router_item['path']=='list/%')
   {
     // as we have list/% and list/1 both menu links in menu_links
-    
    
     // this allows list/% to show
     if ($arg=='%')
     {
       // this is menu_link list/%, feed it with current item lid
-      // make it visible by providing the visitted list id
+      // current item already loaded by menu_get_item()
+      // only provide custom lists
+      // system lists, just use links like list/1, as there is no edit/delete necessary for system
+      
       if(isset($current_router_item['map'][1]) &&
     property_exists($current_router_item['map'][1], 'lid')) 
       {
-        return $current_router_item['map'][1]->lid;
+        if(!$current_router_item['map'][1]->is_shared)
+        {        
+          return $current_router_item['map'][1]->lid;
+        }
       }
     }
       
@@ -416,21 +518,4 @@ function ccpuriri_list_to_arg($arg) {
 }
 
 
-function ccpuriri_list_translated_menu_link_alter(&$link) {
-  // hide list/1, but to display list/%
-  $current_router_item = menu_get_item();
-  
-  //list/% default not showing up by returning %
-  
-  if ($current_router_item['path']=='list/%')
-  {
-    // hide the list/1 menu link if it is current url, and use list/% instead
-    if ($link['link_path'] == $current_router_item['href']) {
-      $link['hidden'] = 1;
-    }
-  }
- 
-  
- 
-}
 

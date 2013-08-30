@@ -5,6 +5,16 @@
  */
 
 /**
+ * Implements hook_schema().
+ */
+function ccpuriri_schema() {
+  // the cache table
+  $schema['cache_ccpuriri'] = drupal_get_schema_unprocessed('system', 'cache');
+  
+  return $schema;
+}
+
+/**
  * Implementation of hook_install().
  */
 function ccpuriri_install() {
@@ -355,7 +365,6 @@ function _ccpuriri_list_add_main_menu(){
           'link_path' => 'list/'.$list->lid,
           'description' => 'Shared list '.$list->title.' menu item on navigation menu',
           'options'=>array(
-              'alter'=> true, // to use link list/%
              'icon'=>'icon-reorder',
               'html'=>true,
           ),

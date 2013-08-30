@@ -73,6 +73,8 @@ function ccpuriri_menu_alter(&$items)
     unset($items['user/%user']);
   }
 
+  // this is the user menu top bar
+  // with user/%/account etc as its submenu
   $items['user/%user_uid_optional'] = array(
       'title' => 'My account',
       'page callback' => 'user_view_page',
@@ -272,7 +274,9 @@ function _ccpuriri_get_navigation()
         case 'list':
                  
           $tree = menu_tree_page_data('ccpuririlistnavigation');
-            break;
+          // add custom lists
+          
+          break;
         default:
           $tree =  menu_tree_page_data('main-menu');
         break;
