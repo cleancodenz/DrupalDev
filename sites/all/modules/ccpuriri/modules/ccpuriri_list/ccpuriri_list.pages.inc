@@ -196,12 +196,7 @@ function _ccpuriri_list_title_noduplicate($title,$uid, $lid)
 }
 
 
-/**
- * Array sorting callback; sorts lists by title.
- */
-function  _ccpuriri_list_sort_by_title($a, $b) {
-  return strnatcasecmp($a->title, $b->title);
-}
+
 
 function _ccpuriri_list_add_list($title,$uid){
 
@@ -249,6 +244,13 @@ function _ccpuriri_list_add_list($title,$uid){
     uasort($userlists,'_ccpuriri_list_sort_by_title');
     */
     // update the weight of all items of this user
+    
+    // clear the list cache
+    global $user;
+    
+    $cid ='ccpuriri_list_user'.$user->uid;
+    
+    cache_clear_all($cid,'cache_ccpuriri');
     
     drupal_set_message(t('New list has been added.'));
  

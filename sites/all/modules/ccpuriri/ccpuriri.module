@@ -275,6 +275,7 @@ function _ccpuriri_get_navigation()
                  
           $tree = menu_tree_page_data('ccpuririlistnavigation');
           // add custom lists
+          _ccpuriri_add_user_created_lists($tree);
           
           break;
         default:
@@ -290,6 +291,95 @@ function _ccpuriri_get_navigation()
   }
   return '';
 
+}
+
+// this adds user defined lists to the menu tree
+// it is highly targeted to theme menu links rendering
+// those fields that are not used by rendering function are not bothered
+// all it does is to render lists with href and title, 
+// no need of #localized_options, no icon, no active status.
+// when a special user list is live, then it needs to be removed from this list
+
+function  _ccpuriri_add_user_created_lists(&$tree)
+{
+  
+  // to get the list
+  $userlist= ccpuriri_list_load_user();
+  
+  if (isset($userlist) && count($userlist)>0)
+  {
+    $current_router_item = menu_get_item();
+    
+    if ($current_router_item['path']=='list/%')
+    {
+      // to get the current list
+      if(isset($current_router_item['map'][1]) &&
+          property_exists($current_router_item['map'][1], 'lid'))
+      {
+        if(!$current_router_item['map'][1]->is_shared)
+        {
+          $currentlistid = $current_router_item['map'][1]->lid;
+     
+          need to keep the sorting
+          // remove it from userlist
+          //unset($userlist[$currentlistid]);
+          
+        }
+      }
+    
+    }
+    
+      // create items for user list
+      //current tree is as this
+      /*
+      $tree	Array [1]
+        50010 My Lists 1780	Array [2]
+          link	Array [45]
+          below	Array [3]
+            49910 Watchlist(0) 1786	Array [2]
+            49920 Listings(0) 1787	Array [2]
+            50000 Add list 1781	Array [2]
+            50000 hgt(0) 1782 Array
+      */
+      reset($tree);
+      $first_key = key($tree);
+      
+      $i=-1;
+     
+      
+      // attach the items to the end 
+      foreach ($userlist as $key => $list)
+      {
+        if (isset($currentlistid) && $list->lid ==$currentlistid)
+        {
+          
+          
+        }
+        
+        $title =  ccpuriri_list_page_title($list);
+        
+        $tree[$first_key]['below'][$title]=array(
+           'link'=> array(
+              'mlid'=> $i, // just a fake mlid to be used by array indexing
+              'menu_name'=>'ccpuririlistnavigation', 
+              'title'=> $title,
+              'href' => 'list/'.$list->lid,
+              'access' =>true,
+              'hidden' =>false,
+              'has_children'=>false,
+               'in_active_trail'=> false,
+             ),
+           'below' => array(),
+            );
+        
+        $i--;
+      }
+       
+      
+    
+  }
+  
+    
 }
 
 

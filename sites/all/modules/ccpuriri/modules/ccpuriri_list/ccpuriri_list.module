@@ -312,7 +312,10 @@ function ccpuriri_list_load_user() {
     }
     else {
       $lists = ccpuriri_list_load_multiple(array(), array('uid' =>$user->uid));
-            
+
+      // uasort
+      uasort($lists,'_ccpuriri_list_sort_by_title');
+      
       cache_set($cid, $lists, 'cache_ccpuriri');
     }
     
@@ -321,6 +324,12 @@ function ccpuriri_list_load_user() {
   return $lists;
 }
 
+/**
+ * Array sorting callback; sorts lists by title.
+ */
+function  _ccpuriri_list_sort_by_title($a, $b) {
+  return strnatcasecmp($a->title, $b->title);
+}
 
 
 /**
