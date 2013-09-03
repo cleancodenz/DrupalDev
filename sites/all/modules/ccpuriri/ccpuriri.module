@@ -40,7 +40,7 @@ function ccpuriri_menu_alter(&$items)
   $items['user']['weight'] =10;
   $items['user']['options']['icon'] = 'icon-user';
   $items['user']['options']['html'] = true;
-  
+
   $items['user/logout']['menu_name'] ='secondary_top';
   $items['user/logout']['weight'] =20;
   $items['user/logout']['options']['icon'] = 'icon-signout';
@@ -54,7 +54,7 @@ function ccpuriri_menu_alter(&$items)
   $items['user/login']['menu_name'] ='secondary_top';
   $items['user/login']['options']['icon'] = 'icon-signin';
   $items['user/login']['options']['html'] = true;
-  
+
 
   //get the titile back by making it a normal menu item
   // need manual change to move it to top level
@@ -85,7 +85,7 @@ function ccpuriri_menu_alter(&$items)
       'options'=>array(
           'icon'=>'icon-user',
           'html'=>true,
-          ),
+      ),
       'weight' =>10,
   );
 
@@ -163,7 +163,7 @@ function ccpuriri_menu() {
       'weight' =>10,
       'file' =>'ccpuriri.user.pages.inc'
   );
-  
+
   $items['user/%user_uid_optional/picture'] = array(
       'title' => 'Picture',
       'page callback' => 'drupal_get_form',
@@ -174,7 +174,7 @@ function ccpuriri_menu() {
       'weight' =>30,
       'file' =>'ccpuriri.user.pages.inc'
   );
-  
+
   $items['user/%user_uid_optional/address'] = array(
       'title' => 'Address',
       'page callback' => 'drupal_get_form',
@@ -185,7 +185,7 @@ function ccpuriri_menu() {
       'weight' =>20,
       'file' =>'ccpuriri.user.pages.inc'
   );
-  
+
   $items['user/%user_uid_optional/contacts'] = array(
       'title' => 'Contacts',
       'page callback' => 'drupal_get_form',
@@ -196,7 +196,7 @@ function ccpuriri_menu() {
       'weight' =>20,
       'file' =>'ccpuriri.user.pages.inc'
   );
-  
+
   $items['admin/config/ccpuriri'] = array(
       'title' => 'Configuation settings for CCPURIRI',
       'description' =>  'Configuation settings',
@@ -205,7 +205,7 @@ function ccpuriri_menu() {
       'file' => 'ccpuriri.admin.inc',
       'access arguments' => array('administer site configuration'),
   );
-  
+
   return $items;
 }
 
@@ -272,18 +272,18 @@ function _ccpuriri_get_navigation()
           $tree = menu_tree_page_data('ccpuririusernavigation');
           break;
         case 'list':
-                 
+           
           $tree = menu_tree_page_data('ccpuririlistnavigation');
           // add custom lists
           _ccpuriri_add_user_created_lists($tree);
-          
+
           break;
         default:
           $tree =  menu_tree_page_data('main-menu');
         break;
       }
     }
-   
+     
     if (isset($tree) && !empty($tree))
     {
       return  menu_tree_output($tree);
@@ -296,21 +296,24 @@ function _ccpuriri_get_navigation()
 // this adds user defined lists to the menu tree
 // it is highly targeted to theme menu links rendering
 // those fields that are not used by rendering function are not bothered
-// all it does is to render lists with href and title, 
+// all it does is to render lists with href and title,
 // no need of #localized_options, no icon, no active status.
 // when a special user list is live, then it needs to be removed from this list
 
 function  _ccpuriri_add_user_created_lists(&$tree)
 {
-  
+
+  reset($tree);
+  $first_key = key($tree);
+
   // to get the list
   $userlist= ccpuriri_list_load_user();
-  
+
   if (isset($userlist) && count($userlist)>0)
   {
     $current_router_item = menu_get_item();
-    
-    if ($current_router_item['path']=='list/%')
+
+    if (strpos($current_router_item['path'], 'list/%') === 0)
     {
       // to get the current list
       if(isset($current_router_item['map'][1]) &&
@@ -319,69 +322,85 @@ function  _ccpuriri_add_user_created_lists(&$tree)
         if(!$current_router_item['map'][1]->is_shared)
         {
           $currentlistid = $current_router_item['map'][1]->lid;
-     
-          need to keep the sorting
-          // remove it from userlist
-          //unset($userlist[$currentlistid]);
-          
+           
+          // take out the last item which is supposed to be list/%
+          end($tree[$first_key]['below']);
+
+          $lastmenukey = key($tree[$first_key]['below']);
+          $currentmenuitem = $tree[$first_key]['below'][$lastmenukey];
+
+          // double check the last item
+          if ($currentmenuitem['link']['href']=='list/'.$currentlistid)
+          {
+            unset($tree[$first_key]['below'][$lastmenukey]);
+            _ccpuriri_list_tree_add_list($userlist, $tree[$first_key]['below'],
+                $currentmenuitem,$lastmenukey, $currentlistid);
+            
+            return ;
+          }
+  
         }
       }
-    
+
     }
-    
-      // create items for user list
-      //current tree is as this
-      /*
-      $tree	Array [1]
-        50010 My Lists 1780	Array [2]
-          link	Array [45]
-          below	Array [3]
-            49910 Watchlist(0) 1786	Array [2]
-            49920 Listings(0) 1787	Array [2]
-            50000 Add list 1781	Array [2]
-            50000 hgt(0) 1782 Array
-      */
-      reset($tree);
-      $first_key = key($tree);
-      
-      $i=-1;
+
+    // create items for user list
+    //current tree is as this
+    /*
+     $tree	Array [1]
+    50010 My Lists 1780	Array [2]
+    link	Array [45]
+    below	Array [3]
+    49910 Watchlist(0) 1786	Array [2]
+    49920 Listings(0) 1787	Array [2]
+    50000 Add list 1781	Array [2]
+    50000 hgt(0) 1782 Array
+    */
      
-      
-      // attach the items to the end 
-      foreach ($userlist as $key => $list)
-      {
-        if (isset($currentlistid) && $list->lid ==$currentlistid)
-        {
-          
-          
-        }
-        
-        $title =  ccpuriri_list_page_title($list);
-        
-        $tree[$first_key]['below'][$title]=array(
-           'link'=> array(
+   _ccpuriri_list_tree_add_list($userlist, $tree[$first_key]['below']);
+
+  }
+
+
+}
+
+function _ccpuriri_list_tree_add_list($userlist,&$treeref,$currentMenuItem=NULL,$currentMenuKey=NULL,$currentListId=NULL)
+{
+
+  $i=-1;
+
+  // attach the items to the end
+  foreach ($userlist as $key => $list)
+  {
+
+    if ($currentListId!=NULL&&$currentMenuKey!=NULL&&$currentMenuItem!=NULL && $list->lid == $currentListId)
+    {
+
+      $treeref[$currentMenuKey] = $currentMenuItem;
+
+    }
+    else
+    {
+
+      $title =  ccpuriri_list_page_title($list);
+
+      $treeref[$title]=array(
+          'link'=> array(
               'mlid'=> $i, // just a fake mlid to be used by array indexing
-              'menu_name'=>'ccpuririlistnavigation', 
+              'menu_name'=>'ccpuririlistnavigation',
               'title'=> $title,
               'href' => 'list/'.$list->lid,
               'access' =>true,
               'hidden' =>false,
               'has_children'=>false,
-               'in_active_trail'=> false,
-             ),
-           'below' => array(),
-            );
-        
-        $i--;
-      }
-       
-      
-    
+              'in_active_trail'=> false,
+          ),
+          'below' => array(),
+      );
+    }
+    $i--;
   }
-  
-    
 }
-
 
 /**
  * @} End of "name ccpuriri_block".

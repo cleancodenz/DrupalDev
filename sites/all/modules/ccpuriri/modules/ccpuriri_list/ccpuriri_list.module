@@ -131,6 +131,19 @@ function ccpuriri_list_save($list) {
      
     // Ignore slave server temporarily to give time for the
     db_ignore_slave();
+    
+    // clear the list cache
+   
+    if ($list->uid > 0)
+    {
+      // only customized list can be changed
+      // shared list saved by on install, can not be changed, this will only be called once to create them
+      
+      $cid ='ccpuriri_list_user'.$list->uid;
+      cache_clear_all($cid,'cache_ccpuriri');
+      
+    }
+    
   }
   catch (Exception $e) {
     $transaction->rollback();
@@ -499,7 +512,7 @@ function ccpuriri_list_to_arg($arg) {
   
   $current_router_item = menu_get_item();
   
-  if ($current_router_item['path']=='list/%')
+  if (strpos($current_router_item['path'], 'list/%') === 0)
   {
     // as we have list/% and list/1 both menu links in menu_links
    

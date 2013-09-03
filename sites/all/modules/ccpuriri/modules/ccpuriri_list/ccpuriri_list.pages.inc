@@ -53,8 +53,13 @@ function ccpuriri_list_page_view($list)
  * Menu callback; presents the list editing and new list form.
  * $type = add for new and edit for editing
  */
-function ccpuriri_list_edit_form($form, &$form_state, $type,$list=array()) {
+function ccpuriri_list_edit_form($form, &$form_state, $type,$list=NULL) {
 
+  if($type=='add')
+  {
+    $list =(object)array('title' => '',);
+  }
+  
   if ($type=='edit')
   {
     drupal_set_title(t('<em>Edit </em> @title', array('@title' => $list->title)), PASS_THROUGH);
@@ -64,38 +69,23 @@ function ccpuriri_list_edit_form($form, &$form_state, $type,$list=array()) {
     
   }
   
-  
-  
   $form['#optype'] = $type;
-  
-  $list += array(
-      'title' => '',
-  );
   
   $form['title'] = array(
       '#type' => 'textfield',
       '#title' => t('Title'),
-      '#default_value' => $list['title'],
+      '#default_value' => $list->title,
       '#required' => TRUE,
 //      '#access' => TRUE,
   );
-  
-  
-  
-    
+      
   $form['actions'] = array('#type' => 'actions');
   $form['actions']['submit'] = array(
       '#type' => 'submit',
       '#value' => t('Save'),
   );
   
-  // Only custom menus may be deleted.
-  $form['actions']['delete'] = array(
-      '#type' => 'submit',
-      '#value' => t('Delete'),
-      '#access' => $type == 'edit',
-  );
-  
+   
   return $form;
 
 }
@@ -110,13 +100,16 @@ function ccpuriri_list_edit_form_submit($form, &$form_state) {
   
   if ($form['#optype']=='add') {
     
-    _ccpuriri_list_add_list( $list['title'],$user->uid);
+    _ccpuriri_list_add_list($list['title'],$user->uid);
     
   }
   else {
     $updatelist = new stdClass();
+    
     $updatelist->title = $list['title'];
+    $updatelist->lid =$form_state['list']->lid;
     $updatelist->uid = $user->uid;
+    
     ccpuriri_list_save($updatelist);
         
     drupal_set_message(t('Your list change has been saved.'));
@@ -171,6 +164,11 @@ function ccpuriri_list_delete_confirm($form, &$form_state, $list) {
   );
 }
 
+function ccpuriri_list_delete_confirm_submit($form, &$form_state) {
+ 
+}
+
+
 function _ccpuriri_list_title_noduplicate($title,$uid, $lid)
 {
   $query = db_select('ccpuriri_list','l');
@@ -199,11 +197,6 @@ function _ccpuriri_list_title_noduplicate($title,$uid, $lid)
 
 
 function _ccpuriri_list_add_list($title,$uid){
-
-  // get existing list
- // $userlists =ccpuriri_list_load_multiple(array(), array('uid' =>$uid));
-
-     
  
     // add list
     $newlist = new stdClass();
@@ -245,12 +238,7 @@ function _ccpuriri_list_add_list($title,$uid){
     */
     // update the weight of all items of this user
     
-    // clear the list cache
-    global $user;
-    
-    $cid ='ccpuriri_list_user'.$user->uid;
-    
-    cache_clear_all($cid,'cache_ccpuriri');
+ 
     
     drupal_set_message(t('New list has been added.'));
  
