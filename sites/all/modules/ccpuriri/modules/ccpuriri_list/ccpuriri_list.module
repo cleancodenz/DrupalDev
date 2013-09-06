@@ -165,7 +165,26 @@ function ccpuriri_list_delete($list)
   
   $transaction = db_transaction();
   try {
+    // delete in reference table
+    // even though it is not necessary, but still do it to keep data integrity
+    db_delete('ccpuriri_list_item')
+    ->condition('lid', $list->lid)
+    ->execute();
+    // delete in main table
+    db_delete('ccpuriri_list')
+    ->condition('lid', $list->lid)
+    ->execute();
+    //clear the cache
     
+     if ($list->uid > 0)
+    {
+      // only customized list can be changed
+      // shared list saved by on install, can not be changed, this will only be called once to create them
+      
+      $cid ='ccpuriri_list_user'.$list->uid;
+      cache_clear_all($cid,'cache_ccpuriri');
+      
+    }
     
   }
   catch (Exception $e) {

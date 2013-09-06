@@ -19,13 +19,13 @@ function ccpuriri_schema() {
  */
 function ccpuriri_install() {
 
-  _ccpuriri_add_custom_menu();
+  _ccpuriri_menu_blocks_custom_add();
 
   // add address field
-  _ccpuriri_add_addressfield() ;
+ _ccpuriri_field_addressfield_add() ;
 
   // add contact field
-  _ccpuriri_add_contactfield() ;
+  _ccpuriri_field_contactfield_add() ;
 
 
 
@@ -36,11 +36,11 @@ function ccpuriri_install() {
  */
 function ccpuriri_uninstall() {
 
-  _ccpuriri_remove_custom_menu();
+  _ccpuriri_menu_blocks_custom_remove();
 
-  _ccpuriri_remove_addressfield();
+  _ccpuriri_field_addressfield_remove();
    
-  _ccpuriri_remove_contactfield();
+  _ccpuriri_field_contactfield_remove();
    
 
    
@@ -53,8 +53,12 @@ function ccpuriri_uninstall() {
  */
 function ccpuriri_enable() {
 
-  _ccpuriri_list_add_main_menu();
-
+  // add list menu items to our menu blocks 
+  _ccpuriri_menu_system_main_add_list();
+  
+  // add main menu items
+  _ccpuriri_menu_main_add_items();
+  
 }
 
 /**
@@ -62,8 +66,9 @@ function ccpuriri_enable() {
  */
 function ccpuriri_disable() {
 
-  _ccpuriri_list_remove_main_menu();
+  _ccpuriri_menu_system_main_remove_list();
 
+  _ccpuriri_menu_main_remove_items();
 }
 
 
@@ -75,7 +80,7 @@ function ccpuriri_disable() {
 /*
  * Add addressfield to user
 * */
-function  _ccpuriri_add_addressfield()
+function  _ccpuriri_field_addressfield_add()
 {
   // create addressfield
   // to clear the cache to include the field type defined in this module
@@ -142,7 +147,7 @@ function  _ccpuriri_add_addressfield()
 /*
  * Add contact field to user
 * */
-function  _ccpuriri_add_contactfield()
+function   _ccpuriri_field_contactfield_add()
 {
   // create contactfield
   // to clear the cache to include the field type defined in this module
@@ -207,7 +212,7 @@ function  _ccpuriri_add_contactfield()
 /*
  * Add menu blocks
 * */
-function _ccpuriri_add_custom_menu(){
+function _ccpuriri_menu_blocks_custom_add(){
 
   // 1. create a custom menu for header-right, login/register etc
   $secondarymenu = array(
@@ -218,6 +223,7 @@ function _ccpuriri_add_custom_menu(){
 
   menu_save($secondarymenu);
 
+  
   //2. create ccpuririusernavigation
   //This is group for account related menu items, only displayed when url is user/1
   //It will be switched on by main navigation block CCPuriri Navigation
@@ -230,6 +236,22 @@ function _ccpuriri_add_custom_menu(){
   );
 
   menu_save($ccpuririusernavigationmenu);
+  
+  // 3 list navigation is added by list module
+  
+  //4. create ccpuririmainnavigation
+  //This is for working area for logged in user
+  //It will be switched on by navigation block CCPuriri Navigation when no specific menu block is required
+  
+  
+  
+  $ccpuririmainnavigationmenu = array(
+      'menu_name' => 'ccpuririmainnavigation',
+      'title' => 'CCPuriri Main Navigation',
+      'description' => 'CCPuriri Main Navigation menu, do not add this to regions, as it is displayed by CCPuriri Navigation block',
+  );
+  
+  menu_save($ccpuririmainnavigationmenu);
 
 
   // Create a menu link for user/% in usernavigation menu.
@@ -268,7 +290,7 @@ function _ccpuriri_add_custom_menu(){
 /*
  * Remove the address field
 * */
-function  _ccpuriri_remove_addressfield(){
+function  _ccpuriri_field_addressfield_remove(){
 
   //delete the field
   field_delete_field('field_ccpuriri_addressfield');
@@ -282,7 +304,7 @@ function  _ccpuriri_remove_addressfield(){
 /*
  * Remove the contact field
 * */
-function  _ccpuriri_remove_contactfield(){
+function  _ccpuriri_field_contactfield_remove(){
 
   //delete the field
   field_delete_field('field_ccpuriri_contactfield');
@@ -295,7 +317,7 @@ function  _ccpuriri_remove_contactfield(){
 /*
  * Remove the menu blocks
 * */
-function  _ccpuriri_remove_custom_menu(){
+function  _ccpuriri_menu_blocks_custom_remove(){
 
   // 1. delete custom menu
   $secondarymenu = array(
@@ -310,6 +332,14 @@ function  _ccpuriri_remove_custom_menu(){
   );
 
   menu_delete($ccpuririusernavigation);
+  //3 list menu will be deleted by list module
+  
+  // 4 delete ccpuriri main menu
+  $ccpuririmainrnavigation = array(
+      'menu_name' => 'ccpuririmainnavigation',
+  );
+  
+  menu_delete($ccpuririmainnavigation);
 
 }
 
@@ -317,7 +347,7 @@ function  _ccpuriri_remove_custom_menu(){
  * Add list to main menu, this must be in main module as it depends on list module
 *
 * */
-function _ccpuriri_list_add_main_menu(){
+function _ccpuriri_menu_system_main_add_list(){
 
   //add the list to main menu
 
@@ -328,7 +358,7 @@ function _ccpuriri_list_add_main_menu(){
       'link_path' => 'list',
       'router_path' => 'list',
       'module' => 'ccpuriri_list',
-      'description' => 'My lists menu item on main menu',
+      'description' => 'My lists menu item on system main menu',
       'options'=>array(
           'icon'=>'icon-folder-open',
           'html'=>true,
@@ -382,7 +412,7 @@ function _ccpuriri_list_add_main_menu(){
  * remove list from main menu, this must be in main module as it depends on list module
 *
 */
-function _ccpuriri_list_remove_main_menu(){
+function _ccpuriri_menu_system_main_remove_list(){
 
   $menuname= "main-menu";
 
@@ -406,4 +436,91 @@ function _ccpuriri_list_remove_main_menu(){
 }
 
 
+/*
+ * Add item to ccpuriri main menu
+ * it is visible only when user is logged in
+*
+* */
+function _ccpuriri_menu_main_add_items(){
+  // first add home to it
+  $home_item = array(
+      'menu_name' => 'ccpuririmainnavigation',
+      'weight' => -100,
+      'link_title' => t('Home'), 
+      'link_path' => '<front>',
+      'router_path' => '',
+      'module' => 'ccpuriri_list',
+      'description' => 'Home on main menu',
+      'options'=>array(
+          'icon'=>'icon-home',
+          'html'=>true,
+      ),
+      'external' => 1,
+      'expanded' => 0,
+  
+  );
+  
+  menu_link_save($home_item);
+  
+  //second add my lists to it
+  
+  
+  $list_item = array(
+      'menu_name' => 'ccpuririmainnavigation',
+      'weight' => -90,
+      'link_title' => t('My Lists'), 
+      'link_path' => 'list',
+      'router_path' => 'list',
+      'module' => 'ccpuriri_list',
+      'description' => 'My lists menu item on main menu',
+      'options'=>array(
+          'icon'=>'icon-folder-open',
+          'html'=>true,
+      ),
+      'expanded' => 0,
+  
+  );
+    
+  menu_link_save($list_item);
+  
+  // 3 add my account to it
+  
+  $account_item = array(
+      'menu_name' => 'ccpuririmainnavigation',
+      'weight' => -80,
+      'link_title' => t('My account'),
+      'link_path' => 'user',
+      'router_path' => 'user',
+      'module' => 'ccpuriri_list',
+      'description' => 'My account menu item on main menu',
+      'options'=>array(
+          'icon'=>'icon-user',
+          'html'=>true,
+      ),
+      'expanded' => 0,
+  
+  );
+    
+  menu_link_save($account_item);
+}
+
+/*
+ * Add item to ccpuriri main menu
+* it is visible only when user is logged in
+*
+* */
+function _ccpuriri_menu_main_remove_items(){
+  
+  $menuname= "ccpuririmainnavigation";
+  
+  $module = "ccpuriri_list";
+  
+  //delete * from ccpuririmainnavigation
+  $delete_query = db_delete('menu_links')
+  ->condition('menu_name', $menuname)
+  ->condition('module', $module);
+  
+  $delete_query->execute();
+  
+}
 

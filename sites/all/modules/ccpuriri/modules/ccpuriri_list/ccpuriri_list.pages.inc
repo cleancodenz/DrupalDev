@@ -55,6 +55,8 @@ function ccpuriri_list_page_view($list)
  */
 function ccpuriri_list_edit_form($form, &$form_state, $type,$list=NULL) {
 
+  $cancleurl='list';
+  
   if($type=='add')
   {
     $list =(object)array('title' => '',);
@@ -65,7 +67,10 @@ function ccpuriri_list_edit_form($form, &$form_state, $type,$list=NULL) {
     drupal_set_title(t('<em>Edit </em> @title', array('@title' => $list->title)), PASS_THROUGH);
 
     // save the list
-    $form_state['list'] = $list;
+    $form_state['#list'] = $list;
+    
+    $cancleurl ='list/'.$list->lid;
+    
     
   }
   
@@ -85,7 +90,15 @@ function ccpuriri_list_edit_form($form, &$form_state, $type,$list=NULL) {
       '#value' => t('Save'),
   );
   
-   
+
+  $form['actions']['cancel'] = array(
+      '#type' => '',
+      '#title' => t('Cancel'),
+      '#href' => $cancleurl,
+  );
+ 
+  
+ 
   return $form;
 
 }
@@ -102,16 +115,23 @@ function ccpuriri_list_edit_form_submit($form, &$form_state) {
     
     _ccpuriri_list_add_list($list['title'],$user->uid);
     
+    $form_state['redirect'] = 'list';
+    
+    drupal_set_message(t('New list has been added.'));
+    
+    
   }
   else {
     $updatelist = new stdClass();
     
     $updatelist->title = $list['title'];
-    $updatelist->lid =$form_state['list']->lid;
+    $updatelist->lid =$form_state['#list']->lid;
     $updatelist->uid = $user->uid;
     
     ccpuriri_list_save($updatelist);
-        
+
+    $form_state['redirect'] = 'list/'.$updatelist->lid;
+    
     drupal_set_message(t('Your list change has been saved.'));
   }
  
@@ -152,11 +172,20 @@ function ccpuriri_list_edit_form_validate($form, &$form_state) {
  * Menu callback -- ask for confirmation of list deletion
  */
 function ccpuriri_list_delete_confirm($form, &$form_state, $list) {
-  $form['#list'] = $list;
+  $form_state['#list'] = $list;
   // Always provide entity id in the same form key as in the entity edit form.
   $form['lid'] = array('#type' => 'value', '#value' => $list->lid);
+  // as we do not display title
+  $question = t('Are you sure you want to delete %title?', array('%title' => $list->title));
+  
+  $form['question'] = array(
+      '#type' => 'item',
+      '#markup' => $question,
+
+  );
+  
   return confirm_form($form,
-      t('Are you sure you want to delete %title?', array('%title' => $list->title)),
+      $question,
       'list/' . $list->lid,
       t('This action cannot be undone.'),
       t('Delete'),
@@ -164,8 +193,40 @@ function ccpuriri_list_delete_confirm($form, &$form_state, $list) {
   );
 }
 
-function ccpuriri_list_delete_confirm_submit($form, &$form_state) {
+/**
+ * Validate function for deleting a custom list.
+ */
+function ccpuriri_list_delete_confirm_validate($form, &$form_state) {
+ // normally these conditions are impossible, here just to protect
  
+  $list= $form_state['#list'] ;
+  if (!isset($list) || !isset($list->lid))
+  {
+    form_set_error('info', t('Trying to delete a list which does not exist.'));
+  }
+  
+  if ($list->is_shared)
+  {
+    form_set_error('info', t('Can not delete this system list.'));
+  }
+  
+  if ($list->items_count>0)
+  {
+    form_set_error('info', t('Can not delete a list which is not empty.'));
+  }
+  
+}
+
+function ccpuriri_list_delete_confirm_submit($form, &$form_state) {
+ // to delete the list
+  $list= $form_state['#list'] ;
+  
+  ccpuriri_list_delete($list);
+  
+  $form_state['redirect'] = 'list';
+  
+  drupal_set_message( t('List %title has been deleted', array('%title' => $list->title)));
+    
 }
 
 
@@ -240,7 +301,7 @@ function _ccpuriri_list_add_list($title,$uid){
     
  
     
-    drupal_set_message(t('New list has been added.'));
+   
  
   
 }

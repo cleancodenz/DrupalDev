@@ -279,7 +279,7 @@ function _ccpuriri_get_navigation()
 
           break;
         default:
-          $tree =  menu_tree_page_data('main-menu');
+          $tree =  menu_tree_page_data('ccpuririmainnavigation');
         break;
       }
     }
