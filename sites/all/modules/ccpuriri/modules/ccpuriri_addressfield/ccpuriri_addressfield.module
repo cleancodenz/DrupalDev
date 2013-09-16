@@ -208,6 +208,8 @@ function ccpuriri_addressfield_cron_queue_info() {
 function ccpuriri_addressfield_search_update($searchResult)
 {
 
+  global $language;
+  
   $skey = $searchResult['key'];
 
   // The transaction opens here.
@@ -215,6 +217,8 @@ function ccpuriri_addressfield_search_update($searchResult)
 
   try {
 
+    $startTime=  microtime(TRUE);
+     
     // to delete old records
     db_delete('ccpuriri_addressfield_search')
     ->condition('skey', $skey)
@@ -255,12 +259,18 @@ function ccpuriri_addressfield_search_update($searchResult)
     }
     
     $query->execute();
-
-
+    
+    watchdog('ccpuriri_addressfield',
+        'Search results saved to db, time elapsed is %timeElpased', 
+        array('%timeElpased' =>  format_interval(
+            round((microtime(TRUE) - $startTime) * 1000)
+            ) 
+        ),
+    WATCHDOG_DEBUG);
   }
   catch (Exception $e) {
     $transaction->rollback();
-    watchdog_exception('ccpuriri_db', $e);
+    watchdog_exception('ccpuriri_addressfield', $e);
   }
 
 }

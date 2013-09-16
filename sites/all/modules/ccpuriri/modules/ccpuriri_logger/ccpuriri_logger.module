@@ -1,0 +1,53 @@
+<?php 
+
+/*
+ * Implements hook_cron_queue_info().
+* Save external searches to internal.
+* */
+
+function ccpuriri_logger_cron_queue_info() {
+  $queues['ccpuriri_logger_queue'] = array(
+      'worker callback' => '_ccpuriri_logger_queue_wroker',
+      'time' => 60,
+  );
+  return $queues;
+}
+
+
+function _ccpuriri_logger_queue_wroker(array $log_entry) {
+  
+  //writing to the same db table
+  
+  // The user object may not exist in all conditions, so 0 is substituted if needed.
+  $user_uid = isset($log_entry['user']->uid) ? $log_entry['user']->uid : 0;
+  
+  Database::getConnection('default', 'default')->insert('watchdog')
+  ->fields(array(
+      'uid' => $user_uid,
+      'type' => substr($log_entry['type'], 0, 64),
+      'message' => $log_entry['message'],
+      'variables' => serialize($log_entry['variables']),
+      'severity' => $log_entry['severity'],
+      'link' => substr($log_entry['link'], 0, 255),
+      'location' => $log_entry['request_uri'],
+      'referer' => $log_entry['referer'],
+      'hostname' => substr($log_entry['ip'], 0, 128),
+      'timestamp' => $log_entry['timestamp'],
+  ))
+  ->execute();
+  
+}
+
+
+/**
+ * Implements hook_watchdog().
+ *
+ * Note some values may be truncated for database column size restrictions.
+ */
+function ccpuriri_logger_watchdog(array $log_entry) {
+  // add the item into queue
+  $queue = DrupalQueue::get('ccpuriri_logger_queue');
+  $queue->createItem($log_entry);
+  
+}
+
