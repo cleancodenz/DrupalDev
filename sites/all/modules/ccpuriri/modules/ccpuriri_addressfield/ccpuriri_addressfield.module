@@ -261,10 +261,10 @@ function ccpuriri_addressfield_search_update($searchResult)
     $query->execute();
     
     watchdog('ccpuriri_addressfield',
-        'Search results saved to db, time elapsed is %timeElpased', 
-        array('%timeElpased' =>  format_interval(
-            round((microtime(TRUE) - $startTime) * 1000)
-            ) 
+        'Search results saved to db, time elapsed is %timeElpased ms', 
+        array('%timeElpased' =>  
+            round((microtime(TRUE) - $startTime) * 1000,2)
+             
         ),
     WATCHDOG_DEBUG);
   }

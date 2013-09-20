@@ -17,13 +17,12 @@ function ccpuriri_logger_cron_queue_info() {
 function _ccpuriri_logger_queue_wroker(array $log_entry) {
   
   //writing to the same db table
-  
   // The user object may not exist in all conditions, so 0 is substituted if needed.
   $user_uid = isset($log_entry['user']->uid) ? $log_entry['user']->uid : 0;
   
   Database::getConnection('default', 'default')->insert('watchdog')
   ->fields(array(
-      'uid' => $user_uid,
+      'uid' =>  $user_uid,
       'type' => substr($log_entry['type'], 0, 64),
       'message' => $log_entry['message'],
       'variables' => serialize($log_entry['variables']),
@@ -51,3 +50,29 @@ function ccpuriri_logger_watchdog(array $log_entry) {
   
 }
 
+
+/**
+ * Implements hook_module_implements_alter().
+ *
+ * we replaced dblog with this module using hook_watchdog
+ * unfortunately the reporting of logs also implemented by dblog
+ * therefore I use this hook to remove dblog_watchdog, but 
+ * other features implemented by dblog will still be valid
+ * 
+ */
+
+function ccpuriri_logger_module_implements_alter(&$implementations, $hook)
+{
+  
+  // the array is index by moudle names which have implemented this hook, and value is FALSE
+  // no ider why it is FALSE, here just simple unset the module to bypass the invoke of that hook
+  // for that module 
+  
+  if ($hook == 'watchdog' && isset($implementations['dblog'])) {
+    unset($implementations['dblog']);
+    // watch dog dblog is removed
+    watchdog('ccpuriri_logger', 'Overriding watchdog using queue/cron, but keep dblog other features like reports.');
+    
+  }
+  
+}
