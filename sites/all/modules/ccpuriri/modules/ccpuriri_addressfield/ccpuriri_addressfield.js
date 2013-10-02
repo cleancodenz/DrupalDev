@@ -156,18 +156,18 @@
 		// lat and lon will be updated by map
 
 		// update lat
-		// if (otherVaule.lat) {
-		// $('[name="field_ccpuriri_addressfield[und][0][lat]"]').val(
-		// otherVaule.lat);
-		// }
+		if (otherVaule.lat) {
+			$('[name="field_ccpuriri_addressfield[und][0][lat]"]').val(
+					otherVaule.lat);
+		 }
 
 		// update lon
-		// if (otherVaule.lon) {
-		// $('[name="field_ccpuriri_addressfield[und][0][lon]"]').val(
-		// otherVaule.lon);
-		// }
+		 if (otherVaule.lon) {
+			 $('[name="field_ccpuriri_addressfield[und][0][lon]"]').val(
+					 otherVaule.lon);
+		 }
 
-		// trigger event
+		// trigger event, to tell map move
 
 		$(Drupal.ccpuriri).trigger(Drupal.ccpuriri.AddressChangeEvent,
 				{'lon' :otherVaule.lon, 'lat' :otherVaule.lat});

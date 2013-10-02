@@ -50,7 +50,8 @@ class CCPuririListController extends DrupalDefaultEntityController {
       
       // when adding folders to another folder it will form the hierachical structure, but 
       // this is not implemented in this version      
-       
+      $startTime=  microtime(TRUE);
+      
       // set up items_count
       if ($list->is_shared)
       {
@@ -68,6 +69,14 @@ class CCPuririListController extends DrupalDefaultEntityController {
       
       $list->items_count = count($list->items) ;
       
+      watchdog('ccpuriri_list',
+          'Get the list items of a list, time elapsed is %timeElpased ms',
+          array('%timeElpased' =>
+              round((microtime(TRUE) - $startTime) * 1000,2)
+      
+          ),
+          WATCHDOG_DEBUG);
+      
       
     }
     
@@ -84,6 +93,7 @@ class CCPuririListController extends DrupalDefaultEntityController {
 function ccpuriri_list_save($list) {
   $transaction = db_transaction();
   try {
+    $startTime=  microtime(TRUE);
      
     // Load the stored entity, if any.
     if (!empty($list->lid) && !isset($list->original)) {
@@ -144,6 +154,14 @@ function ccpuriri_list_save($list) {
       
     }
     
+    watchdog('ccpuriri_list',
+        'list '.$list->lid.':'.$list->title.' saved to db, time elapsed is %timeElpased ms',
+        array('%timeElpased' =>
+            round((microtime(TRUE) - $startTime) * 1000,2)
+    
+        ),
+        WATCHDOG_DEBUG);
+    
   }
   catch (Exception $e) {
     $transaction->rollback();
@@ -165,6 +183,9 @@ function ccpuriri_list_delete($list)
   
   $transaction = db_transaction();
   try {
+
+    $startTime=  microtime(TRUE);
+    
     // delete in reference table
     // even though it is not necessary, but still do it to keep data integrity
     db_delete('ccpuriri_list_item')
@@ -185,6 +206,14 @@ function ccpuriri_list_delete($list)
       cache_clear_all($cid,'cache_ccpuriri');
       
     }
+    
+    watchdog('ccpuriri_list',
+        'list '.$list->lid.':'.$list->title.' is deleted, time elapsed is %timeElpased ms',
+        array('%timeElpased' =>
+            round((microtime(TRUE) - $startTime) * 1000,2)
+    
+        ),
+        WATCHDOG_DEBUG);
     
   }
   catch (Exception $e) {
@@ -329,6 +358,8 @@ function ccpuriri_list_load_shared() {
  * @see ccpuriri_list_load()
  */
 function ccpuriri_list_load_user() {
+
+  $startTime=  microtime(TRUE);
   
   $lists = &drupal_static(__FUNCTION__);
   
@@ -352,6 +383,14 @@ function ccpuriri_list_load_user() {
     }
     
   }
+  
+  watchdog('ccpuriri_list',
+      'User '.$user->uid.' defined lists are loaded, time elapsed is %timeElpased ms',
+      array('%timeElpased' =>
+          round((microtime(TRUE) - $startTime) * 1000,2)
+  
+      ),
+      WATCHDOG_DEBUG);
   
   return $lists;
 }

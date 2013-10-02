@@ -455,6 +455,10 @@ function _ccpuriri_addressfield_read_geocode($result)
 
 function _ccpuriri_addressfield_search_internal($search, &$matches)
 {
+  
+  $startTime=  microtime(TRUE);
+  
+  
   $result = db_query('SELECT
       skey, formatted_address, country,
       administrative_area, sub_administrative_area, locality,
@@ -483,6 +487,14 @@ function _ccpuriri_addressfield_search_internal($search, &$matches)
 
   }
 
+  watchdog('ccpuriri_addressfield',
+      'Search cached results ccpuriri_addressfield_search for '.$search.', time elapsed is %timeElpased ms',
+      array('%timeElpased' =>
+          round((microtime(TRUE) - $startTime) * 1000,2)
+  
+      ),
+      WATCHDOG_DEBUG);
+  
   return $internalexists;
 
 }
@@ -496,11 +508,23 @@ function _ccpuriri_addressfield_search_external($search, &$matches)
       'sensor' => 'false',
   );
 
+  $startTime=  microtime(TRUE);
+  
   $url = CCPURIRI_ADDRESSFIELD_AUTOCOMPLETE_URL . '/' . CCPURIRI_ADDRESSFIELD_AUTOCOMPLETE_FORMAT . '?' . drupal_http_build_query($params);
   $response = drupal_http_request($url);
 
 
   if ($response->code == 200) {
+    
+    watchdog('ccpuriri_addressfield',
+        'querying '.$url.', time elapsed is %timeElpased ms',
+        array('%timeElpased' =>
+            round((microtime(TRUE) - $startTime) * 1000,2)
+    
+        ),
+        WATCHDOG_DEBUG);
+    
+    
     $data = json_decode($response->data);
     switch ($data->status)
     {

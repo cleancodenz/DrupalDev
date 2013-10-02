@@ -25,6 +25,7 @@
 			layers.overlay = new OpenLayers.Layer.Vector(
 					'Overlay',
 					{
+			
 						styleMap : new OpenLayers.StyleMap(
 								{
 									externalGraphic : 'http://www.openlayers.org/dev/img/marker-gold.png',
@@ -33,6 +34,10 @@
 									graphicYOffset : -24,
 									title : '${tooltip}'
 								})
+							
+					
+						
+							
 					});
 
 			// We add the marker with a tooltip text to the overlay
@@ -42,8 +47,20 @@
 
 			layers.overlay.addFeatures([ layers.pointFeature ]);
 
+			/*
+			layers.circleFeature = new OpenLayers.Geometry.Polygon.createRegularPolygon
+			(
+				myLocation,
+			    50000, //radius, map units
+			    40, // sides
+			    0
+			);
+			
+			layers.overlay.addFeatures([layers.pointFeature, layers.circleFeature ]);
+			*/
 			map.addLayer(layers.overlay);
 
+		
 			// A popup with some information about our location
 			layers.popup = new OpenLayers.Popup.Anchored("Popup", mapCenter,
 					new OpenLayers.Size(60, 60),
@@ -54,9 +71,37 @@
 
 			// and add the popup to it.
 			map.addPopup(layers.popup);
+			
+			
+			
+			
+			var mapCentralMoveTo = function (mapcenter) {
+				
+				// update point feature
+				layers.pointFeature.move(mapcenter);
+				// update popup
+				layers.popup.lonlat = mapcenter;
+				layers.popup.updatePosition();
 
+			}
+			
+		
+			var updateEventHandler = function(){
+				// update
+				mapCenter = map.getCenter();
+
+				mapCentralMoveTo(mapCenter);		
+				// update form fields
+				mapCenter.transform(layers.baseProjection,
+						layers.defaultProjection);
+
+				$('#ccpuriri_openlayers_lat').val(mapCenter.lat);
+				$('#ccpuriri_openlayers_lon').val(mapCenter.lon);
+				
+			}
+			
 			// register events
-
+			
 			map.events.register("move", null, updateEventHandler);
 			map.events.register("zoomend", null, updateEventHandler);
 			
@@ -75,28 +120,8 @@
 					
 			);
 			
-			var updateEventHandler = function(){
-				// update
-				mapCenter = map.getCenter();
-
-				mapCentralMoveTo(mapCenter);		
-				// update form fields
-				mapCenter.transform(layers.baseProjection,
-						layers.defaultProjection);
-
-				$('#ccpuriri_openlayers_lat').val(mapCenter.lat);
-				$('#ccpuriri_openlayers_lon').val(mapCenter.lon);
-				
-			}
-			var mapCentralMoveTo = function (mapcenter) {
-			
-				// update point feature
-				layers.pointFeature.move(mapcenter);
-				// update popup
-				layers.popup.lonlat = mapcenter;
-				layers.popup.updatePosition();
-
-			}
+	
+	
 			
 		}
 	};

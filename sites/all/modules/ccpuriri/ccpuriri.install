@@ -82,6 +82,8 @@ function ccpuriri_disable() {
 * */
 function  _ccpuriri_field_addressfield_add()
 {
+  $startTime=  microtime(TRUE);
+  
   // create addressfield
   // to clear the cache to include the field type defined in this module
 
@@ -101,6 +103,9 @@ function  _ccpuriri_field_addressfield_add()
 
     field_create_field($field);
 
+ 
+    
+    
     // Create the instance if needed.
     // add the field to user, with some widget settings
     if (!field_read_instance('user', $fieldname , 'user', array('include_inactive' => TRUE))) {
@@ -140,6 +145,14 @@ function  _ccpuriri_field_addressfield_add()
       field_create_instance($instance);
     }
 
+    watchdog('ccpuriri',
+        'field_ccpuriri_addressfield is added, time elapsed is %timeElpased ms',
+        array('%timeElpased' =>
+            round((microtime(TRUE) - $startTime) * 1000,2)
+    
+        ),
+        WATCHDOG_DEBUG);
+    
   }
 
 }
@@ -149,6 +162,8 @@ function  _ccpuriri_field_addressfield_add()
 * */
 function   _ccpuriri_field_contactfield_add()
 {
+
+  $startTime=  microtime(TRUE);
   // create contactfield
   // to clear the cache to include the field type defined in this module
 
@@ -204,6 +219,14 @@ function   _ccpuriri_field_contactfield_add()
       field_create_instance($instance);
     }
 
+    watchdog('ccpuriri',
+        'field_ccpuriri_contactfield is added, time elapsed is %timeElpased ms',
+        array('%timeElpased' =>
+            round((microtime(TRUE) - $startTime) * 1000,2)
+    
+        ),
+        WATCHDOG_DEBUG);
+    
   }
 
 }
@@ -214,6 +237,7 @@ function   _ccpuriri_field_contactfield_add()
 * */
 function _ccpuriri_menu_blocks_custom_add(){
 
+  $startTime=  microtime(TRUE);
   // 1. create a custom menu for header-right, login/register etc
   $secondarymenu = array(
       'menu_name' => 'secondary_top',
@@ -223,7 +247,16 @@ function _ccpuriri_menu_blocks_custom_add(){
 
   menu_save($secondarymenu);
 
+  watchdog('ccpuriri',
+      'secondary_top menu block is added, time elapsed is %timeElpased ms',
+      array('%timeElpased' =>
+          round((microtime(TRUE) - $startTime) * 1000,2)
   
+      ),
+      WATCHDOG_DEBUG);
+  
+  
+  $startTime=  microtime(TRUE);
   //2. create ccpuririusernavigation
   //This is group for account related menu items, only displayed when url is user/1
   //It will be switched on by main navigation block CCPuriri Navigation
@@ -237,6 +270,16 @@ function _ccpuriri_menu_blocks_custom_add(){
 
   menu_save($ccpuririusernavigationmenu);
   
+  
+  watchdog('ccpuriri',
+      'ccpuririusernavigation menu block is added, time elapsed is %timeElpased ms',
+      array('%timeElpased' =>
+          round((microtime(TRUE) - $startTime) * 1000,2)
+  
+      ),
+      WATCHDOG_DEBUG);
+  
+  $startTime=  microtime(TRUE);
   // 3 list navigation is added by list module
   
   //4. create ccpuririmainnavigation
@@ -253,6 +296,13 @@ function _ccpuriri_menu_blocks_custom_add(){
   
   menu_save($ccpuririmainnavigationmenu);
 
+  watchdog('ccpuriri',
+      'ccpuririmainnavigation menu block is added, time elapsed is %timeElpased ms',
+      array('%timeElpased' =>
+          round((microtime(TRUE) - $startTime) * 1000,2)
+  
+      ),
+      WATCHDOG_DEBUG);
 
   // Create a menu link for user/% in usernavigation menu.
   /*
@@ -292,6 +342,7 @@ function _ccpuriri_menu_blocks_custom_add(){
 * */
 function  _ccpuriri_field_addressfield_remove(){
 
+  $startTime=  microtime(TRUE);
   //delete the field
   field_delete_field('field_ccpuriri_addressfield');
 
@@ -299,6 +350,15 @@ function  _ccpuriri_field_addressfield_remove(){
   //if this is the only field remaining.
   field_purge_batch(10);
 
+  watchdog('ccpuriri',
+      'field_ccpuriri_addressfield is deleted, time elapsed is %timeElpased ms',
+      array('%timeElpased' =>
+          round((microtime(TRUE) - $startTime) * 1000,2)
+  
+      ),
+      WATCHDOG_DEBUG);
+  
+  
 }
 
 /*
@@ -306,6 +366,8 @@ function  _ccpuriri_field_addressfield_remove(){
 * */
 function  _ccpuriri_field_contactfield_remove(){
 
+  $startTime=  microtime(TRUE);
+  
   //delete the field
   field_delete_field('field_ccpuriri_contactfield');
 
@@ -313,12 +375,21 @@ function  _ccpuriri_field_contactfield_remove(){
   //if this is the only field remaining.
   field_purge_batch(10);
 
+  watchdog('ccpuriri',
+      'field_ccpuriri_contactfield is deleted, time elapsed is %timeElpased ms',
+      array('%timeElpased' =>
+          round((microtime(TRUE) - $startTime) * 1000,2)
+  
+      ),
+      WATCHDOG_DEBUG);
+  
 }
 /*
  * Remove the menu blocks
 * */
 function  _ccpuriri_menu_blocks_custom_remove(){
 
+  $startTime=  microtime(TRUE);
   // 1. delete custom menu
   $secondarymenu = array(
       'menu_name' => 'secondary_top',
@@ -341,6 +412,15 @@ function  _ccpuriri_menu_blocks_custom_remove(){
   
   menu_delete($ccpuririmainnavigation);
 
+  watchdog('ccpuriri',
+      'Menu blocks are deleted, time elapsed is %timeElpased ms',
+      array('%timeElpased' =>
+          round((microtime(TRUE) - $startTime) * 1000,2)
+  
+      ),
+      WATCHDOG_DEBUG);
+  
+  
 }
 
 /*
@@ -349,6 +429,8 @@ function  _ccpuriri_menu_blocks_custom_remove(){
 * */
 function _ccpuriri_menu_system_main_add_list(){
 
+  $startTime=  microtime(TRUE);
+  
   //add the list to main menu
 
   $list_item = array(
@@ -406,6 +488,14 @@ function _ccpuriri_menu_system_main_add_list(){
       $i =$i+10;
     }
   }
+  
+  watchdog('ccpuriri',
+      'List menu items are added, time elapsed is %timeElpased ms',
+      array('%timeElpased' =>
+          round((microtime(TRUE) - $startTime) * 1000,2)
+  
+      ),
+      WATCHDOG_DEBUG);
 }
 
 /*
@@ -414,6 +504,8 @@ function _ccpuriri_menu_system_main_add_list(){
 */
 function _ccpuriri_menu_system_main_remove_list(){
 
+  $startTime=  microtime(TRUE);
+  
   $menuname= "main-menu";
 
   $module = "ccpuriri_list";
@@ -432,6 +524,15 @@ function _ccpuriri_menu_system_main_remove_list(){
   ->condition('module', $module);
 
   $delete_query->execute();
+  
+  watchdog('ccpuriri',
+      'List menu links are removed, time elapsed is %timeElpased ms',
+      array('%timeElpased' =>
+          round((microtime(TRUE) - $startTime) * 1000,2)
+  
+      ),
+      WATCHDOG_DEBUG);
+  
 
 }
 
@@ -442,6 +543,9 @@ function _ccpuriri_menu_system_main_remove_list(){
 *
 * */
 function _ccpuriri_menu_main_add_items(){
+
+  $startTime=  microtime(TRUE);
+  
   // first add home to it
   $home_item = array(
       'menu_name' => 'ccpuririmainnavigation',
@@ -502,6 +606,14 @@ function _ccpuriri_menu_main_add_items(){
   );
     
   menu_link_save($account_item);
+  
+  watchdog('ccpuriri',
+      'Menu links home, list my account etc are added, time elapsed is %timeElpased ms',
+      array('%timeElpased' =>
+          round((microtime(TRUE) - $startTime) * 1000,2)
+  
+      ),
+      WATCHDOG_DEBUG);
 }
 
 /*
@@ -510,6 +622,8 @@ function _ccpuriri_menu_main_add_items(){
 *
 * */
 function _ccpuriri_menu_main_remove_items(){
+  
+  $startTime=  microtime(TRUE);
   
   $menuname= "ccpuririmainnavigation";
   
@@ -521,6 +635,14 @@ function _ccpuriri_menu_main_remove_items(){
   ->condition('module', $module);
   
   $delete_query->execute();
+  
+  watchdog('ccpuriri',
+      'ccpuririmainnavigation Menu links are removed, time elapsed is %timeElpased ms',
+      array('%timeElpased' =>
+          round((microtime(TRUE) - $startTime) * 1000,2)
+  
+      ),
+      WATCHDOG_DEBUG);
   
 }
 
