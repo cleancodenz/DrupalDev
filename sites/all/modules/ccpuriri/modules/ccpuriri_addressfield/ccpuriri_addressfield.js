@@ -182,6 +182,9 @@
 		var db = this;
 		this.searchString = searchString;
 
+		// extend the delay to 1 second
+		this.delay =1000;
+		
 		// See if this string needs to be searched for anyway.
 		searchString = searchString.replace(/^\s+|\s+$/, '');
 		if (searchString.length <= 3
