@@ -21,7 +21,29 @@
 			var myLocation = new OpenLayers.Geometry.Point(mapCenter.lon,
 					mapCenter.lat);
 
-			// The overlay layer for our marker, with a simple diamond as symbol
+			
+		     /*
+	           * Mark style
+	           */
+	        var style_mark = OpenLayers.Util.extend({}, OpenLayers.Feature.Vector.style['default']);
+	        // each of the three lines below means the same, if only one of
+	        // them is active: the image will have a size of 24px, and the
+	        // aspect ratio will be kept
+	        // style_mark.pointRadius = 12;
+	        // style_mark.graphicHeight = 24; 
+	        // style_mark.graphicWidth = 24;
+
+	        // if graphicWidth and graphicHeight are both set, the aspect ratio
+	        // of the image will be ignored
+	        style_mark.graphicWidth = 24;
+	        style_mark.graphicHeight = 20;
+	        style_mark.graphicXOffset = 10; // default is -(style_mark.graphicWidth/2);
+	        style_mark.graphicYOffset = -style_mark.graphicHeight;
+	        style_mark.externalGraphic = 'http://www.openlayers.org/dev/img/marker.png';
+	        // title only works in Firefox and Internet Explorer
+	        style_mark.title = '${tooltip}';
+	        
+			/*
 			layers.overlay = new OpenLayers.Layer.Vector(
 					'Overlay',
 					{
@@ -39,25 +61,29 @@
 						
 							
 					});
-
+			*/
+	    	layers.overlay = new OpenLayers.Layer.Vector('Overlay');
+	    	
+	        
 			// We add the marker with a tooltip text to the overlay
 			layers.pointFeature = new OpenLayers.Feature.Vector(myLocation, {
-				tooltip : 'OpenLayers'
+				tooltip : 'OpenLayers',
+				style: style_mark,
 			});
 
-			layers.overlay.addFeatures([ layers.pointFeature ]);
+		//	layers.overlay.addFeatures([ layers.pointFeature ]);
 
-			/*
-			layers.circleFeature = new OpenLayers.Geometry.Polygon.createRegularPolygon
+	
+			layers.circleFeature =new OpenLayers.Feature.Vector(new OpenLayers.Geometry.Polygon.createRegularPolygon
 			(
 				myLocation,
-			    50000, //radius, map units
+			    800, //radius, map units 800m 
 			    40, // sides
-			    0
-			);
+			    0,
+			));
 			
 			layers.overlay.addFeatures([layers.pointFeature, layers.circleFeature ]);
-			*/
+		
 			map.addLayer(layers.overlay);
 
 		
