@@ -5,7 +5,7 @@
 		// set the base layer and default zoom
 		   // funy thing is it knows these are baselayer while marker layer is treated as overlay
         
-		this.zoom = 12;
+		this.zoom = 15;
 		
 		this.map.addLayer(new OpenLayers.Layer.Google(
                 "Google Streets",

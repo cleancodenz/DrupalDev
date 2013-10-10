@@ -67,36 +67,25 @@
 	        
 			// We add the marker with a tooltip text to the overlay
 			layers.pointFeature = new OpenLayers.Feature.Vector(myLocation, {
-				tooltip : 'OpenLayers',
-				style: style_mark,
-			});
+				tooltip : 'It is right here',
+			},style_mark);
 
-		//	layers.overlay.addFeatures([ layers.pointFeature ]);
-
+		
 	
-			layers.circleFeature =new OpenLayers.Feature.Vector(new OpenLayers.Geometry.Polygon.createRegularPolygon
-			(
-				myLocation,
-			    800, //radius, map units 800m 
-			    40, // sides
-			    0,
-			));
+			layers.circleFeature =new OpenLayers.Feature.Vector(
+					new OpenLayers.Geometry.Polygon.createRegularPolygon
+					(myLocation,
+							800, //radius, map units 800m 
+							40, // sides
+							0
+					)
+			);
 			
-			layers.overlay.addFeatures([layers.pointFeature, layers.circleFeature ]);
+		
 		
 			map.addLayer(layers.overlay);
 
-		
-			// A popup with some information about our location
-			layers.popup = new OpenLayers.Popup.Anchored("Popup", mapCenter,
-					new OpenLayers.Size(60, 60),
-					'It is right here', // this can be any html
-					null, true // <--
-																			// otherwise
-			);
-
-			// and add the popup to it.
-			map.addPopup(layers.popup);
+			layers.overlay.addFeatures([layers.pointFeature]);
 			
 			
 			
@@ -106,8 +95,8 @@
 				// update point feature
 				layers.pointFeature.move(mapcenter);
 				// update popup
-				layers.popup.lonlat = mapcenter;
-				layers.popup.updatePosition();
+			//	layers.popup.lonlat = mapcenter;
+			//	layers.popup.updatePosition();
 
 			}
 			
