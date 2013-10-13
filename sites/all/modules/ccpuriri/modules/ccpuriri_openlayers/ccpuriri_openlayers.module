@@ -49,7 +49,9 @@ function ccpuriri_openlayers_element_info() {
       '#map_attributes' => array(), //custom property, used by map div
       '#default_lat' => 0, // custom property
       '#default_lon' => 0, // custom property
-      '#description' =>'If the center of map is not where the physical address is, you can pan the map to point the center to the right place so that accurate coordinates can be saved and used to provid geo services.',
+      //do not use #description, as it will trigger form_element theme which is overriden by bootstrap
+      // it will have -8 top margin. 
+      '#map_description' =>'If the center of map is not where the physical address is, you can pan the map to point the center to the right place so that accurate coordinates can be saved and used to provid geo services.',
   );
   return $types;
 
@@ -170,9 +172,16 @@ function theme_ccpuriri_openlayers_coordinate_wrapper($variables) {
   if (strlen($element['#children']) > 0) {
     $output = '<div '. drupal_attributes($element['#attributes']) . '>';
     //add a map div
+    // #map_attributes defined in container of address field 
     $output .='<div id="map"'.drupal_attributes($element['#map_attributes']) . '></div>' ;
     // two hidden columns lat and lon
     $output .= $element['#children'];
+    
+    if(!empty($element['#map_description']))
+    {
+      $output .='<div>'.$element['#map_description'].'</div>';
+    } 
+    
     $output .= '</div>';
     return $output;
   }

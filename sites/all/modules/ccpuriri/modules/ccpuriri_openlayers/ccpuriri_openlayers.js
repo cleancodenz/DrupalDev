@@ -97,6 +97,8 @@
 		
 	};
 	
+	
+	
 	Drupal.ccpuriri.openlayers.Map.prototype.MapShow =function(lon,lat){
 		
 		   var myLocation = 

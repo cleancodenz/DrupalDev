@@ -217,7 +217,7 @@ function ccpuriri_addressfield_street(&$elements, $address)
   $elements['map_block'] = array(
       '#type' => 'ccpuriri_openlayers_coordinate',
       '#attributes' => array('class' => array('map-block')),
-      '#map_attributes' => array('style' => array('width: 512px; height: 256px; border: 1px solid #ccc;')),
+      '#map_attributes' => array('style' => array('width: 512px; height: 512px; border: 1px solid #ccc;')),
       '#weight' => 40,
       '#default_lat' => $address['lat'], 
       '#default_lon' => $address['lon'],
