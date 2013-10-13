@@ -382,16 +382,17 @@ function ccpuriri_list_load_user() {
       cache_set($cid, $lists, 'cache_ccpuriri');
     }
     
+    watchdog('ccpuriri_list',
+        'User '.$user->uid.' defined lists are loaded, time elapsed is %timeElpased ms',
+        array('%timeElpased' =>
+            round((microtime(TRUE) - $startTime) * 1000,2)
+    
+        ),
+        WATCHDOG_DEBUG);
+    
+    
   }
-  
-  watchdog('ccpuriri_list',
-      'User '.$user->uid.' defined lists are loaded, time elapsed is %timeElpased ms',
-      array('%timeElpased' =>
-          round((microtime(TRUE) - $startTime) * 1000,2)
-  
-      ),
-      WATCHDOG_DEBUG);
-  
+   
   return $lists;
 }
 

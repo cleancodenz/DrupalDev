@@ -155,7 +155,7 @@ function ccpuriri_list_edit_form_validate($form, &$form_state) {
     
     }else{
     $noduplicate =  _ccpuriri_list_title_noduplicate(
-        $list['title'],$user->uid, $form_state['list']->lid);
+        $list['title'],$user->uid, $form_state['#list']->lid);
       
   }
   
