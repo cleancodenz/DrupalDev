@@ -11,6 +11,20 @@ function ccpuriri_common_element_info() {
       '#tag' => 'div', // custom tag
       '#id' => '',// set a id for this wrapper
   );
+  
+  // buttons with title(which is set as an attribute)
+  $types['ccpuriri_titlebutton'] = array(
+      '#input' => TRUE,
+      '#name' => 'ccpurirititlebuttonop',
+      '#button_type' => 'submit',
+      '#executes_submit_callback' => FALSE,
+      '#limit_validation_errors' => FALSE,
+      '#process' => array('ajax_process_form'),
+      '#theme_wrappers' => array('ccpuriri_titlebutton'),
+      '#attributes' => array(),
+      
+  );
+  
   return $types;
 }
 
@@ -19,6 +33,9 @@ function ccpuriri_common_element_info() {
  */
 function ccpuriri_common_theme() {
   $hooks['ccpuriri_container'] = array(
+      'render element' => 'element',
+  );
+  $hooks['ccpuriri_titlebutton'] = array(
       'render element' => 'element',
   );
   return $hooks;
@@ -61,4 +78,21 @@ function ccpuriri_container_process($element, &$form_state, $form) {
   return $element;
 }
 
+/**
+ * Render a button which has a title
+ * theme wrapper for ccpuriri_titlebutton
+ */
+function theme_ccpuriri_titlebutton($variables) {
+  $element = $variables['element'];
 
+  // old way
+  $element['#attributes']['type'] = 'submit';
+  element_set_attributes($element, array('id', 'name', 'value'));
+  
+  $element['#attributes']['class'][] = 'form-' . $element['#button_type'];
+  if (!empty($element['#attributes']['disabled'])) {
+    $element['#attributes']['class'][] = 'form-button-disabled';
+  }
+  
+  return '<input' . drupal_attributes($element['#attributes']) . ' />';
+}

@@ -598,5 +598,55 @@ function ccpuriri_list_to_arg($arg) {
   return $arg;
 }
 
+/**
+ *
+ *hook_node_view
+ *
+ * add add to list and remove from list functionalities to a rental node view,
+ *
+ *
+ */
+function ccpuriri_list_node_view($node, $view_mode) {
+  if ($view_mode == 'full') {
+    // Only append comments when we are building a node on its own node detail
+    // page. We compare $node and $page_node to ensure that comments are not
+    // appended to other nodes shown on the page, for example a node_reference
+    // displayed in 'full' view mode within another node.
+    if ($node->type == 'ccpuriri_rental'  && node_is_page($node) ) {
+  
+      $node->content['ccpuriri_list'] = ccpuriri_list_node_page_additions($node);
+      
+    }
+  }
+}
 
+function ccpuriri_list_node_page_additions($node) {
+  $additions = array( );
+  
+  $form_args= array(
+      'nid'=>  $node->nid,
+      'annonymoususer'=>user_is_anonymous(),
+      
+  );
+    
+  $build = drupal_get_form("ccpuriri_list_addremove_form",  $form_args);
+  $additions['ccpuriri_list_addremove_form'] = $build;
+    
+  return $additions;
+  
+}
+
+/**
+ * **/
+function ccpuriri_list_addremove_form($form, &$form_state, $args)
+{
+  if ($args['annonymoususer'])
+  {
+      
+  }
+  else
+  {
+    // logged in user
+  }
+}
 
