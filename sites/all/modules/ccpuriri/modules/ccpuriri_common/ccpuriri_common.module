@@ -11,20 +11,25 @@ function ccpuriri_common_element_info() {
       '#tag' => 'div', // custom tag
       '#id' => '',// set a id for this wrapper
   );
-  
-  // buttons with title(which is set as an attribute)
-  $types['ccpuriri_titlebutton'] = array(
-      '#input' => TRUE,
-      '#name' => 'ccpurirititlebuttonop',
-      '#button_type' => 'submit',
-      '#executes_submit_callback' => FALSE,
-      '#limit_validation_errors' => FALSE,
-      '#process' => array('ajax_process_form'),
-      '#theme_wrappers' => array('ccpuriri_titlebutton'),
+
+  //button with dropdown menu, it is not submit button, only way it works is ajax
+  $types['ccpuriri_dropdownbutton'] = array(
+      '#process' => array('ccpuriri_dropdownbutton_process','ajax_process_form'),
+      '#theme_wrappers' => array('ccpuriri_dropdownbutton'),
       '#attributes' => array(),
-      
+
+      /*
+       * other possible attributes
+  *
+  * '#ajax' - normal ajax setting will be used by underneath hidden input
+  * '#colorcode'=>'primary','success','info','warning','danger', no value means 'default'
+  * '#items' =>array() of dropdown items with structure of
+  *             array('id'=> $list->lid,'description' => $list->title, when 'id' is zero, then it is a devider
   );
-  
+  *
+  * */
+  );
+
   return $types;
 }
 
@@ -35,7 +40,7 @@ function ccpuriri_common_theme() {
   $hooks['ccpuriri_container'] = array(
       'render element' => 'element',
   );
-  $hooks['ccpuriri_titlebutton'] = array(
+  $hooks['ccpuriri_dropdownbutton'] = array(
       'render element' => 'element',
   );
   return $hooks;
@@ -53,8 +58,8 @@ function theme_ccpuriri_container($variables) {
   $element['#children'] = trim($element['#children']);
   if (strlen($element['#children']) > 0) {
     $output = '<' . $element['#tag'] .
-      (empty($element['#id'])? '': ' id='.$element['#id'])
-     . drupal_attributes($element['#attributes']) . '>';
+    (empty($element['#id'])? '': ' id='.$element['#id'])
+    . drupal_attributes($element['#attributes']) . '>';
     $output .= $element['#children'];
     $output .= '</' . $element['#tag'] . ">";
     return $output;
@@ -78,21 +83,109 @@ function ccpuriri_container_process($element, &$form_state, $form) {
   return $element;
 }
 
+
+/**
+ * Form API process function: 
+ * add a hidden input which will trigger ajax
+ *  
+ */
+function ccpuriri_dropdownbutton_process($element, &$form_state, $form) {
+   
+  // always having a tree structure for UI
+  $elements['#tree'] = true;
+  
+  $element['selecteditem'] = array(
+      '#type'=>'hidden',
+      '#default_value' =>'0',
+      );
+  
+  if(!empty($element['#ajax']))
+  {
+    $element['selecteditem']['#ajax'] = $element['#ajax'];
+    unset($element['#ajax']);  
+    
+  }   
+  return $element;
+}
+
+
 /**
  * Render a button which has a title
  * theme wrapper for ccpuriri_titlebutton
  */
-function theme_ccpuriri_titlebutton($variables) {
+function theme_ccpuriri_dropdownbutton($variables) {
   $element = $variables['element'];
-
-  // old way
-  $element['#attributes']['type'] = 'submit';
+  
   element_set_attributes($element, array('id', 'name', 'value'));
   
-  $element['#attributes']['class'][] = 'form-' . $element['#button_type'];
+  
+  // create attributes array for dropdown button
+  $dropdownattributes = array(); 
+
+  $element['#attributes']['type'] = 'button';
+  
+  $dropdownattributes['type'] ='button';
+   
+  
   if (!empty($element['#attributes']['disabled'])) {
     $element['#attributes']['class'][] = 'form-button-disabled';
+    $dropdownattributes['class'][] = 'form-button-disabled';
+    
   }
+
+  $element['#attributes']['class'][] = 'btn';
+  $dropdownattributes['class'][] ='btn';
   
-  return '<input' . drupal_attributes($element['#attributes']) . ' />';
+  // button color
+  if (!empty($element['#colorcode']))
+  {
+    $element['#attributes']['class'][] = 'btn-'.$element['#colorcode'];
+    
+    $dropdownattributes['class'][] ='btn-'.$element['#colorcode'];
+  }
+  else
+  {
+    $element['#attributes']['class'][] = 'btn-default';
+    $dropdownattributes['class'][] ='btn-default';
+  }
+
+  // these two only for dropdown
+  
+  $dropdownattributes['class'][] = 'dropdown-toggle';
+  
+  $dropdownattributes['data-toggle'] = 'dropdown';
+
+  //move value to text
+  $val = '';
+
+  if (!empty($element['#attributes']['value']))
+  {
+    $val = $element['#attributes']['value'];
+    unset($element['#attributes']['value']);
+  }
+
+  $buttonOutput ='<button '.drupal_attributes($element['#attributes']).
+  '>'.$val.'</button>';
+  
+  $dropdownmenuOutput = '<button '.drupal_attributes($dropdownattributes).
+  '><span class="caret"></span></button>';
+
+  $dropdownmenuOutput .='<ul class="dropdown-menu" role="menu">';
+
+  foreach($element['#items'] as $item)
+  {
+    if ($item['id']==0)
+    {
+      $dropdownmenuOutput.='<li class="divider"></li>';
+    }
+    else
+    {
+      $dropdownmenuOutput.='<li><a href="#">'.$item['description'].'</a></li>';
+    }
+  }
+
+  $dropdownmenuOutput.='</ul>';
+  
+  return '<div class="btn-group">' . $buttonOutput.$element['#children'].$dropdownmenuOutput. ' /div>';
+
 }

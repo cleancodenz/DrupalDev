@@ -38,48 +38,48 @@ function ccpuriri_list_entity_info() {
 class CCPuririListController extends DrupalDefaultEntityController {
 
   function attachLoad(&$queried_lists, $revision_id = FALSE) {
-    
+
     foreach ($queried_lists as  $key => $list) {
-      
+
       global $user;
-      
+
       // set up is_shared
       $list->is_shared = $list->uid==0;
-      
+
       // set up has_childfolders
-      
-      // when adding folders to another folder it will form the hierachical structure, but 
-      // this is not implemented in this version      
+
+      // when adding folders to another folder it will form the hierachical structure, but
+      // this is not implemented in this version
       $startTime=  microtime(TRUE);
-      
+
       // set up items_count
       if ($list->is_shared)
       {
         $items = db_query('SELECT l.entity_id FROM {ccpuriri_list_item} l  WHERE l.lid = :lid AND l.uid =:uid',
-             array(':lid' =>$list->lid, ':uid'=>$user->uid))->fetchAllAssoc('entity_id');
+            array(':lid' =>$list->lid, ':uid'=>$user->uid))->fetchAllAssoc('entity_id');
       }
       else
       {
         $items = db_query('SELECT l.entity_id FROM {ccpuriri_list_item} l  WHERE l.lid = :lid',
             array(':lid' =>$list->lid))->fetchAllAssoc('entity_id');
-        
+
       }
-      
+
       $list->items=  isset($items)? $items:array();
-      
+
       $list->items_count = count($list->items) ;
-      
+
       watchdog('ccpuriri_list',
           'Get the list items of a list, time elapsed is %timeElpased ms',
           array('%timeElpased' =>
               round((microtime(TRUE) - $startTime) * 1000,2)
-      
+
           ),
           WATCHDOG_DEBUG);
-      
-      
+
+
     }
-    
+
     // Call the default attachLoad() method. This will add fields and call
     parent::attachLoad($queried_lists, $revision_id);
   }
@@ -88,8 +88,8 @@ class CCPuririListController extends DrupalDefaultEntityController {
 
 /*
  * Save a list with accesses, if user id is 0, means it is a shared folder by everyone
- * Normally it is private folder, visible to owner 
- * */
+* Normally it is private folder, visible to owner
+* */
 function ccpuriri_list_save($list) {
   $transaction = db_transaction();
   try {
@@ -125,14 +125,14 @@ function ccpuriri_list_save($list) {
       // For existing list, update the list record which matches the value of
       // $list->lid.
       drupal_write_record('ccpuriri_list', $list, 'lid');
-      
+
       $op = 'update';
-      
+
     }
-   
-    
+     
+
     module_invoke_all('entity_' . $op, $list, 'ccpuriri_list');
- 
+
     // Clear internal properties.
     unset($list->is_new);
     unset($list->original);
@@ -141,27 +141,27 @@ function ccpuriri_list_save($list) {
      
     // Ignore slave server temporarily to give time for the
     db_ignore_slave();
-    
+
     // clear the list cache
-   
+     
     if ($list->uid > 0)
     {
       // only customized list can be changed
       // shared list saved by on install, can not be changed, this will only be called once to create them
-      
+
       $cid ='ccpuriri_list_user'.$list->uid;
       cache_clear_all($cid,'cache_ccpuriri');
-      
+
     }
-    
+
     watchdog('ccpuriri_list',
         'list '.$list->lid.':'.$list->title.' saved to db, time elapsed is %timeElpased ms',
         array('%timeElpased' =>
             round((microtime(TRUE) - $startTime) * 1000,2)
-    
+
         ),
         WATCHDOG_DEBUG);
-    
+
   }
   catch (Exception $e) {
     $transaction->rollback();
@@ -172,20 +172,20 @@ function ccpuriri_list_save($list) {
 
 /*
  * Delete a list when it is empty, no items and no child folders, no shared folder
- * Deletion includes list, access  
- * 
- * */
+* Deletion includes list, access
+*
+* */
 
 function ccpuriri_list_delete($list)
 {
   if ($list->is_shared || $list->items_count>0)
     return;
-  
+
   $transaction = db_transaction();
   try {
 
     $startTime=  microtime(TRUE);
-    
+
     // delete in reference table
     // even though it is not necessary, but still do it to keep data integrity
     db_delete('ccpuriri_list_item')
@@ -196,25 +196,25 @@ function ccpuriri_list_delete($list)
     ->condition('lid', $list->lid)
     ->execute();
     //clear the cache
-    
-     if ($list->uid > 0)
+
+    if ($list->uid > 0)
     {
       // only customized list can be changed
       // shared list saved by on install, can not be changed, this will only be called once to create them
-      
+
       $cid ='ccpuriri_list_user'.$list->uid;
       cache_clear_all($cid,'cache_ccpuriri');
-      
+
     }
-    
+
     watchdog('ccpuriri_list',
         'list '.$list->lid.':'.$list->title.' is deleted, time elapsed is %timeElpased ms',
         array('%timeElpased' =>
             round((microtime(TRUE) - $startTime) * 1000,2)
-    
+
         ),
         WATCHDOG_DEBUG);
-    
+
   }
   catch (Exception $e) {
     $transaction->rollback();
@@ -239,25 +239,25 @@ function ccpuriri_list_delete($list)
  * @see ccpuriri_list_load_multiple()
  */
 function ccpuriri_list_load($lid) {
-  
+
   //to check if it shared
-  
+
   $sharedlists= ccpuriri_list_load_shared();
   if (isset($sharedlists[$lid]))
   {
     return $sharedlists[$lid];
-  } 
+  }
   else
   {
     $userlists= ccpuriri_list_load_user();
-    
+
     if (isset($userlists[$lid]))
     {
       return $userlists[$lid];
     }
-      
-  }  
-  
+
+  }
+
   return false;
 }
 
@@ -288,22 +288,22 @@ function ccpuriri_list_load($lid) {
  * @see ccpuriri_list_load_shared()
  *
  * @todo Remove $conditions in Drupal 8.
- * 
- * structure is 
- * $sharedlists	Array [2]	
-	1	stdClass	
-		lid	1	
-		language	
-		title	Watchlist	
-		uid	0	
-		created	1377573834	
-		tnid	0	
-		translate	0	
-		is_shared	true	
-		items	Array [0]	
-		items_count	0	
-		rdf_mapping	Array [0]	
-	2	stdClass	
+ *
+ * structure is
+ * $sharedlists	Array [2]
+ 1	stdClass
+ lid	1
+ language
+ title	Watchlist
+ uid	0
+ created	1377573834
+ tnid	0
+ translate	0
+ is_shared	true
+ items	Array [0]
+ items_count	0
+ rdf_mapping	Array [0]
+ 2	stdClass
 
  */
 function ccpuriri_list_load_multiple($lids = array(), $conditions = array(), $reset = FALSE) {
@@ -318,39 +318,39 @@ function ccpuriri_list_load_multiple($lids = array(), $conditions = array(), $re
  *   A fully-loaded $list objects upon successful list load or FALSE if list
  *   cannot be loaded.
  *
-* @see ccpuriri_list_load()
+ * @see ccpuriri_list_load()
  */
 function ccpuriri_list_load_shared() {
-  
+
   $lists = &drupal_static(__FUNCTION__);
-  
+
   if (!isset($lists))
   {
     global $user;
-  
+
     // get the list from cache
     $cid ='ccpuriri_list_shared'.$user->uid;
-  
+
     if ($cached = cache_get($cid, 'cache_ccpuriri')) {
       $lists = $cached->data;
     }
     else {
       $lists = ccpuriri_list_load_multiple(array(), array('uid' =>0));
-  
+
       cache_set($cid, $lists, 'cache_ccpuriri');
     }
-  
+
   }
-  
+
   return $lists;
- 
+
 }
 
 /**
  * Fetch all folders for this user, it is cached, static too
  * the lists include shared lists and user created lists as well
  * the items count of per list is also loaded
- *  
+ *
  * @return
  *   A fully-loaded $list objects upon successful list load or FALSE if list
  *   cannot be loaded.
@@ -360,16 +360,16 @@ function ccpuriri_list_load_shared() {
 function ccpuriri_list_load_user() {
 
   $startTime=  microtime(TRUE);
-  
+
   $lists = &drupal_static(__FUNCTION__);
-  
+
   if (!isset($lists))
   {
     global $user;
-    
+
     // get the list from cache
     $cid ='ccpuriri_list_user'.$user->uid;
-    
+
     if ($cached = cache_get($cid, 'cache_ccpuriri')) {
       $lists = $cached->data;
     }
@@ -378,19 +378,19 @@ function ccpuriri_list_load_user() {
 
       // uasort
       uasort($lists,'_ccpuriri_list_sort_by_title');
-      
+
       cache_set($cid, $lists, 'cache_ccpuriri');
     }
-    
+
     watchdog('ccpuriri_list',
         'User '.$user->uid.' defined lists are loaded, time elapsed is %timeElpased ms',
         array('%timeElpased' =>
             round((microtime(TRUE) - $startTime) * 1000,2)
-    
+
         ),
         WATCHDOG_DEBUG);
-    
-    
+
+
   }
    
   return $lists;
@@ -408,7 +408,7 @@ function  _ccpuriri_list_sort_by_title($a, $b) {
  * Implementation of hook_menu().
  */
 function ccpuriri_list_menu() {
- 
+
   $items['list'] = array(
       'title' => t('My Lists'),
       'page callback' => 'drupal_get_form',
@@ -422,7 +422,7 @@ function ccpuriri_list_menu() {
       ),
       'file' =>'ccpuriri_list.pages.inc'
   );
-  
+
   // list add
   $items['list/add'] = array(
       'title' => t('Add list'),
@@ -433,7 +433,7 @@ function ccpuriri_list_menu() {
       'menu_name' => 'ccpuririlistnavigation',
       'file' => 'ccpuriri_list.pages.inc',
   );
-  
+
   // list view
   $items['list/%ccpuriri_list'] = array(
       'title' => 'My listsss',
@@ -446,10 +446,10 @@ function ccpuriri_list_menu() {
       'access callback' => 'ccpuriri_list_access',
       'access arguments' => array('view', 1),
       'menu_name' => 'ccpuririlistnavigation',
-  
+
       'file' => 'ccpuriri_list.pages.inc',
   );
-  
+
   $items['list/%ccpuriri_list/edit'] = array(
       'title' => t('Edit'),
       'page callback' => 'drupal_get_form',
@@ -470,7 +470,7 @@ function ccpuriri_list_menu() {
       'menu_name' => 'ccpuririlistnavigation',
       'file' => 'ccpuriri_list.pages.inc',
   );
-  
+
   return $items;
 }
 
@@ -497,7 +497,7 @@ function ccpuriri_list_access($op, $list, $account = NULL) {
     return $rights[$account->uid][$cid][$op];
   }
 
-  
+
   // public shared list, can view only
   if($list->is_shared)
   {
@@ -505,27 +505,27 @@ function ccpuriri_list_access($op, $list, $account = NULL) {
     {
       $rights[$account->uid][$cid][$op] = TRUE;
       return TRUE;
-      
+
     }
-    
-  } 
+
+  }
   elseif($list->uid == $account->uid)
   {
     if($op == 'delete')
-    {      
+    {
       $rights[$account->uid][$cid][$op] = !($list->items_count>0);
-      
+
       return $rights[$account->uid][$cid][$op] ;
     }
-      
+
     $rights[$account->uid][$cid][$op] = TRUE;
-    
+
     return TRUE;
   }
-     
+   
   $rights[$account->uid][$cid][$op] = FALSE;
   return FALSE;
-  
+
 }
 
 /**
@@ -539,13 +539,13 @@ function ccpuriri_list_page_title($list) {
  * Get the root menu link (/list on navigation).
  */
 function ccpuriri_list_root_menu_link_id() {
- 
-  $query = db_query('SELECT mlid FROM menu_links where link_path =:link_path AND menu_name=:menu_name', 
+
+  $query = db_query('SELECT mlid FROM menu_links where link_path =:link_path AND menu_name=:menu_name',
       array(':link_path'=>'list',
-         ':menu_name'=>'ccpuririlistnavigation',));
-  
+          ':menu_name'=>'ccpuririlistnavigation',));
+
   return $query->fetchField();
-  
+
 }
 
 /**
@@ -554,13 +554,13 @@ function ccpuriri_list_root_menu_link_id() {
  *
  * in one sentence, list/% is only visible when a custom list is currently requested,
  * in other scenarios, % is returned, and no show
- * 
+ *
  *for custom lists :
- * 
- * they are not handled by menu system, 
- * but will be inserted to menu tree separately, 
- * and activate list/% when it is requested, this why here we need to return a valid id when a custom list is requested 
- * 
+ *
+ * they are not handled by menu system,
+ * but will be inserted to menu tree separately,
+ * and activate list/% when it is requested, this why here we need to return a valid id when a custom list is requested
+ *
  *for shared lists (system lists)
  *they have duplicated in menu links, as we have list/% and list/1 and list/2 as menu links
  *when shared list is requested like /list/1, it returns % which will make list/% invisible, while list/1 is visible
@@ -568,13 +568,13 @@ function ccpuriri_list_root_menu_link_id() {
  *
  */
 function ccpuriri_list_to_arg($arg) {
-  
+
   $current_router_item = menu_get_item();
-  
+
   if (strpos($current_router_item['path'], 'list/%') === 0)
   {
     // as we have list/% and list/1 both menu links in menu_links
-   
+     
     // this allows list/% to show
     if ($arg=='%')
     {
@@ -582,19 +582,19 @@ function ccpuriri_list_to_arg($arg) {
       // current item already loaded by menu_get_item()
       // only provide custom lists
       // system lists, just use links like list/1, as there is no edit/delete necessary for system
-      
+
       if(isset($current_router_item['map'][1]) &&
-    property_exists($current_router_item['map'][1], 'lid')) 
+          property_exists($current_router_item['map'][1], 'lid'))
       {
         if(!$current_router_item['map'][1]->is_shared)
-        {        
+        {
           return $current_router_item['map'][1]->lid;
         }
       }
     }
-      
+
   }
- 
+
   return $arg;
 }
 
@@ -613,40 +613,118 @@ function ccpuriri_list_node_view($node, $view_mode) {
     // appended to other nodes shown on the page, for example a node_reference
     // displayed in 'full' view mode within another node.
     if ($node->type == 'ccpuriri_rental'  && node_is_page($node) ) {
-  
+
       $node->content['ccpuriri_list'] = ccpuriri_list_node_page_additions($node);
-      
+
     }
   }
 }
 
 function ccpuriri_list_node_page_additions($node) {
-  $additions = array( );
-  
+
+  // add a wrapper
+  $additions['list_block'] = array(
+      '#type' => 'ccpuriri_container',
+  );
+
   $form_args= array(
       'nid'=>  $node->nid,
       'annonymoususer'=>user_is_anonymous(),
-      
+
   );
-    
+
+
+  if (!$form_args['annonymoususer'])
+  {
+    // get list
+    $sharedlists=  ccpuriri_list_load_shared();
+     
+    foreach($sharedlists as $list)
+    {
+      // not checking contains at moment, add straigh away
+      $form_args['toaddlists'][] =
+      _ccpuriri_list_convert_list_to_dropdownitem($list);
+
+    }
+
+    $userlists=  ccpuriri_list_load_user();
+    if (!empty($userlists) && sizeof($userlists)>0)
+    {
+      // add a devider
+      $form_args['toaddlists'][] = array(
+          'id'=>0,
+          'description'=>'',
+          );
+      
+      foreach($userlists as $list)
+      {
+        // not checking contains at moment, add straigh away
+
+        $form_args['toaddlists'][] =
+        _ccpuriri_list_convert_list_to_dropdownitem($list);
+
+      }
+    }
+
+  }
+
   $build = drupal_get_form("ccpuriri_list_addremove_form",  $form_args);
-  $additions['ccpuriri_list_addremove_form'] = $build;
-    
+
+
+
+  $additions['list_block']['ccpuriri_list_addremove_form'] = $build;
+
   return $additions;
-  
+
+}
+
+function _ccpuriri_list_convert_list_to_dropdownitem($list)
+{
+  return array(
+      'id'=> $list->lid,
+      'description' => $list->title,
+  );
+
 }
 
 /**
  * **/
 function ccpuriri_list_addremove_form($form, &$form_state, $args)
 {
+  // always having a tree structure for UI
+  $form['#tree'] = true;
+
   if ($args['annonymoususer'])
   {
-      
+    $form['addbutton']= array(
+        '#type' => 'button',
+        '#value' => t('Add to List'),
+        '#attributes'=>array(
+            'title'=> 'You need to log in',
+            'disabled'=>true,
+        ),
+    );
   }
   else
   {
     // logged in user
+
+    // get to add lists
+    if (!empty($args['toaddlists'])
+        && sizeof($args['toaddlists']))
+    {
+      $form['addbutton']= array(
+          '#type' => 'ccpuriri_dropdownbutton',
+          '#value' => t('Add to List'),
+          '#attributes'=>array(),
+          '#colorcode' =>'info',
+          '#items' => $args['toaddlists'],
+      );
+    }
+
+    // added lists
+
   }
+  return $form;
 }
 
