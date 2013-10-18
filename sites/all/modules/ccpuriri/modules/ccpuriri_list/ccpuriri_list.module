@@ -622,10 +622,8 @@ function ccpuriri_list_node_view($node, $view_mode) {
 
 function ccpuriri_list_node_page_additions($node) {
 
-  // add a wrapper
-  $additions['list_block'] = array(
-      '#type' => 'ccpuriri_container',
-  );
+ 
+  $additions = array();
 
   $form_args= array(
       'nid'=>  $node->nid,
@@ -672,7 +670,7 @@ function ccpuriri_list_node_page_additions($node) {
 
 
 
-  $additions['list_block']['ccpuriri_list_addremove_form'] = $build;
+  $additions['ccpuriri_list_addremove_form'] = $build;
 
   return $additions;
 
@@ -708,7 +706,12 @@ function ccpuriri_list_addremove_form($form, &$form_state, $args)
   else
   {
     // logged in user
-
+    
+    //add a wrapper
+    $form['list_block'] = array(
+        '#type' => 'ccpuriri_container',
+         '#id' => 'list-block',// set a id for this wrapper
+        );
     // get to add lists
     if (!empty($args['toaddlists'])
         && sizeof($args['toaddlists']))
@@ -719,6 +722,10 @@ function ccpuriri_list_addremove_form($form, &$form_state, $args)
           '#attributes'=>array(),
           '#colorcode' =>'info',
           '#items' => $args['toaddlists'],
+          '#ajax' =>array(
+              'wrapper'=>'list-block',
+              'callback' => 'ccpuriri_list_addremove_form_callback',
+              ), 
       );
     }
 
@@ -728,3 +735,7 @@ function ccpuriri_list_addremove_form($form, &$form_state, $args)
   return $form;
 }
 
+function ccpuriri_list_addremove_form_callback($form, &$form_state)
+{
+  $button = $form_state['triggering_element'];
+}

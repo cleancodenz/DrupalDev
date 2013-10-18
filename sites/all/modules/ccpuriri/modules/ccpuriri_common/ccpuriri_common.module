@@ -97,12 +97,23 @@ function ccpuriri_dropdownbutton_process($element, &$form_state, $form) {
   $element['selecteditem'] = array(
       '#type'=>'hidden',
       '#default_value' =>'0',
+      '#attached'=>array(
+          'js' => array(drupal_get_path('module', 'ccpuriri_common') . '/ccpuriri_common_dropdownbutton.js'=>
+              array('group' => JS_DEFAULT, 'weight'=>500),
+              array('type' => 'setting',
+                  'data' => array('dropdownbuttonids'=>array($element['#id'])),
+                  ), // telling the client javascript the id of this element
+              ),
+         
+        ),
+      
       );
   
   if(!empty($element['#ajax']))
   {
-    $element['selecteditem']['#ajax'] = $element['#ajax'];
-    unset($element['#ajax']);  
+    //customize this triggering event 
+    unset($element['#ajax']['event']);
+    $element['#ajax']['event']='itemselected';
     
   }   
   return $element;
@@ -176,16 +187,20 @@ function theme_ccpuriri_dropdownbutton($variables) {
   {
     if ($item['id']==0)
     {
-      $dropdownmenuOutput.='<li class="divider"></li>';
+      $dropdownmenuOutput.='<li class="divider" value="'.$item['id'].'"></li>';
     }
     else
     {
-      $dropdownmenuOutput.='<li><a href="#">'.$item['description'].'</a></li>';
+      $dropdownmenuOutput.='<li value="'.$item['id'].'"><a href="#">'.$item['description'].'</a></li>';
     }
   }
 
   $dropdownmenuOutput.='</ul>';
   
-  return '<div class="btn-group">' . $buttonOutput.$element['#children'].$dropdownmenuOutput. ' /div>';
+  //wrap them under a div with a id as elementid-div, this will be used by clientside javascript
+  
+  return '<div class="btn-group" id="'.$element['#id'].'-div'. '">' .
+     $buttonOutput.$element['#children'].$dropdownmenuOutput.
+     ' /div>';
 
 }
