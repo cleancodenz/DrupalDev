@@ -14,8 +14,11 @@
 						$('#'+settings.dropdownbuttonids[base]+'-div > input[type="hidden"]').val($(this).val());
 						
 						// trigger the ajax event
-						$('#'+settings.dropdownbuttonids[base]).trigger('itemselected');
-						
+						if($(this).val()>0)
+						{
+							// deviders having id as 0, no trigger
+							$('#'+settings.dropdownbuttonids[base]).trigger('itemselected');
+						}
 					});
 						
 					 

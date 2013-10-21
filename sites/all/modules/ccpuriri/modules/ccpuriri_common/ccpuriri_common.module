@@ -14,6 +14,7 @@ function ccpuriri_common_element_info() {
 
   //button with dropdown menu, it is not submit button, only way it works is ajax
   $types['ccpuriri_dropdownbutton'] = array(
+      '#input'=>true, // to make it trigger element
       '#process' => array('ccpuriri_dropdownbutton_process','ajax_process_form'),
       '#theme_wrappers' => array('ccpuriri_dropdownbutton'),
       '#attributes' => array(),
@@ -92,7 +93,7 @@ function ccpuriri_container_process($element, &$form_state, $form) {
 function ccpuriri_dropdownbutton_process($element, &$form_state, $form) {
    
   // always having a tree structure for UI
-  $elements['#tree'] = true;
+  $element['#tree'] = true;
   
   $element['selecteditem'] = array(
       '#type'=>'hidden',
@@ -201,6 +202,6 @@ function theme_ccpuriri_dropdownbutton($variables) {
   
   return '<div class="btn-group" id="'.$element['#id'].'-div'. '">' .
      $buttonOutput.$element['#children'].$dropdownmenuOutput.
-     ' /div>';
+     ' </div>';
 
 }
