@@ -27,7 +27,26 @@ function ccpuriri_common_element_info() {
   * '#items' =>array() of dropdown items with structure of
   *             array('id'=> $list->lid,'description' => $list->title, when 'id' is zero, then it is a devider
   );
-  *
+  * '#icon'=>' icon-remove'
+  * */
+  );
+
+  //button with icon it is not submit button, only way it works is ajax
+
+  $types['ccpuriri_imagebutton'] = array(
+      '#input'=>true, // to make it trigger element
+      '#process' => array('ajax_process_form'),
+      '#button_type'=> 'submit',
+      '#type' => 'button',
+      '#theme_wrappers' => array('ccpuriri_imagebutton'),
+       
+      /*
+       * other possible attributes
+  * '#value' will be value of button, not the text, but in old ie, prior 8, the text is submitted
+  * '#title' will be text of button
+  * '#icon'=>' icon-remove'
+  * '#ajax' - normal ajax setting will be used by underneath hidden input
+  * '#colorcode'=>'primary','success','info','warning','danger', no value means 'default'
   * */
   );
 
@@ -42,6 +61,9 @@ function ccpuriri_common_theme() {
       'render element' => 'element',
   );
   $hooks['ccpuriri_dropdownbutton'] = array(
+      'render element' => 'element',
+  );
+  $hooks['ccpuriri_imagebutton'] = array(
       'render element' => 'element',
   );
   return $hooks;
@@ -86,15 +108,15 @@ function ccpuriri_container_process($element, &$form_state, $form) {
 
 
 /**
- * Form API process function: 
+ * Form API process function:
  * add a hidden input which will trigger ajax
- *  
+ *
  */
 function ccpuriri_dropdownbutton_process($element, &$form_state, $form) {
    
   // always having a tree structure for UI
   $element['#tree'] = true;
-  
+
   $element['selecteditem'] = array(
       '#type'=>'hidden',
       '#default_value' =>'0',
@@ -103,20 +125,20 @@ function ccpuriri_dropdownbutton_process($element, &$form_state, $form) {
               array('group' => JS_DEFAULT, 'weight'=>500),
               array('type' => 'setting',
                   'data' => array('dropdownbuttonids'=>array($element['#id'])),
-                  ), // telling the client javascript the id of this element
-              ),
-         
-        ),
-      
-      );
-  
+              ), // telling the client javascript the id of this element
+          ),
+           
+      ),
+
+  );
+
   if(!empty($element['#ajax']))
   {
-    //customize this triggering event 
+    //customize this triggering event
     unset($element['#ajax']['event']);
     $element['#ajax']['event']='itemselected';
-    
-  }   
+
+  }
   return $element;
 }
 
@@ -127,32 +149,32 @@ function ccpuriri_dropdownbutton_process($element, &$form_state, $form) {
  */
 function theme_ccpuriri_dropdownbutton($variables) {
   $element = $variables['element'];
-  
+
   element_set_attributes($element, array('id', 'name', 'value'));
-  
-  
+
+
   // create attributes array for dropdown button
-  $dropdownattributes = array(); 
+  $dropdownattributes = array();
 
   $element['#attributes']['type'] = 'button';
-  
+
   $dropdownattributes['type'] ='button';
    
-  
+
   if (!empty($element['#attributes']['disabled'])) {
     $element['#attributes']['class'][] = 'form-button-disabled';
     $dropdownattributes['class'][] = 'form-button-disabled';
-    
+
   }
 
   $element['#attributes']['class'][] = 'btn';
   $dropdownattributes['class'][] ='btn';
-  
+
   // button color
   if (!empty($element['#colorcode']))
   {
     $element['#attributes']['class'][] = 'btn-'.$element['#colorcode'];
-    
+
     $dropdownattributes['class'][] ='btn-'.$element['#colorcode'];
   }
   else
@@ -162,9 +184,9 @@ function theme_ccpuriri_dropdownbutton($variables) {
   }
 
   // these two only for dropdown
-  
+
   $dropdownattributes['class'][] = 'dropdown-toggle';
-  
+
   $dropdownattributes['data-toggle'] = 'dropdown';
 
   //move value to text
@@ -176,12 +198,18 @@ function theme_ccpuriri_dropdownbutton($variables) {
     unset($element['#attributes']['value']);
   }
 
-  $buttonOutput ='<button '.drupal_attributes($element['#attributes']).
-  '>'.$val.'</button>';
+  $buttonOutput ='<button '.drupal_attributes($element['#attributes']).'>';
+  
+  if (!empty($element['#icon']))
+  {
+    $buttonOutput .= '<i class="'.$element['#icon'].'"></i> ' ;
+  }
+  $buttonOutput.=$val.'</button>';
+  
   
   $dropdownmenuOutput = '<button '.drupal_attributes($dropdownattributes).
-  '><span class="caret"></span></button>';
-
+  '><span class="caret"></span></button>'; 
+  
   $dropdownmenuOutput .='<ul class="dropdown-menu" role="menu">';
 
   foreach($element['#items'] as $item)
@@ -197,11 +225,58 @@ function theme_ccpuriri_dropdownbutton($variables) {
   }
 
   $dropdownmenuOutput.='</ul>';
-  
-  //wrap them under a div with a id as elementid-div, this will be used by clientside javascript
-  
-  return '<div class="btn-group" id="'.$element['#id'].'-div'. '">' .
-     $buttonOutput.$element['#children'].$dropdownmenuOutput.
-     ' </div>';
 
+  //wrap them under a div with a id as elementid-div, this will be used by clientside javascript
+
+  return '<div class="btn-group" id="'.$element['#id'].'-div'. '">' .
+      $buttonOutput.$element['#children'].$dropdownmenuOutput.
+      "</div>\n";
+
+}
+
+/**
+ * Render a button which has an icon
+ * theme wrapper for ccpuriri_imagebutton
+ */
+function theme_ccpuriri_imagebutton($variables) {
+
+  $element = $variables['element'];
+ 
+  element_set_attributes($element, array('id', 'name', 'value', 'type'));
+
+  
+  $element['#attributes']['class'][] = 'form-' . $element['#button_type'];
+  if (!empty($element['#attributes']['disabled'])) {
+    $element['#attributes']['class'][] = 'form-button-disabled';
+  }
+
+  // add bootstrap attributes
+  
+  $element['#attributes']['class'][] = 'btn';
+  
+  
+  // button color
+  if (!empty($element['#colorcode']))
+  {
+    $element['#attributes']['class'][] = 'btn-'.$element['#colorcode'];
+  
+  }
+  else
+  {
+    $element['#attributes']['class'][] = 'btn-default';
+  }
+  
+  
+  $buttonoutput = '<button' . drupal_attributes($element['#attributes']) . '>';
+  
+  if (!empty($element['#icon']))
+  {
+    $buttonoutput.='<i class="'.$element['#icon'].'"></i> '; 
+    
+  }
+  
+  $buttonoutput .= $element['#title'] ."</button>\n"; // This line break adds inherent margin between multiple buttons
+  
+  return $buttonoutput;
+  
 }

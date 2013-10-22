@@ -221,6 +221,8 @@ function ccpuriri_list_delete($list)
     watchdog_exception('ccpuriri_list_delete', $e);
     throw $e;
   }
+
+  // refresh
 }
 
 /**
@@ -282,9 +284,10 @@ function ccpuriri_list_load($lid) {
  *
  * @return
  *   An array of list objects, indexed by lid.
+ *   if no lists, and empty array will be returned
  *
  * @see entity_load()
- 
+
  * @todo Remove $conditions in Drupal 8.
  *
  * structure is
@@ -298,7 +301,10 @@ function ccpuriri_list_load($lid) {
  tnid	0
  translate	0
  is_shared	true
- items	Array [0]
+ items	Array [1]
+ 33	stdClass
+ entity_id	33
+
  items_count	0
  rdf_mapping	Array [0]
  2	stdClass
@@ -313,8 +319,7 @@ function ccpuriri_list_load_multiple($lids = array(), $conditions = array(), $re
  * Fetch publicly shared folders.
  *
  * @return
- *   A fully-loaded $list objects upon successful list load or FALSE if list
- *   cannot be loaded.
+ *   A fully-loaded $list objects upon successful list load , empty lsit is zero item array
  *
  * @see ccpuriri_list_load()
  */
@@ -345,6 +350,59 @@ function ccpuriri_list_load_shared() {
 }
 
 /**
+ * Refresh publicly shared folders.
+ *
+ * @return
+ *   A fully-loaded $list objects upon successful list load or zero item array
+ *
+ * @see ccpuriri_list_load()
+ */
+function ccpuriri_list_shared_refresh() {
+
+  // get the cache id and clear it
+  global $user;
+
+  $cid ='ccpuriri_list_shared'.$user->uid;
+
+  cache_clear_all($cid,'cache_ccpuriri');
+
+  //clear method cache
+
+  drupal_static_reset('ccpuriri_list_load_shared');
+  //request it again
+
+  return ccpuriri_list_load_shared();
+
+}
+
+/**
+ * Refresh user folders.
+ *
+ * @return
+ *   A fully-loaded $list objects upon successful list load or zero items array
+ *
+ * @see ccpuriri_list_load()
+ */
+function ccpuriri_list_user_refresh() {
+
+  // get the cache id and clear it
+  global $user;
+
+  // get the list from cache
+  $cid ='ccpuriri_list_user'.$user->uid;
+
+  cache_clear_all($cid,'cache_ccpuriri');
+
+  //clear method cache
+  drupal_static_reset('ccpuriri_list_load_user');
+
+  //request it again
+  return ccpuriri_list_load_user();
+
+}
+
+
+/**
  * Fetch all folders for this user, it is cached, static too
  * the lists include shared lists and user created lists as well
  * the items count of per list is also loaded
@@ -372,6 +430,7 @@ function ccpuriri_list_load_user() {
       $lists = $cached->data;
     }
     else {
+
       $lists = ccpuriri_list_load_multiple(array(), array('uid' =>$user->uid));
 
       // uasort
@@ -400,83 +459,95 @@ function ccpuriri_list_load_user() {
  *
  * @return
  *   no return
- *  
+ *
  */
-function ccpuriri_list_add_node($listid,$nodeid,$nodetype,$nodebundle) {
- 
+function ccpuriri_list_node_add($listid,$entityid,$entitytype,$bundle,$uid) {
+
+  $list = ccpuriri_list_load($listid);
+
+  if ($list)
+  {
+
     $startTime=  microtime(TRUE);
-  
-    // Load the stored entity, if any.
-    if (!empty($list->lid) && !isset($list->original)) {
-      $list->original = entity_load_unchanged('ccpuriri_list', $list->lid);
-    }
-  
-    field_attach_presave('ccpuriri_list', $list);
-  
-    // Determine if we will be inserting a new list.
-    if (!isset($list->is_new)) {
-      $list->is_new = empty($list->lid);
-    }
-  
-    // Set the timestamp fields.
-    if (empty($list->created)) {
-      $list->created = REQUEST_TIME;
-    }
-  
-    // Let modules modify the node before it is saved to the database.
-    module_invoke_all('entity_presave', $list, 'ccpuriri_list');
-  
-    // Save the list .
-    if ($list->is_new) {
-  
-      drupal_write_record('ccpuriri_list', $list);
-      $op = 'insert';
-    }
-    else {
-      // For existing list, update the list record which matches the value of
-      // $list->lid.
-      drupal_write_record('ccpuriri_list', $list, 'lid');
-  
-      $op = 'update';
-  
-    }
-  
-  
-    module_invoke_all('entity_' . $op, $list, 'ccpuriri_list');
-  
-    // Clear internal properties.
-    unset($list->is_new);
-    unset($list->original);
-    // Clear the static loading cache.
-    entity_get_controller('ccpuriri_list')->resetCache(array($list->lid));
-  
-    // Ignore slave server temporarily to give time for the
-    db_ignore_slave();
-  
-    // clear the list cache
-  
-    if ($list->uid > 0)
-    {
-      // only customized list can be changed
-      // shared list saved by on install, can not be changed, this will only be called once to create them
-  
-      $cid ='ccpuriri_list_user'.$list->uid;
-      cache_clear_all($cid,'cache_ccpuriri');
-  
-    }
-  
+
+
+    db_insert('ccpuriri_list_item')
+    ->fields(array('lid','entity_type', 'bundle','entity_id','uid'))
+    ->values(array(
+        'lid' => $listid,
+        'entity_type'=>$entitytype,
+        'bundle' => $bundle,
+        'entity_id'=>$entityid,
+        'uid' =>$uid,
+    ))
+    ->execute();
+
+
     watchdog('ccpuriri_list',
-       'add node: '.$nodeid.' node type: '.$nodetype.' node bundle: '
-         .$nodebundle. ' to list: '.$listid.', time elapsed is %timeElpased ms',
+        'add entity id: '.$entityid.' entity type: '.$entitytype.' entity bundle: '
+        .$bundle. ' to list: '.$listid.', time elapsed is %timeElpased ms',
         array('%timeElpased' =>
             round((microtime(TRUE) - $startTime) * 1000,2)
-  
+
         ),
         WATCHDOG_DEBUG);
-  
- 
+
+    // refresh the list
+    if ($list->is_shared)
+    {
+      ccpuriri_list_shared_refresh();
+    }
+    else
+    {
+      ccpuriri_list_user_refresh();
+    }
+  }
 }
 
+/**
+ * remove a node from the list.
+ *
+ * @return
+ *   no return
+ *
+ */
+function ccpuriri_list_node_remove($listid,$entityid,$entitytype,$bundle,$uid) {
+
+  $list = ccpuriri_list_load($listid);
+
+  if ($list)
+  {
+
+    $startTime=  microtime(TRUE);
+
+    db_delete('ccpuriri_list_item')
+    ->condition('lid',$listid)
+    ->condition('entity_type', $entitytype)
+    ->condition('bundle', $bundle)
+    ->condition('entity_id', $entityid)
+    ->condition('uid', $uid)
+    ->execute();
+
+    watchdog('ccpuriri_list',
+        'remove entity id: '.$entityid.' entity type: '.$entitytype.' entity bundle: '
+        .$bundle. ' from list: '.$listid.', time elapsed is %timeElpased ms',
+        array('%timeElpased' =>
+            round((microtime(TRUE) - $startTime) * 1000,2)
+
+        ),
+        WATCHDOG_DEBUG);
+
+    // refresh the list
+    if ($list->is_shared)
+    {
+      ccpuriri_list_shared_refresh();
+    }
+    else
+    {
+      ccpuriri_list_user_refresh();
+    }
+  }
+}
 
 
 /**
@@ -705,13 +776,13 @@ function ccpuriri_list_node_view($node, $view_mode) {
 
 function ccpuriri_list_node_page_additions($node) {
 
- 
+
   $additions = array();
 
   $form_args= array(
       'nid'=>  $node->nid,
       'node_type'=>  $node->type,
-   );
+  );
 
 
   $build = drupal_get_form("ccpuriri_list_addremove_form",  $form_args);
@@ -723,6 +794,11 @@ function ccpuriri_list_node_page_additions($node) {
 
 }
 
+/**
+ * used by addremove list form, converting lists to renderable objects
+ * @param a  $list object
+ * @return array with id and description
+ **/
 function _ccpuriri_list_convert_list_to_dropdownitem($list)
 {
   return array(
@@ -734,15 +810,17 @@ function _ccpuriri_list_convert_list_to_dropdownitem($list)
 
 /**
  * this is used by initial list form rendering and call back of with list changes and all
- * 
+ *
  * **/
 function ccpuriri_list_addremove_form($form, &$form_state, $args)
 {
- 
+  // turn on tree on form, so that remove buttons will be keyed by list id
+  $form['#tree'] =true;
+
   if (user_is_anonymous())
   {
     // just give them an indicative disabled button
-    
+
     $form['addbutton']= array(
         '#type' => 'button',
         '#value' => t('Add to List'),
@@ -755,87 +833,148 @@ function ccpuriri_list_addremove_form($form, &$form_state, $args)
   else
   {
     // logged in user
+    global $user;
      
     if (!empty($form_state['triggering_element']))
     {
       if ($form_state['triggering_element']['#name']=='addbutton'
-          &&!empty($form_state['values']['addbutton']['selecteditem']) 
+          &&!empty($form_state['values']['addbutton']['selecteditem'])
           && $form_state['values']['addbutton']['selecteditem'] > 0)
       {
-         // to get the selected item value
-         // this is to add the node to the selected list
+        // to get the selected item value
+        // this is to add the node to the selected list
+        ccpuriri_list_node_add(
+            $form_state['values']['addbutton']['selecteditem'], // $listid,
+            $args['nid'], //   $entityid,
+            'node', //$entitytype,
+            $args['node_type'],//$bundle,
+            $user->uid // $uid
+        );
          
-                 
-  
+
       }
-      
+      else if(strpos($form_state['triggering_element']['#name'],'removebutton')==0)
+      {
+        // to get the value of that button
+
+        $key_exists = NULL;
+        $value = drupal_array_get_nested_value($form_state['values'],
+            $form_state['triggering_element']['#parents'], $key_exists);
+        if ($key_exists) {
+
+          // where second item is the list id
+          // this is to remove the node to the selected list
+          ccpuriri_list_node_remove(
+              $value, // $listid,
+              $args['nid'], //   $entityid,
+              'node', //$entitytype,
+              $args['node_type'],//$bundle,
+              $user->uid // $uid
+          );
+
+        }
+
+
+
+      }
+
     }
-    
+
     $toaddlists=array();
     $toremovelists=array();
-    
-   
-      // get list
-      $sharedlists=  ccpuriri_list_load_shared();
-    
-      foreach($sharedlists as $list)
+
+     
+    // get list
+    $sharedlists=  ccpuriri_list_load_shared();
+
+    foreach($sharedlists as $list)
+    {
+      if (array_key_exists($args['nid'],$list->items))
+      {
+        $toremovelists[$list->lid] = $list;
+      }
+      else
       {
         // not checking contains at moment, add straigh away
         $toaddlists[] =
         _ccpuriri_list_convert_list_to_dropdownitem($list);
-    
       }
-    
-      $userlists=  ccpuriri_list_load_user();
-      if (!empty($userlists) && sizeof($userlists)>0)
+    }
+
+    $userlists=  ccpuriri_list_load_user();
+    if (!empty($userlists) && sizeof($userlists)>0)
+    {
+      // add a devider
+      $toaddlists[] = array(
+          'id'=>0,
+          'description'=>'',
+      );
+
+      foreach($userlists as $list)
       {
-        // add a devider
-        $toaddlists[] = array(
-            'id'=>0,
-            'description'=>'',
-        );
-    
-        foreach($userlists as $list)
+        if (array_key_exists($args['nid'],$list->items))
         {
-          // not checking contains at moment, add straigh away
-    
-         $toaddlists[] =
+          $toremovelists[$list->lid] = $list;
+        }
+        else
+        {
+
+          $toaddlists[] =
           _ccpuriri_list_convert_list_to_dropdownitem($list);
-    
         }
       }
-    
-   
-    
-    
-    
+    }
+
+     
+
+
+
     // start rendering
-      
-    
+
+
     //add a wrapper
     $form['list_block'] = array(
         '#type' => 'ccpuriri_container',
-         '#id' => 'list-block',// set a id for this wrapper
-        );
-    
-    
-    // get to add lists
+        '#id' => 'list-block',// set a id for this wrapper
+    );
+
+    // get toadd lists
     if (sizeof($toaddlists))
     {
       $form['list_block']['addbutton']= array(
           '#type' => 'ccpuriri_dropdownbutton',
           '#value' => t('Add to List'),
+          '#icon' =>'icon-plus',
           '#attributes'=>array(),
           '#colorcode' =>'info',
           '#items' => $toaddlists,
           '#ajax' =>array(
               'wrapper'=>'list-block',
               'callback'=> 'ccpuriri_list_addremove_form_callback',
-           ), 
+          ),
       );
     }
 
-    // added lists
+    // get to remove lists
+    if (sizeof($toremovelists))
+    {
+      foreach ($toremovelists as $key=>$list)
+      {
+        $form['list_block']['removebutton'.$key]= array(
+            '#type' => 'ccpuriri_imagebutton',
+            '#value' => $list->lid,
+            '#title' => $list->title,
+            '#icon' =>'icon-minus',
+            '#attributes'=>array(),
+            '#colorcode' =>'warning',
+            '#ajax' =>array(
+                'wrapper'=>'list-block',
+                'callback'=> 'ccpuriri_list_addremove_form_callback',
+            ),
+    
+        );
+      }
+    }
 
   }
   return $form;
@@ -843,6 +982,6 @@ function ccpuriri_list_addremove_form($form, &$form_state, $args)
 
 function ccpuriri_list_addremove_form_callback($form, &$form_state)
 {
-    return $form['list_block'];
-    
+  return $form['list_block'];
+
 }
