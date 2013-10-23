@@ -969,6 +969,7 @@ function ccpuriri_list_addremove_form($form, &$form_state, $args)
             '#colorcode' =>'warning',
             '#ajax' =>array(
                 'wrapper'=>'list-block',
+                'event' => 'click',// must define, as default event for only limited system controls types
                 'callback'=> 'ccpuriri_list_addremove_form_callback',
             ),
     

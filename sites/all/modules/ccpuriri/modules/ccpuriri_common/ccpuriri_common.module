@@ -135,6 +135,7 @@ function ccpuriri_dropdownbutton_process($element, &$form_state, $form) {
   if(!empty($element['#ajax']))
   {
     //customize this triggering event
+    // this is important if no event set, it will not be marked as ajax element
     unset($element['#ajax']['event']);
     $element['#ajax']['event']='itemselected';
 
