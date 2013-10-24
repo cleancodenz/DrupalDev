@@ -567,7 +567,8 @@ function ccpuriri_list_menu() {
       'title' => t('My Lists'),
       'page callback' => 'drupal_get_form',
       'page arguments' => array('ccpuriri_list_form'),
-      'access callback' => true,//'user_is_logged_in',
+      //'user_is_logged_in', changed to true, it is visible for every one,but when click it will prompt login
+      'access callback' => true,
       'menu_name' => 'ccpuririlistnavigation',
       'weight' =>10,
       'options'=>array(

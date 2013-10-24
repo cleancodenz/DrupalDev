@@ -8,6 +8,9 @@ function ccpuriri_rental_enable() {
 
   // set pathauto pattern
   variable_set('pathauto_node_ccpuriri_rental_pattern', 'rental/[node:title]');
+  
+  // add rental menu block
+  _ccpuriri_rental_add_rental_menu();
 
 }
 
@@ -22,6 +25,47 @@ function ccpuriri_rental_disable() {
   
   node_type_delete('ccpuriri_rental');
   
+  // remove rental menu
+  _ccpuriri_rental_remove_rental_menu();
+}
+
+
+/*
+ * Add rental menu block
+ * this is different list or use menu block they are rendered by ccpurir block
+ * It will not be switched on by main navigation block CCPuriri Navigation
+
+ * this block is added to side bar one , and only visible for logged in user 
+* */
+function _ccpuriri_rental_add_rental_menu(){
+
+
+  //create ccpuririrentalnavigation
+ 
+  $ccpuririrentalnavigationmenu = array(
+      'menu_name' => 'ccpuririrentalnavigation',
+      'title' => 'CCPuriri Rental Navigation',
+      'description' => 'CCPuriri Rental navigation menu, add this to sidebar one region',
+  );
+
+  menu_save($ccpuririrentalnavigationmenu);
+
+
+}
+
+/*
+ * Remove rental menu block
+* */
+function _ccpuriri_rental_remove_rental_menu(){
+
+  $ccpuririrentalnavigationmenu = array(
+      'menu_name' => 'ccpuririrentalnavigation',
+
+  );
+
+  menu_delete($ccpuririrentalnavigationmenu);
+
+
 }
 
 

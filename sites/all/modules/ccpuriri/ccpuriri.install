@@ -553,7 +553,7 @@ function _ccpuriri_menu_main_add_items(){
       'link_title' => t('Home'), 
       'link_path' => '<front>',
       'router_path' => '',
-      'module' => 'ccpuriri_list',
+      'module' => 'ccpuriri',
       'description' => 'Home on main menu',
       'options'=>array(
           'icon'=>'icon-home',
@@ -575,7 +575,7 @@ function _ccpuriri_menu_main_add_items(){
       'link_title' => t('My Lists'), 
       'link_path' => 'list',
       'router_path' => 'list',
-      'module' => 'ccpuriri_list',
+      'module' => 'ccpuriri',
       'description' => 'My lists menu item on main menu',
       'options'=>array(
           'icon'=>'icon-folder-open',
@@ -595,7 +595,7 @@ function _ccpuriri_menu_main_add_items(){
       'link_title' => t('My account'),
       'link_path' => 'user',
       'router_path' => 'user',
-      'module' => 'ccpuriri_list',
+      'module' => 'ccpuriri',
       'description' => 'My account menu item on main menu',
       'options'=>array(
           'icon'=>'icon-user',
@@ -606,6 +606,28 @@ function _ccpuriri_menu_main_add_items(){
   );
     
   menu_link_save($account_item);
+  
+  
+  //add rental to main menu
+  
+  $rental_item = array(
+      'menu_name' => 'main-menu',
+      'weight' => 120,
+      'link_title' => t('Rental'), //use the router one, to activate callback
+      'link_path' => 'rental',
+      'router_path' => 'rental',
+      'module' => 'ccpuriri',
+      'description' => 'Rental menu item on system main menu',
+      'options'=>array(
+          'icon'=>'icon-gift',
+          'html'=>true,
+      ),
+      'expanded' => 0,
+  );
+  
+  
+  menu_link_save($rental_item);
+  
   
   watchdog('ccpuriri',
       'Menu links home, list my account etc are added, time elapsed is %timeElpased ms',
@@ -627,7 +649,7 @@ function _ccpuriri_menu_main_remove_items(){
   
   $menuname= "ccpuririmainnavigation";
   
-  $module = "ccpuriri_list";
+  $module = "ccpuriri";
   
   //delete * from ccpuririmainnavigation
   $delete_query = db_delete('menu_links')

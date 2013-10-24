@@ -1,15 +1,110 @@
 <?php 
 
 /**
- * Implementation of hook_node_info(). 
+ * Implementation of hook_node_info().
  */
 function ccpuriri_rental_node_info() {
   $types['ccpuriri_rental'] = array(
       'name' => t('CCPuriri rental'),
       'base' => 'node_content',
       'description' => t('Use for rental managment.'),
-      
+
   );
   return $types;
 }
+
+
+/**
+ * Implementation of hook_menu().
+ */
+function ccpuriri_rental_menu() {
+
+  // this item appears on main menu and ccpuririrentalnavigation and all
+  $items['rental'] = array(
+      'title' => t('Rentals'),
+      'page callback' => '_ccpuriri_rental_page_default',
+      'access arguments' => array('access content'),
+      'menu_name' => 'ccpuririrentalnavigation',
+      'weight' =>10,
+      'options'=>array(
+          'icon'=>'icon-gift',
+          'html'=>true,
+      ),
+      'file' =>'ccpuriri_rental.pages.inc'
+  );
+
+  // rental add
+  $items['rental/add'] = array(
+      'title' => t('Add a rental'),
+      'title callback' => 'check_plain',
+      'page callback' => 'node_add',
+      'page arguments' => array('ccpuriri_rental'),
+      'access callback' => 'node_access',
+      'access arguments' => array('create', 'ccpuriri_rental'),
+      'description' => 'Add a rental',
+      'menu_name' => 'ccpuririrentalnavigation',
+      'file' => 'node.pages.inc',
+      
+  );
+
+  // rental view
+  $items['rental/%node'] = array(
+      'title' => 'My rental',// just to trigger title callback, will not be displayed
+      'title callback'  => 'node_page_title',
+      'title arguments' => array(1),
+      // The page callback also invokes drupal_set_title() in case
+      // the menu router's title is overridden by a menu link.
+      'page callback' => 'node_page_view',
+      'page arguments' => array(1),
+      'access callback' => 'node_access',
+      'access arguments' => array('view', 1),
+      'menu_name' => 'ccpuririrentalnavigation',
+      
+  );
+
+  $items['rental/%node/edit'] = array(
+      'title' => t('Edit'),
+      'page callback' => 'node_page_edit',
+      'page arguments' => array(1),
+      'access callback' => 'node_access',
+      'access arguments' => array('update', 1),
+      'menu_name' => 'ccpuririrentalnavigation',
+      'weight' => 0,
+      'file' => 'node.pages.inc',
+  );
+  
+  return $items;
+}
+
+/**
+ * Alter Pathauto-generated aliases before saving.
+ * 
+ * for rental/[node title] as the alias, no problem
+ * but on the other end we want it to be rental/%node, rather than node/%node
+ *
+ * @param string $alias
+ *   The automatic alias after token replacement and strings cleaned.
+ * @param array $context
+ *   An associative array of additional options, with the following elements:
+ *   - 'module': The module or entity type being aliased.
+ *   - 'op': A string with the operation being performed on the object being
+ *     aliased. Can be either 'insert', 'update', 'return', or 'bulkupdate'.
+ *   - 'source': A string of the source path for the alias (e.g. 'node/1').
+ *     This can be altered by reference.
+ *   - 'data': An array of keyed objects to pass to token_replace().
+ *   - 'type': The sub-type or bundle of the object being aliased.
+ *   - 'language': A string of the language code for the alias (e.g. 'en').
+ *     This can be altered by reference.
+ *   - 'pattern': A string of the pattern used for aliasing the object.
+ */
+function ccpuriri_rental_pathauto_alias_alter(&$alias, array &$context) {
+  if($context['type']=='ccpuriri_rental' &&
+     $context['module'] == 'node')
+  {
+    // change the source from node/33 to rental/33
+    $context['source'] = str_replace('node','rental',$context['source']);   
+    
+  }
+}
+
 
