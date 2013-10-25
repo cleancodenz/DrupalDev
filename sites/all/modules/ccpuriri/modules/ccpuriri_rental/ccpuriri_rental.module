@@ -4,6 +4,7 @@
  * Implementation of hook_node_info().
  */
 function ccpuriri_rental_node_info() {
+
   $types['ccpuriri_rental'] = array(
       'name' => t('CCPuriri rental'),
       'base' => 'node_content',
@@ -44,11 +45,13 @@ function ccpuriri_rental_menu() {
       'description' => 'Add a rental',
       'menu_name' => 'ccpuririrentalnavigation',
       'file' => 'node.pages.inc',
-      
+
   );
 
   // rental view
-  $items['rental/%node'] = array(
+  // we have ccpuriri_rental_menu_to_arg implemented to make it appear in the memu tree
+  // we also have ccpuriri_rental_menu_load implemented to make it load
+  $items['rental/%ccpuriri_rental_menu'] = array(
       'title' => 'My rental',// just to trigger title callback, will not be displayed
       'title callback'  => 'node_page_title',
       'title arguments' => array(1),
@@ -59,10 +62,10 @@ function ccpuriri_rental_menu() {
       'access callback' => 'node_access',
       'access arguments' => array('view', 1),
       'menu_name' => 'ccpuririrentalnavigation',
-      
+
   );
 
-  $items['rental/%node/edit'] = array(
+  $items['rental/%%ccpuriri_rental_menu/edit'] = array(
       'title' => t('Edit'),
       'page callback' => 'node_page_edit',
       'page arguments' => array(1),
@@ -72,38 +75,93 @@ function ccpuriri_rental_menu() {
       'weight' => 0,
       'file' => 'node.pages.inc',
   );
-  
+
   return $items;
 }
 
 /**
- * Alter Pathauto-generated aliases before saving.
- * 
- * for rental/[node title] as the alias, no problem
- * but on the other end we want it to be rental/%node, rather than node/%node
+ * Loads an item based on its $id.
+ * it is node, so just call node_load
  *
- * @param string $alias
- *   The automatic alias after token replacement and strings cleaned.
- * @param array $context
- *   An associative array of additional options, with the following elements:
- *   - 'module': The module or entity type being aliased.
- *   - 'op': A string with the operation being performed on the object being
- *     aliased. Can be either 'insert', 'update', 'return', or 'bulkupdate'.
- *   - 'source': A string of the source path for the alias (e.g. 'node/1').
- *     This can be altered by reference.
- *   - 'data': An array of keyed objects to pass to token_replace().
- *   - 'type': The sub-type or bundle of the object being aliased.
- *   - 'language': A string of the language code for the alias (e.g. 'en').
- *     This can be altered by reference.
- *   - 'pattern': A string of the pattern used for aliasing the object.
+ * @param $id
  */
-function ccpuriri_rental_pathauto_alias_alter(&$alias, array &$context) {
-  if($context['type']=='ccpuriri_rental' &&
-     $context['module'] == 'node')
+function ccpuriri_rental_menu_load($rentalid) {
+ return node_load($rentalid);
+}
+
+
+/**
+ * A to_arg() function is used to provide a default for the arg in the
+ * wildcard. The purpose is to provide a menu link that will function if no
+ * argument is given.  when the to_arg() function is
+ * provided, the menu system will create a menu link pointing to the path
+ * which would be created with the to_arg() function 
+ *
+ * @param $arg
+ *   The arg (URL fragment) to be tested.
+ */
+function ccpuriri_rental_menu_to_arg($arg) {
+  
+  $result='%';
+  
+  // If our argument is not provided, try to find if current item is node
+  if (empty($arg) || $arg == '%')
   {
-    // change the source from node/33 to rental/33
-    $context['source'] = str_replace('node','rental',$context['source']);   
-    
+    $item= menu_get_item();
+    if($item['path']=='rental/%' ||
+        $item['path']=='rental/%/edit' )
+    {
+      if (sizeof($item['original_map'])>=2)
+      {
+        // the second is the rental id
+        $result= $item['original_map'][1];
+        
+      }
+      
+    }
+  }
+  else
+  {
+    $result= $arg;
+  }
+
+  return $result;
+}
+
+
+/**
+ * Implements hook_entity_info_alter().
+ * just add uri_callback for bundles[ccpuriri+rental][uri_callback]= 'rental/'.nodeid
+ * it will not affect pathauto generate beautiful uri, as it is based on entity to generate new b uri, not the original 
+ * so when it is set to rental/[node:title] it will just generate that.
+ */
+function ccpuriri_rental_entity_info_alter(&$entity_info) {
+  
+  if (!empty($entity_info['node']['bundles']['ccpuriri_rental'])) 
+  {
+    $entity_info['node']['bundles']['ccpuriri_rental']['uri callback'] = 'ccpuriri_rental_uri';
+  }
+}
+
+function ccpuriri_rental_uri($node)
+{
+  return array(
+      'path' => 'rental/' . $node->nid,
+  );
+  
+}
+
+
+
+/**
+ * A theme preprocess function for node to automatically allow teaser based template
+ * using hook_preprocess_node
+ */
+function ccpuriri_rental_preprocess_node(&$vars) {
+  if ($vars['view_mode']=='teaser' &&  $vars['type']=='ccpuriri_rental') {
+
+    $vars['theme_hook_suggestions'][] = 'node__ccpuriri_rental__teaser';
+
   }
 }
 

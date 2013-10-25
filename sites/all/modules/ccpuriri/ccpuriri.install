@@ -616,7 +616,7 @@ function _ccpuriri_menu_main_add_items(){
       'link_title' => t('Rental'), //use the router one, to activate callback
       'link_path' => 'rental',
       'router_path' => 'rental',
-      'module' => 'ccpuriri',
+      'module' => 'ccpuriri_rental',
       'description' => 'Rental menu item on system main menu',
       'options'=>array(
           'icon'=>'icon-gift',
@@ -657,6 +657,19 @@ function _ccpuriri_menu_main_remove_items(){
   ->condition('module', $module);
   
   $delete_query->execute();
+  
+  // delete the ccpuriri-rental item on main-menu
+  $menuname= "main-menu";
+  
+  $module = "ccpuriri_rental";
+  
+  $delete_query = db_delete('menu_links')
+  ->condition('menu_name', $menuname)
+  ->condition('module', $module);
+  
+  $delete_query->execute();
+  
+  
   
   watchdog('ccpuriri',
       'ccpuririmainnavigation Menu links are removed, time elapsed is %timeElpased ms',
