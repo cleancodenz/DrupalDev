@@ -4,6 +4,8 @@
  *  Install, update and uninstall functions for the ccpuriri module.
  */
 
+define ('CCPURIRI_RENTAL_STANDARD_ROLE' , 'CCPuriri rental standard user');
+
 /**
  * Implements hook_schema().
  */
@@ -59,6 +61,9 @@ function ccpuriri_enable() {
   // add main menu items
   _ccpuriri_menu_main_add_items();
   
+  // setup permissions
+  _ccpuriri_rental_permission_setup();
+  
 }
 
 /**
@@ -69,6 +74,9 @@ function ccpuriri_disable() {
   _ccpuriri_menu_system_main_remove_list();
 
   _ccpuriri_menu_main_remove_items();
+  
+  //remove all rental permission settings
+  _ccpuriri_rental_permission_dispose();
 }
 
 
@@ -680,4 +688,110 @@ function _ccpuriri_menu_main_remove_items(){
       WATCHDOG_DEBUG);
   
 }
+
+
+/*
+ * it has to be in main module, compared in rental module 
+ * where the node type has not be created in module enable or disable
+ *set up a particular role ccpuriri_rental_standard_role for rental type
+* set up permissions for ccpuriri_rental_standard_role
+* assign this role to all existing users exectept admin
+* 
+*
+* */
+function _ccpuriri_rental_permission_setup()
+{
+  // create CCPURIRI_RENTAL_STANDARD_ROLE
+
+  // role id keyed key value array, value is role name
+  $roles = user_roles();
+
+  $key = array_search(CCPURIRI_RENTAL_STANDARD_ROLE,$roles);
+
+
+  if(!$key)
+  {
+    // add the standard role
+    $standardRole= new stdClass();
+    $standardRole->name = CCPURIRI_RENTAL_STANDARD_ROLE;
+
+    user_role_save($standardRole);
+
+  }
+
+  
+  //refresh
+
+  $roles = user_roles();
+
+  $key = array_search(CCPURIRI_RENTAL_STANDARD_ROLE,$roles);
+
+  if($key)
+  {
+    // set up the permissions for CCPURIRI_RENTAL_STANDARD_ROLE
+    // do not call module_invoke_all('permission') as current content type has not been added yet
+
+    $type = 'ccpuriri_rental';
+
+    $permissionsToAdd =array();
+
+    // add create $type content, ccpuriri_rental
+    $permissionsToAdd[] = "create $type content";
+
+
+    // add edit own $type content,  ccpuriri_rental
+    $permissionsToAdd[] = "edit own $type content";
+
+    // add delete own $type content, ccpuriri_rental
+    $permissionsToAdd[] = "delete own $type content";
+
+
+    user_role_grant_permissions($key, $permissionsToAdd);
+
+    // add all existing users except admin to this role,
+    $result = db_select('users')
+    ->fields('users', array('uid'))
+    ->condition('uid', 1,'>') // only all users except admin
+    ->execute();
+
+    $query = db_insert('users_roles')->fields(array('uid', 'rid'));
+
+    foreach ($result as $item) {
+
+      $query->values(array(
+          'uid' => $item->uid,
+          'rid' => $key,
+      ));
+
+    }
+
+    $query->execute();
+
+  }
+
+}
+
+/**
+ * remove users for role  ccpuriri_rental_standard_role
+ * remove permissions for role ccpuriri_rental_standard_role
+ * remove role itself
+ *
+ * */
+function _ccpuriri_rental_permission_dispose()
+{
+
+  //delete the role
+  // role id keyed key value array, value is role name
+  $roles = user_roles();
+  // if not found it returns false, otherwise the key
+  $key = array_search(CCPURIRI_RENTAL_STANDARD_ROLE,$roles);
+
+  if($key)
+  {
+    //delete role
+    user_role_delete($key);
+
+  }
+}
+
 

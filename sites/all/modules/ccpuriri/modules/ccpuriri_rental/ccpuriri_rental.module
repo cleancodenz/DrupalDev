@@ -36,7 +36,7 @@ function ccpuriri_rental_menu() {
 
   // rental add
   $items['rental/add'] = array(
-      'title' => t('Add a rental'),
+      'title' => t('Add'),
       'title callback' => 'check_plain',
       'page callback' => 'node_add',
       'page arguments' => array('ccpuriri_rental'),
@@ -65,7 +65,7 @@ function ccpuriri_rental_menu() {
 
   );
 
-  $items['rental/%%ccpuriri_rental_menu/edit'] = array(
+  $items['rental/%ccpuriri_rental_menu/edit'] = array(
       'title' => t('Edit'),
       'page callback' => 'node_page_edit',
       'page arguments' => array(1),

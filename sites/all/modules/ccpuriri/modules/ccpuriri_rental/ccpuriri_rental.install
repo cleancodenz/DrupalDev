@@ -27,6 +27,8 @@ function ccpuriri_rental_disable() {
   
   // remove rental menu
   _ccpuriri_rental_remove_rental_menu();
+  
+ 
 }
 
 
@@ -67,5 +69,6 @@ function _ccpuriri_rental_remove_rental_menu(){
 
 
 }
+
 
 
