@@ -42,3 +42,4 @@ function _ccpuriri_rental_list_page() {
   }
   return $build;
 }
+
