@@ -3,7 +3,7 @@
 /**
  * Generate a listing of rental nodes.
  */
-function _ccpuriri_rental_page_default() {
+function _ccpuriri_rental_list_page() {
   $select = db_select('node', 'n')
   ->fields('n', array('nid', 'sticky', 'created'))
   ->condition('type', 'ccpuriri_rental')

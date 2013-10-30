@@ -23,7 +23,7 @@ function ccpuriri_rental_menu() {
   // this item appears on main menu and ccpuririrentalnavigation and all
   $items['rental'] = array(
       'title' => t('Rentals'),
-      'page callback' => '_ccpuriri_rental_page_default',
+      'page callback' => '_ccpuriri_rental_list_page',
       'access arguments' => array('access content'),
       'menu_name' => 'ccpuririrentalnavigation',
       'weight' =>10,
