@@ -4,7 +4,7 @@
  *  Install, update and uninstall functions for the ccpuriri module.
  */
 
-define ('CCPURIRI_RENTAL_STANDARD_ROLE' , 'CCPuriri rental standard user');
+
 
 /**
  * Implements hook_schema().
@@ -64,6 +64,12 @@ function ccpuriri_enable() {
   // setup permissions
   _ccpuriri_rental_permission_setup();
   
+  //add address field to rental
+  _ccpuriri_field_addressfield_add_rental();
+  
+  // add contact field to rental
+  _ccpuriri_field_contactfield_add_rental();
+ 
 }
 
 /**
@@ -135,8 +141,40 @@ function  _ccpuriri_field_addressfield_add()
       field_create_instance($instance);
     }
 
+  
+    watchdog('ccpuriri',
+        'field_ccpuriri_addressfield is added, time elapsed is %timeElpased ms',
+        array('%timeElpased' =>
+            round((microtime(TRUE) - $startTime) * 1000,2)
+    
+        ),
+        WATCHDOG_DEBUG);
+    
+  }
+
+}
+
+
+/*
+ * Add addressfield to rental
+ * This does not have matching removing func, as it is included in field delete which is done in unsinatll
+ * 
+* */
+function  _ccpuriri_field_addressfield_add_rental()
+{
+  $startTime=  microtime(TRUE);
+
+  // create addressfield
+  // to clear the cache to include the field type defined in this module
+
+  _field_info_collate_types(true);
+
+  $fieldname = 'field_ccpuriri_addressfield';
+  $field = field_read_field($fieldname, array('include_inactive' => TRUE));
+
+
     // add the field to rental
-    if (!field_read_instance('node', $fieldname , 'rental', array('include_inactive' => TRUE))) {
+    if (!empty($field) && !field_read_instance('node', $fieldname , 'ccpuriri_rental', array('include_inactive' => TRUE))) {
 
       $settings= array(
           'showname'=> false,
@@ -150,20 +188,21 @@ function  _ccpuriri_field_addressfield_add()
           'widget' => array('settings'=> $settings),
           'bundle' => 'ccpuriri_rental',
       );
+      
       field_create_instance($instance);
+
+      watchdog('ccpuriri',
+          'field_ccpuriri_addressfield is added to rental type, time elapsed is %timeElpased ms',
+          array('%timeElpased' =>
+              round((microtime(TRUE) - $startTime) * 1000,2)
+      
+          ),
+          WATCHDOG_DEBUG);
+      
     }
 
-    watchdog('ccpuriri',
-        'field_ccpuriri_addressfield is added, time elapsed is %timeElpased ms',
-        array('%timeElpased' =>
-            round((microtime(TRUE) - $startTime) * 1000,2)
-    
-        ),
-        WATCHDOG_DEBUG);
-    
-  }
-
 }
+
 
 /*
  * Add contact field to user
@@ -212,7 +251,7 @@ function   _ccpuriri_field_contactfield_add()
     }
 
     // add to rental
-    if (!field_read_instance('node', $fieldname , 'rental', array('include_inactive' => TRUE))) {
+    if (!field_read_instance('node', $fieldname , 'ccpuriri_rental', array('include_inactive' => TRUE))) {
 
        
       $settings= array();
@@ -235,6 +274,53 @@ function   _ccpuriri_field_contactfield_add()
         ),
         WATCHDOG_DEBUG);
     
+  }
+
+}
+
+
+/*
+ * Add contact field to rental
+ * This does not have matching removing func, as it is included in field delete which is done in unsinatll
+* */
+function   _ccpuriri_field_contactfield_add_rental()
+{
+
+  $startTime=  microtime(TRUE);
+  // create contactfield
+  // to clear the cache to include the field type defined in this module
+
+  _field_info_collate_types(true);
+
+  $fieldname = 'field_ccpuriri_contactfield';
+  $field = field_read_field($fieldname, array('include_inactive' => TRUE));
+
+  if (!empty($field)) {
+
+    // add to rental
+    if (!field_read_instance('node', $fieldname , 'ccpuriri_rental', array('include_inactive' => TRUE))) {
+
+
+      $settings= array();
+
+      $instance = array(
+          'field_name' => $fieldname,
+          'label' => 'Contacts',
+          'entity_type' => 'node',
+          'widget' => array('settings'=> $settings),
+          'bundle' => 'ccpuriri_rental',
+      );
+      field_create_instance($instance);
+    }
+
+    watchdog('ccpuriri',
+        'field_ccpuriri_contactfield is added, time elapsed is %timeElpased ms',
+        array('%timeElpased' =>
+            round((microtime(TRUE) - $startTime) * 1000,2)
+
+        ),
+        WATCHDOG_DEBUG);
+
   }
 
 }

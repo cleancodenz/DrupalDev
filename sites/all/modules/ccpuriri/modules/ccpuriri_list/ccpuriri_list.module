@@ -764,13 +764,18 @@ function ccpuriri_list_to_arg($arg) {
 function ccpuriri_list_node_view($node, $view_mode) {
   if ($view_mode == 'full') {
     // Only append comments when we are building a node on its own node detail
-    // page. We compare $node and $page_node to ensure that comments are not
-    // appended to other nodes shown on the page, for example a node_reference
+    // page. for example a node_reference 
     // displayed in 'full' view mode within another node.
-    if ($node->type == 'ccpuriri_rental'  && node_is_page($node) ) {
-
-      $node->content['ccpuriri_list'] = ccpuriri_list_node_page_additions($node);
-
+    if ($node->type == 'ccpuriri_rental') {
+      // as node_is_page only applies to menu items using node_load so we have to do
+      // something bit different
+       $page_node= menu_get_object('ccpuriri_rental_menu');
+      
+      if (!empty($page_node) && $page_node->nid == $node->nid) 
+      {
+      
+        $node->content['ccpuriri_list'] = ccpuriri_list_node_page_additions($node);
+      }
     }
   }
 }

@@ -4,7 +4,7 @@
  * @file
  * A node module that defines a node type: .
  */
-
+define ('CCPURIRI_RENTAL_STANDARD_ROLE' , 'CCPuriri rental standard user');
 
 /**
  * Implements hook_help.
@@ -404,6 +404,35 @@ function _ccpuriri_list_tree_add_list($userlist,&$treeref,$currentMenuItem=NULL,
 
 /**
  * @} End of "name ccpuriri_block".
+ */
+
+
+/**
+ * @name ccpuriri_user_xxxx
+ * @{
+ */
+
+/**
+ * Implements hook_user_insert().
+ * add new user into role CCPURIRI_RENTAL_STANDARD_ROLE
+ */
+function ccpuriri_user_insert(&$edit, $account, $category) {
+
+  $roles = user_roles();
+  
+  $key = array_search(CCPURIRI_RENTAL_STANDARD_ROLE,$roles);
+  
+  if($key)
+  {
+    //add all authenticated user to CCPURIRI_RENTAL_STANDARD_ROLE
+      $account->roles[$key] = CCPURIRI_RENTAL_STANDARD_ROLE;
+    
+  }
+
+}
+
+/**
+ * @} End of "name ccpuriri_user_insert".
  */
 
 

@@ -10,6 +10,7 @@
 
     <?php if ($display_submitted): ?>
       <span class="submitted">
+      dddddd
         <?php print $user_picture; ?>
         <?php print $submitted; ?>
       </span>

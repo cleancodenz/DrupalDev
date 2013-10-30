@@ -45,7 +45,7 @@ function ccpuriri_rental_menu() {
       'description' => 'Add a rental',
       'menu_name' => 'ccpuririrentalnavigation',
       'file' => 'node.pages.inc',
-
+      'file path' =>drupal_get_path('module', 'node'), 
   );
 
   // rental view
@@ -74,6 +74,7 @@ function ccpuriri_rental_menu() {
       'menu_name' => 'ccpuririrentalnavigation',
       'weight' => 0,
       'file' => 'node.pages.inc',
+      'file path' =>drupal_get_path('module', 'node'),
   );
 
   return $items;
@@ -143,6 +144,9 @@ function ccpuriri_rental_entity_info_alter(&$entity_info) {
   }
 }
 
+/*
+ * this changes all node/id for rental into rental/id, it works with pathauto as well
+ * */
 function ccpuriri_rental_uri($node)
 {
   return array(
