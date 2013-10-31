@@ -135,6 +135,8 @@ function ccpuriri_rental_menu_to_arg($arg) {
  * just add uri_callback for bundles[ccpuriri+rental][uri_callback]= 'rental/'.nodeid
  * it will not affect pathauto generate beautiful uri, as it is based on entity to generate new b uri, not the original 
  * so when it is set to rental/[node:title] it will just generate that.
+ * 
+ *  Add the 'ccpuriri_rental_list_view' view mode for nodes. 
  */
 function ccpuriri_rental_entity_info_alter(&$entity_info) {
   
@@ -142,6 +144,15 @@ function ccpuriri_rental_entity_info_alter(&$entity_info) {
   {
     $entity_info['node']['bundles']['ccpuriri_rental']['uri callback'] = 'ccpuriri_rental_uri';
   }
+  
+  // Add the 'ccpuriri_rental_list_view' view mode for nodes.
+  $entity_info['node']['view modes'] += array(
+      'ccpuriri_rental_list_view' => array(
+          'label' => t('Rental List View'),
+          'custom settings' => TRUE, // make it appear in manage display
+      ),
+  );
+  
 }
 
 /*
@@ -162,9 +173,9 @@ function ccpuriri_rental_uri($node)
  * using hook_preprocess_node
  */
 function ccpuriri_rental_preprocess_node(&$vars) {
-  if ($vars['view_mode']=='teaser' &&  $vars['type']=='ccpuriri_rental') {
+  if ($vars['view_mode']=='ccpuriri_rental_list_view' &&  $vars['type']=='ccpuriri_rental') {
 
-    $vars['theme_hook_suggestions'][] = 'node__ccpuriri_rental__teaser';
+    $vars['theme_hook_suggestions'][] = 'node__ccpuriri_rental__ccpuriri_rental_list_view';
 
   }
 }
