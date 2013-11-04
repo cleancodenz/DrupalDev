@@ -70,6 +70,8 @@ function ccpuriri_enable() {
   // add contact field to rental
   _ccpuriri_field_contactfield_add_rental();
  
+  // add body field to rental type
+  _ccpuriri_rental_body_field_add();
 }
 
 /**
@@ -83,6 +85,9 @@ function ccpuriri_disable() {
   
   //remove all rental permission settings
   _ccpuriri_rental_permission_dispose();
+  
+  //remove body field from rental type
+  _ccpuriri_rental_body_field_remove();
 }
 
 
@@ -880,4 +885,77 @@ function _ccpuriri_rental_permission_dispose()
   }
 }
 
+/*
+* add the body field to rental type, it is in main module install
+* and removing of body is in module uninstall, as it will invovle the the data loss
+* this will add an entry in field_config_instance 
+* */
+function _ccpuriri_rental_body_field_add()
+{
+  $instance = field_info_instance('node', 'body', 'ccpuriri_rental');
+  
+  if (empty($instance))
+  {
+    $types = node_type_get_types();
+    
+    $startTime=  microtime(TRUE);
+    
+    node_add_body_field($types['ccpuriri_rental']) ;
+    
+    //change the settings of instance to turn off display summary
+    
+    $instance = field_info_instance('node', 'body', 'ccpuriri_rental');
+    if (!empty($instance['settings']['display_summary'])
+        &&$instance['settings']['display_summary'])
+    {
+      $instance['settings']['display_summary']=false;
+      
+      field_update_instance($instance);
+      
+    }
+    
+   
+    
+    
+    watchdog('ccpuriri',
+        'Body field is added to ccpuriri rental bundle, time elapsed is %timeElpased ms',
+        array('%timeElpased' =>
+            round((microtime(TRUE) - $startTime) * 1000,2)
+    
+        ),
+        WATCHDOG_DEBUG);
+  }
+  
+ 
+}
 
+/*
+ * remove the body field of rental type
+* and removing of body is in module uninstall, as it will invovle the the data loss
+* this will remove instance entry in field_config_instance
+* and it will remove any user data in field_data_body
+* not straight away, but after cron run 
+* */
+function _ccpuriri_rental_body_field_remove()
+{
+  // field name is body
+  $instance = field_info_instance('node', 'body', 'ccpuriri_rental');
+  
+  if (!empty($instance))
+  {
+    $startTime=  microtime(TRUE);
+    
+    // delete this instace
+    // field clean up is false, as this is system field
+    // the data only marked as delete, run cron to purge the field instance data 
+     field_delete_instance($instance, false) ;
+     
+     watchdog('ccpuriri',
+         'Body field in ccpuriri rental bundle is marked for delete, time elapsed is %timeElpased ms',
+         array('%timeElpased' =>
+             round((microtime(TRUE) - $startTime) * 1000,2)
+     
+         ),
+         WATCHDOG_DEBUG);
+  }
+}
