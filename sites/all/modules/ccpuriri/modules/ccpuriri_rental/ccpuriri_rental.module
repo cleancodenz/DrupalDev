@@ -172,10 +172,14 @@ function ccpuriri_rental_uri($node)
  * A theme preprocess function for node to automatically allow teaser based template
  * using hook_preprocess_node
  */
-function ccpuriri_rental_preprocess_node(&$vars) {
-  if ($vars['view_mode']=='ccpuriri_rental_list_view' &&  $vars['type']=='ccpuriri_rental') {
+function ccpuriri_rental_preprocess_node(&$variables) {
+  if ($variables['view_mode']=='ccpuriri_rental_list_view' &&  $variables['type']=='ccpuriri_rental') {
 
-    $vars['theme_hook_suggestions'][] = 'node__ccpuriri_rental__ccpuriri_rental_list_view';
+    //add jumbton to class array
+    $variables['classes_array'][] = 'jumbotron';
+    
+    $variables['theme_hook_suggestions'][] = 'node__ccpuriri_rental__ccpuriri_rental_list_view';
+    
 
   }
 }
