@@ -38,12 +38,12 @@ function ccpuriri_menu_alter(&$items)
   $items['user']['menu_name'] ='secondary_top';
   $items['user']['title callback'] = '_ccpuriri_user_menu_title';
   $items['user']['weight'] =10;
-  $items['user']['options']['icon'] = 'icon-user';
+  $items['user']['options']['icon'] = 'glyphicon glyphicon-user';
   $items['user']['options']['html'] = true;
 
   $items['user/logout']['menu_name'] ='secondary_top';
   $items['user/logout']['weight'] =20;
-  $items['user/logout']['options']['icon'] = 'icon-signout';
+  $items['user/logout']['options']['icon'] = 'glyphicon glyphicon-signout';
   $items['user/logout']['options']['html'] = true;
   // items for not logged in
 
@@ -52,7 +52,7 @@ function ccpuriri_menu_alter(&$items)
   $items['user/login']['type'] = MENU_NORMAL_ITEM;
   $items['user/login']['weight'] =10;
   $items['user/login']['menu_name'] ='secondary_top';
-  $items['user/login']['options']['icon'] = 'icon-signin';
+  $items['user/login']['options']['icon'] = 'glyphicon glyphicon-signin';
   $items['user/login']['options']['html'] = true;
 
 
@@ -62,7 +62,7 @@ function ccpuriri_menu_alter(&$items)
   $items['user/register']['title'] ='Sign up';
   $items['user/register']['weight'] =15;
   $items['user/register']['menu_name'] ='secondary_top';
-  $items['user/register']['options']['icon'] = 'icon-upload-alt';
+  $items['user/register']['options']['icon'] = 'glyphicon glyphicon-upload-alt';
   $items['user/register']['options']['html'] = true;
 
   // user navigation menu
@@ -83,7 +83,7 @@ function ccpuriri_menu_alter(&$items)
       'access arguments' => array(1),
       'menu_name' => 'ccpuririusernavigation',
       'options'=>array(
-          'icon'=>'icon-user',
+          'icon'=>'glyphicon glyphicon-user',
           'html'=>true,
       ),
       'weight' =>10,

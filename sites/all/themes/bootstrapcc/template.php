@@ -28,29 +28,7 @@ function bootstrapcc_css_alter(&$css) {
   return $css;
 }
 
-/*
- * 
- * /
-/**
- * Returns the correct span class for a region
- */
-function _bootstrapcc_content_span($columns = 1) {
-  $class = FALSE;
-  
-  switch($columns) {
-    case 1:
-      $class = 'span12';
-      break;
-    case 2:
-      $class = 'span10';
-      break;
-    case 3:
-      $class = 'span8';
-      break;
-  }
-  
-  return $class;
-}
+
 
 /*
  * html theming
@@ -147,7 +125,7 @@ function bootstrapcc_menu_link__main_menu(array $variables) {
     
     $element['#localized_options']['html']=true;
     
-    $output = l('<i class="icon-home"></i>'.$element['#title'], $element['#href'], $element['#localized_options']);
+    $output = l('<i class="glyphicon glyphicon-home"></i>'.$element['#title'], $element['#href'], $element['#localized_options']);
     
   }elseif (isset($element['#localized_options']['icon']))
   {
@@ -211,7 +189,7 @@ function bootstrapcc_menu_link(array $variables) {
     
     $element['#localized_options']['html']=true;
     
-    $output = l('<i class="icon-home"></i>'.$element['#title'], $element['#href'], $element['#localized_options']);
+    $output = l('<i class="glyphicon glyphicon-home"></i>'.$element['#title'], $element['#href'], $element['#localized_options']);
     
   }elseif (isset($element['#localized_options']['icon']))
   {
@@ -237,7 +215,7 @@ function bootstrapcc_menu_link(array $variables) {
  */
 
 function bootstrapcc_menu_tree(&$variables) {
-  return '<ul class="nav nav-list">' . $variables['tree'] . '</ul>';
+  return '<ul class="nav">' . $variables['tree'] . '</ul>';
 }
 
 
@@ -265,10 +243,10 @@ function bootstrapcc_form_search_block_form_alter(&$form, &$form_state) {
  
   // form
   // when fluid, 12 means 100% of parent
-  $form['#attributes']['class'][] = 'span12';
+  $form['#attributes']['class'][] = 'col-md-12';
   
   // input, remove  remove span2 which was added by base theme
-  if (($key = array_search('span2',
+  if (($key = array_search('col-md-2',
       $form['search_block_form']['#attributes']['class'])) !== false)
     unset($form['search_block_form']['#attributes']['class'][$key]);
   
@@ -282,8 +260,7 @@ function bootstrapcc_form_search_block_form_alter(&$form, &$form_state) {
 /**
  * Implements hook_form_FORM_ID_alter() for search_form().
  * add span* to customized the width of search box
- * 
- */
+
 function bootstrapcc_form_search_form_alter(&$form, &$form_state) {
  
   // form
@@ -291,7 +268,7 @@ function bootstrapcc_form_search_form_alter(&$form, &$form_state) {
   $form['#attributes']['class'][] = 'span12';
   
   // input, remove  remove span2 which was added by base theme
-  if (($key = array_search('span2',
+  if (($key = array_search('col-md-2',
       $form['basic']['keys']['#attributes']['class'])) !== false)
     unset($form['basic']['keys']['#attributes']['class'][$key]);
   
@@ -302,7 +279,8 @@ function bootstrapcc_form_search_form_alter(&$form, &$form_state) {
   $form['basic']['keys']['#size']=45;
   
 }
-
+ * 
+ */
 
 /*
  * Bread crumb override, add current title to the end of bread crumb
