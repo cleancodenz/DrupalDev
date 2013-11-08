@@ -29,28 +29,6 @@ function bootstrapcc_css_alter(&$css) {
 }
 
 
-
-/*
- * html theming
- * Add met tag with viewport to head
-*/
-function bootstrapcc_preprocess_html(&$variables) {
-
-  // add view port tag to head
- // $element = array(
- //     '#type'=>'html_tag',
- //     '#tag' => 'meta',
- //     '#attributes' => array(
- //         'name' => 'viewport',
- //         'content' =>'width=device-width, initial-scale=1.0',
- //     ),
- // );
-
- // drupal_add_html_head($element, 'bootstrap_viewport');
-
-}
-
-
 /**
  * Pagetheming
  * Add own theme suggestions for page when user logged in
@@ -70,9 +48,9 @@ function bootstrapcc_preprocess_page(&$variables) {
  */
 function bootstrapcc_preprocess_block(&$variables) {
   // add well class to all block.
-  if (!($variables['block']->module == 'search' && $variables['block']->delta=='form')) {
-  $variables['classes_array'][] = 'well';
-  }
+ // if (!($variables['block']->module == 'search' && $variables['block']->delta=='form')) {
+//  $variables['classes_array'][] = 'well';
+//  }
 }
 
 /*
@@ -157,7 +135,7 @@ function bootstrapcc_menu_link(array $variables) {
     // Ad our own wrapper
   
     unset($element['#below']['#theme_wrappers']);
-    $sub_menu = '<ul class="nav nav-list">' . drupal_render($element['#below']) . '</ul>';
+    $sub_menu = "<ul class='nav nav-pills nav-stacked' style='max-width: 250px;'>" . drupal_render($element['#below']) . "</ul>\n";
      
     $element['#localized_options']['html'] = TRUE;
   
@@ -200,7 +178,7 @@ function bootstrapcc_menu_link(array $variables) {
     $output = l($element['#title'], $element['#href'], $element['#localized_options']);
   }
    
-  return '<li' . drupal_attributes($element['#attributes']) . '>' . $output . $sub_menu . "</li>\n";
+  return '<li' . drupal_attributes($element['#attributes']) . '>' . $output . $sub_menu . "</li>";
 }
 
 
@@ -215,7 +193,8 @@ function bootstrapcc_menu_link(array $variables) {
  */
 
 function bootstrapcc_menu_tree(&$variables) {
-  return '<ul class="nav">' . $variables['tree'] . '</ul>';
+  return "<div class='cp-sidebar hidden-print' role='complementary'>
+  <ul class='nav nav-pills nav-stacked' style='max-width: 250px;'>" . $variables['tree'] . "</ul></div>\n";
 }
 
 
@@ -234,6 +213,7 @@ function bootstrapcc_preprocess_region(&$variables, $hook) {
     
   }
 }
+
 
 /**
  * Implements hook_form_FORM_ID_alter() for search_block_form().
@@ -291,7 +271,7 @@ function bootstrapcc_form_search_form_alter(&$form, &$form_state) {
  * Override theme_breadrumb().
  *
  * Print breadcrumbs as a list, with separators.
- */
+ 
 function bootstrapcc_breadcrumb($variables) {
   $breadcrumb = $variables['breadcrumb'];
 
@@ -316,4 +296,4 @@ function bootstrapcc_breadcrumb($variables) {
     return $breadcrumbs;
   }
 }
-
+*/

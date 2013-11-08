@@ -3,11 +3,9 @@
 
 <div class="container main">
 	<div class="row">
-
 		
 		<!-- /#sidebar-first -->
-		
-		<section class="col-md-9">
+		<section class="col-md-9" role="main">
 
 			<?php if (!empty($breadcrumb)): print $breadcrumb; endif;?>
 			<!-- /#breadcrumb -->
@@ -36,12 +34,14 @@
 
 		</section>
 
-		<?php if (!empty($page['sidebar_second'])): ?>
+	
 		<aside class="col-md-3" role="complementary">
-			<?php print render($page['sidebar_second']); ?>
+			<?php if (!empty($page['sidebar_second'])): ?>
+			  <?php print render($page['sidebar_second']); ?>
+			  <!-- /#sidebar-second -->
+		    <?php endif; ?>
+			  
 		</aside>
-		<!-- /#sidebar-second -->
-		<?php endif; ?>
 		
 	</div>
 	<footer class="footer">

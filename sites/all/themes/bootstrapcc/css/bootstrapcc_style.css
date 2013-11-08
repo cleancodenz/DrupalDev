@@ -8,30 +8,22 @@ body
 
 }
 
-.cp-header .col-md-4
+
+
+.cp-logo-container .col-md-4
 {
     padding-left:0px; 
 }
 
-.cp-header hr
+.cp-logo-container hr
 {
 	margin-top: 0px;
 	margin-bottom: 10px;
 }
 
-.header
-{
-   padding-left:20px;
-   padding-right:20px;
-}
-.header hr
-{
-    margin:2px 0;
-}
-.navbar .navbar-brand
-{
-    padding: 2px 20px 2px;
-   
+
+.nav-stacked ul {
+    margin-left: 15px !important;
 }
 
 

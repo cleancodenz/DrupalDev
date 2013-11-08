@@ -62,3 +62,4 @@ datestamp = "1361234513"
 ; ;settings[toggle_search] = 1
 ; ;settings[cdn_bootstrap] = 1
 settings[bootstrap_cdn] = 3.0.2
+settings[bootstrap_breadcrumb_home] = 1
