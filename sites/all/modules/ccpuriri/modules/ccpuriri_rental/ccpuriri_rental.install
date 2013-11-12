@@ -46,7 +46,7 @@ function _ccpuriri_rental_add_rental_menu(){
  
   $ccpuririrentalnavigationmenu = array(
       'menu_name' => 'ccpuririrentalnavigation',
-      'title' => 'CCPuriri Rental Navigation',
+      'title' => 'CCPuriri Rental Navigation-add to sidebar',
       'description' => 'CCPuriri Rental navigation menu, add this to sidebar one region',
   );
 

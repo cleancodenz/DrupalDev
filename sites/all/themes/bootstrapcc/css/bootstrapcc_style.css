@@ -22,8 +22,18 @@ body
 }
 
 
-.nav-stacked ul {
+.cp-sidebar{
+	background-color: #f5f5f5;
+    border-radius: 5px;
+}
+
+.nav-stacked ul{
     margin-left: 15px !important;
+}
+
+.nav-stacked a.active-trail
+{
+    border-right: 1px solid #2a6496;
 }
 
 
@@ -32,9 +42,7 @@ body
 	margin-bottom :10px;
 }
 
-#childmenu {
-    list-style-type: none;	
-}
+
 
 div.messages {
   background-position: 8px 8px; /* LTR */

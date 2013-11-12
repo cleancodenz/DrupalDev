@@ -33,62 +33,24 @@ function ccpuriri_help($path, $arg) {
 */
 function ccpuriri_menu_alter(&$items)
 {
-  //items when user logged in
-
-  $items['user']['menu_name'] ='secondary_top';
+  // user navigation menu
   $items['user']['title callback'] = '_ccpuriri_user_menu_title';
-  $items['user']['weight'] =10;
-  $items['user']['options']['icon'] = 'glyphicon glyphicon-user';
-  $items['user']['options']['html'] = true;
-
-  $items['user/logout']['menu_name'] ='secondary_top';
-  $items['user/logout']['weight'] =20;
-  $items['user/logout']['options']['icon'] = 'glyphicon glyphicon-signout';
-  $items['user/logout']['options']['html'] = true;
-  // items for not logged in
-
-  //get the titile back by making it a normal menu item
-  // need manual change to move it to top level
+  
   $items['user/login']['type'] = MENU_NORMAL_ITEM;
-  $items['user/login']['weight'] =10;
-  $items['user/login']['menu_name'] ='secondary_top';
-  $items['user/login']['options']['icon'] = 'glyphicon glyphicon-signin';
-  $items['user/login']['options']['html'] = true;
-
 
   //get the titile back by making it a normal menu item
   // need manual change to move it to top level
   $items['user/register']['type'] = MENU_NORMAL_ITEM;
   $items['user/register']['title'] ='Sign up';
-  $items['user/register']['weight'] =15;
-  $items['user/register']['menu_name'] ='secondary_top';
-  $items['user/register']['options']['icon'] = 'glyphicon glyphicon-upload-alt';
-  $items['user/register']['options']['html'] = true;
-
-  // user navigation menu
-
+  
+  
   // must remove original one, it can only have one
   if (array_key_exists('user/%user',$items))
   {
     unset($items['user/%user']);
   }
 
-  // this is the user menu top bar
-  // with user/%/account etc as its submenu
-  $items['user/%user_uid_optional'] = array(
-      'title' => 'My account',
-      'page callback' => 'user_view_page',
-      'page arguments' => array(1),
-      'access callback' => 'user_view_access',
-      'access arguments' => array(1),
-      'menu_name' => 'ccpuririusernavigation',
-      'options'=>array(
-          'icon'=>'glyphicon glyphicon-user',
-          'html'=>true,
-      ),
-      'weight' =>10,
-  );
-
+  
   if (array_key_exists('user/%user/view',$items))
   {
     unset($items['user/%user/view']);
@@ -109,17 +71,26 @@ function ccpuriri_menu_alter(&$items)
     unset($items['user/%user/cancel']);
   }
 
+  
+  // this is the user menu top bar
+  // with user/%/account etc as its submenu
+  $items['user/%user_uid_optional'] = array(
+      'title' => 'My account',
+      'page callback' => 'user_view_page',
+      'page arguments' => array(1),
+      'access callback' => 'user_view_access',
+      'access arguments' => array(1),
+  );
+  
   $items['user/%user_uid_optional/cancel'] = array(
       'title' => 'Cancel account',
       'page callback' => 'drupal_get_form',
       'page arguments' => array('user_cancel_confirm_form', 1),
       'access callback' => 'user_cancel_access',
       'access arguments' => array(1),
-      'menu_name' => 'ccpuririusernavigation',
-      'weight' =>100,
       'file' => drupal_get_path('module', 'user').'/user.pages.inc',
   );
-
+  
   // here for new development to compare with
   // later on set this to admin only
   $items['user/%user_uid_optional/edit'] = array(
@@ -127,9 +98,80 @@ function ccpuriri_menu_alter(&$items)
       'page callback' => 'drupal_get_form',
       'page arguments' => array('user_profile_form', 1),
       'access arguments' => array('administer users'),
-      'menu_name' => 'ccpuririusernavigation',
       'file' => drupal_get_path('module', 'user').'/user.pages.inc',
   );
+}
+
+
+/*
+ * hook_menu_link_alter, this is perlink
+ * */
+function ccpuriri_menu_link_alter(&$link) {
+  
+  // items logged in
+  
+  //the menu name change has to be in hook_menu_link_alter 
+  if ($link['link_path'] == 'user' && $link['module'] == 'system') {
+    $link['menu_name'] ='secondary_top';
+    $link['weight'] =10;
+    $link['options']['icon'] = 'user';
+    $link['options']['html'] = true;
+  }
+ 
+  if ($link['link_path'] == 'user/logout' && $link['module'] == 'system') {
+    
+    $link['menu_name'] ='secondary_top';
+    $link['weight'] =20;
+    $link['options']['icon'] = 'log-out';
+    $link['options']['html'] = true;
+    $link['plid'] = 0; // move it to top level
+  }
+  
+  
+ 
+  // items for not logged in
+  
+  if ($link['link_path'] == 'user/login' && $link['module'] == 'system') {
+
+    $link['weight'] =10;
+    $link['menu_name'] ='secondary_top';
+    $link['options']['icon'] = 'log-in';
+    $link['options']['html'] = true;
+    
+    $link['plid'] = 0; // move it to top level
+  }
+  
+  if ($link['link_path'] == 'user/register' && $link['module'] == 'system') {
+    
+    $link['weight'] =15;
+    $link['menu_name'] ='secondary_top';
+    $link['options']['icon'] = 'cog';
+    $link['options']['html'] = true;
+    $link['plid'] = 0; // move it to top level
+  }
+  
+   //change of  $items['user/%user_uid_optional'], but only need to reference %
+  if ($link['link_path'] == 'user/%' && $link['module'] == 'system') {
+    
+    $link['weight'] =10;
+    $link['menu_name'] ='ccpuririusernavigation';
+    $link['options']['icon'] = 'user';
+    $link['options']['html'] = true;
+  }
+ 
+  if ($link['link_path'] == 'user/%/cancel' && $link['module'] == 'system') {
+    
+    $link['weight'] =100;
+    $link['menu_name'] ='ccpuririusernavigation';
+    
+  }
+  
+  if ($link['link_path'] == 'user/%/cancel' && $link['module'] == 'system') {
+  
+    $link['menu_name'] ='ccpuririusernavigation';
+    
+  }
+  
 }
 
 /**
@@ -227,7 +269,7 @@ function ccpuriri_menu() {
 function ccpuriri_block_info() {
 
   $blocks['navigation'] =array(
-      'info' => t('CCPuriri Navigation'),
+      'info' => t('CCPuriri Navigation- add to sidebar first'),
       'region' => 'sidebar_first',
       // Menu blocks can't be cached because each menu item can have
       // a custom access callback. menu.inc manages its own caching.

@@ -363,7 +363,7 @@ function _ccpuriri_menu_blocks_custom_add(){
 
   $ccpuririusernavigationmenu = array(
       'menu_name' => 'ccpuririusernavigation',
-      'title' => 'CCPuriri User Navigation',
+      'title' => 'CCPuriri User Navigation- not to be added to sidebar',
       'description' => 'CCPuriri User Navigation menu, do not add this to regions, as it is displayed by CCPuriri Navigation block',
   );
 
@@ -389,7 +389,7 @@ function _ccpuriri_menu_blocks_custom_add(){
   
   $ccpuririmainnavigationmenu = array(
       'menu_name' => 'ccpuririmainnavigation',
-      'title' => 'CCPuriri Main Navigation',
+      'title' => 'CCPuriri Main Navigation-not to be added to sidebar',
       'description' => 'CCPuriri Main Navigation menu, do not add this to regions, as it is displayed by CCPuriri Navigation block',
   );
   
@@ -541,7 +541,7 @@ function _ccpuriri_menu_system_main_add_list(){
       'module' => 'ccpuriri_list',
       'description' => 'My lists menu item on system main menu',
       'options'=>array(
-          'icon'=>'glyphicon glyphicon-folder-open',
+          'icon'=>'indent-left',
           'html'=>true,
       ),
       'expanded' => 0,
@@ -576,8 +576,8 @@ function _ccpuriri_menu_system_main_add_list(){
           'link_path' => 'list/'.$list->lid,
           'description' => 'Shared list '.$list->title.' menu item on navigation menu',
           'options'=>array(
-             'icon'=>'glyphicon glyphicon-reorder',
-              'html'=>true,
+             'icon'=>'tag',
+             'html'=>true,
           ),
           'plid' => $parentmid,
           'module' => 'ccpuriri_list',
@@ -655,7 +655,7 @@ function _ccpuriri_menu_main_add_items(){
       'module' => 'ccpuriri',
       'description' => 'Home on main menu',
       'options'=>array(
-          'icon'=>'glyphicon glyphicon-home',
+          'icon'=>'home',
           'html'=>true,
       ),
       'external' => 1,
@@ -677,7 +677,7 @@ function _ccpuriri_menu_main_add_items(){
       'module' => 'ccpuriri',
       'description' => 'My lists menu item on main menu',
       'options'=>array(
-          'icon'=>'glyphicon glyphicon-folder-open',
+          'icon'=>'indent-left',
           'html'=>true,
       ),
       'expanded' => 0,
@@ -697,7 +697,7 @@ function _ccpuriri_menu_main_add_items(){
       'module' => 'ccpuriri',
       'description' => 'My account menu item on main menu',
       'options'=>array(
-          'icon'=>'glyphicon glyphicon-user',
+          'icon'=>'user',
           'html'=>true,
       ),
       'expanded' => 0,
@@ -718,7 +718,7 @@ function _ccpuriri_menu_main_add_items(){
       'module' => 'ccpuriri_rental',
       'description' => 'Rental menu item on system main menu',
       'options'=>array(
-          'icon'=>'glyphicon glyphicon-gift',
+          'icon'=>'th', // th-large for house
           'html'=>true,
       ),
       'expanded' => 0,

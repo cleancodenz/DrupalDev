@@ -197,7 +197,7 @@ function _ccpuriri_list_add_custom_menu(){
 
   $ccpuririlistnavigationmenu = array(
       'menu_name' => 'ccpuririlistnavigation',
-      'title' => 'CCPuriri List Navigation',
+      'title' => 'CCPuriri List Navigation - not to be added to sidebar',
       'description' => 'CCPuriri list navigation menu, do not add this to regions, as it is displayed by CCPuriri Navigation block.',
   );
 
@@ -217,7 +217,6 @@ function _ccpuriri_list_remove_custom_menu(){
   );
 
   menu_delete($ccpuririlistnavigationmenu);
-
 
 }
 

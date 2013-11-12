@@ -28,7 +28,7 @@ function ccpuriri_rental_menu() {
       'menu_name' => 'ccpuririrentalnavigation',
       'weight' =>10,
       'options'=>array(
-          'icon'=>'glyphicon glyphicon-gift',
+          'icon'=>'th',
           'html'=>true,
       ),
       'file' =>'ccpuriri_rental.pages.inc'

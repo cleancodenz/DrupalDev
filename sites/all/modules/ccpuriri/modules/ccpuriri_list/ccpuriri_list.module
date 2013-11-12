@@ -572,7 +572,7 @@ function ccpuriri_list_menu() {
       'menu_name' => 'ccpuririlistnavigation',
       'weight' =>10,
       'options'=>array(
-          'icon'=>'glyphicon glyphicon-folder-open',
+          'icon'=>'indent-left',
           'html'=>true,
       ),
       'file' =>'ccpuriri_list.pages.inc'
@@ -687,7 +687,8 @@ function ccpuriri_list_access($op, $list, $account = NULL) {
  * Title callback.
  */
 function ccpuriri_list_page_title($list) {
-  return $list->title.'('.$list->items_count.')';
+//  return $list->title.'('.$list->items_count.')';
+  return $list->title.'<span class="badge pull-right">'.$list->items_count.'</span>';
 }
 
 /**
@@ -950,7 +951,7 @@ function ccpuriri_list_addremove_form($form, &$form_state, $args)
       $form['list_block']['addbutton']= array(
           '#type' => 'ccpuriri_dropdownbutton',
           '#value' => t('Add to List'),
-          '#icon' =>'glyphicon glyphicon-plus',
+          '#icon' =>'plus',
           '#attributes'=>array(),
           '#colorcode' =>'info',
           '#items' => $toaddlists,
@@ -970,7 +971,7 @@ function ccpuriri_list_addremove_form($form, &$form_state, $args)
             '#type' => 'ccpuriri_imagebutton',
             '#value' => $list->lid,
             '#title' => $list->title,
-            '#icon' =>'glyphicon glyphicon-minus',
+            '#icon' =>'minus',
             '#attributes'=>array(),
             '#colorcode' =>'warning',
             '#ajax' =>array(
