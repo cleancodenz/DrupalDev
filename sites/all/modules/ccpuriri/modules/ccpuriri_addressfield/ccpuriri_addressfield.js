@@ -11,13 +11,13 @@
 	// otherVaule.lat,// lat
 	// );
 	Drupal.ccpuriri.AddressChangeEvent = 'ccpuriri_address_changed';
-	
 
 	/**
 	 * Fills the suggestion popup with any matches received. This is override of
 	 * default implementation as the data structure is changed
 	 * 
 	 */
+
 	Drupal.jsAC.prototype.found = function(matches) {
 		// If no value in the textfield, do not show the popup.
 		if (!this.input.value.length) {
@@ -25,23 +25,30 @@
 		}
 
 		// Prepare matches.
-		var ul = $('<ul></ul>');
+		var ul = $('<ul class="dropdown-menu"></ul>');
 		var ac = this;
+		ul.css({
+			display : 'block',
+			right : 0
+		});
 		for (key in matches) {
-			$('<li></li>').html($('<div></div>').html(key)).mousedown(
-					function() {
-						ac.select(this);
-					}).mouseover(function() {
+			$('<li></li>').html(
+					$('<a href="#"></a>').html(key).click(function(e) {
+						e.preventDefault();
+					})).mousedown(function() {
+				ac.select(this);
+			}).mouseover(function() {
 				ac.highlight(this);
 			}).mouseout(function() {
 				ac.unhighlight(this);
 			}).data('autocompleteValue', key).data('autocompleteOtherValue',
 					matches[key]).appendTo(ul);
+
 		}
 
 		// Show popup with matches, if any.
 		if (this.popup) {
-			if (ul.children().size()) {
+			if (ul.children().length) {
 				$(this.popup).empty().append(ul).show();
 				$(this.ariaLive).html(Drupal.t('Autocomplete popup'));
 			} else {
@@ -51,6 +58,7 @@
 				this.hidePopup();
 			}
 		}
+
 	};
 
 	/**
@@ -159,18 +167,20 @@
 		if (otherVaule.lat) {
 			$('[name="field_ccpuriri_addressfield[und][0][lat]"]').val(
 					otherVaule.lat);
-		 }
+		}
 
 		// update lon
-		 if (otherVaule.lon) {
-			 $('[name="field_ccpuriri_addressfield[und][0][lon]"]').val(
-					 otherVaule.lon);
-		 }
+		if (otherVaule.lon) {
+			$('[name="field_ccpuriri_addressfield[und][0][lon]"]').val(
+					otherVaule.lon);
+		}
 
 		// trigger event, to tell map move
 
-		$(Drupal.ccpuriri).trigger(Drupal.ccpuriri.AddressChangeEvent,
-				{'lon' :otherVaule.lon, 'lat' :otherVaule.lat});
+		$(Drupal.ccpuriri).trigger(Drupal.ccpuriri.AddressChangeEvent, {
+			'lon' : otherVaule.lon,
+			'lat' : otherVaule.lat
+		});
 
 	};
 
@@ -183,8 +193,8 @@
 		this.searchString = searchString;
 
 		// extend the delay to 1 second
-		this.delay =1000;
-		
+		this.delay = 1000;
+
 		// See if this string needs to be searched for anyway.
 		searchString = searchString.replace(/^\s+|\s+$/, '');
 		if (searchString.length <= 3

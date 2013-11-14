@@ -86,9 +86,10 @@ function ccpuriri_addressfield_street(&$elements, $address)
       '#id' => 'extrernal_autocomplete',
       '#name' => 'extrernal_autocomplete',
       // add js, to make sure it is added after autocomplete
+      // group set to JS_THEME, as it is possible it is overriden by theme autocomplete
       '#attached' => array(
           'js' => array(drupal_get_path('module', 'ccpuriri_addressfield') . '/ccpuriri_addressfield.js'=>
-              array('group' => JS_DEFAULT, 'weight'=>100)),
+              array('group' => JS_THEME, 'weight'=>100)),
       ),
   );
 
