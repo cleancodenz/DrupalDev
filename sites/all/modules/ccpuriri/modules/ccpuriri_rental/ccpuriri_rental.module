@@ -174,9 +174,6 @@ function ccpuriri_rental_uri($node)
  */
 function ccpuriri_rental_preprocess_node(&$variables) {
   if ($variables['view_mode']=='ccpuriri_rental_list_view' &&  $variables['type']=='ccpuriri_rental') {
-
-    //add jumbton to class array
-    $variables['classes_array'][] = 'jumbotron';
     
     $variables['theme_hook_suggestions'][] = 'node__ccpuriri_rental__ccpuriri_rental_list_view';
     
