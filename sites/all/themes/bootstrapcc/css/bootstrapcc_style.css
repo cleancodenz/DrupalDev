@@ -25,6 +25,7 @@ body
 .cp-sidebar{
 	background-color: #f5f5f5;
     border-radius: 5px;
+    margin-bottom :10px;
 }
 
 .nav-stacked ul{
@@ -36,11 +37,6 @@ body
     border-right: 1px solid #2a6496;
 }
 
-
-
-.sidebar {
-	margin-bottom :10px;
-}
 
 
 /* to make a box*/
@@ -61,3 +57,13 @@ div.warning {
   border-color: #bce8f1;
 }
 
+/* rental list view*/
+div.node-ccpuriri-rental .thumbnail img
+{
+    padding-right: 5px;
+}
+
+div.node-ccpuriri-rental .thumbnail .caption
+{
+	padding: 5px;
+}

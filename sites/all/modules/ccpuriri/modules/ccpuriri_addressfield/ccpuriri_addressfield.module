@@ -111,6 +111,11 @@ function ccpuriri_addressfield_field_formatter_info() {
           'field types' => array('ccpuriri_addressfield'),
           'settings' => array(),
       ),
+      'ccpuriri_addressfield_subandstreet' => array(
+          'label' => t('Suburb and Street'),
+          'field types' => array('ccpuriri_addressfield'),
+          'settings' => array(),
+      ),
   );
 }
 
@@ -130,6 +135,47 @@ function ccpuriri_addressfield_field_formatter_view($entity_type, $entity, $fiel
         //$element[$delta] = addressfield_generate($address, $handlers, $context);
       }
       break;
+    
+    case 'ccpuriri_addressfield_subandstreet':
+        // this is used by list view, just displaying suburb and street number and street
+      
+        foreach ($items as $delta => $address) {
+          // this only has one value
+          $format['city_block'] = array(
+              '#type' => 'ccpuriri_container',
+              '#tag' => 'span',
+              '#attributes' => array('class' => array('city-block')),
+          );
+          $format['city_block']['city'] =
+          array('#markup' => strip_tags($address['locality']));
+          
+          $format['suburb_block'] = array(
+              '#type' => 'ccpuriri_container',
+              '#tag' => 'span',
+              '#attributes' => array('class' => array('suburb-block')),
+          );
+          $format['suburb_block']['suburb'] =
+            array('#markup' => strip_tags($address['dependent_locality']));
+          
+          $format['street_block'] = array(
+              '#type' => 'ccpuriri_container',
+              '#tag' => 'span',
+              '#attributes' => array('class' => array('street-block')),
+          );
+          $format['street_block']['street'] =
+          array('#markup' => strip_tags($address['thoroughfare']));
+          
+          
+          $element[$delta] =$format ;
+          
+          
+        }
+        break;
+    
+    default:
+      ;
+    
+      
   }
 
   return $element;

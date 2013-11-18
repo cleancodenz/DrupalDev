@@ -4,6 +4,7 @@
  * Implementation of hook_element_info(). this is for widget form block element
  */
 function ccpuriri_common_element_info() {
+  // this can be used on a form and a view to add div arround child elements
   $types['ccpuriri_container'] = array(
       '#theme_wrappers' => array('ccpuriri_container'),
       '#process' => array('ccpuriri_container_process'),
