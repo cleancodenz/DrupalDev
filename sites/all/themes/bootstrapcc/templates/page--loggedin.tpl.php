@@ -4,7 +4,7 @@
 <div class="container cp-docs-container">
 	<div class="row">
 
-		<aside class="col-md-3" role="complementary">
+		<aside class="col-md-2" role="complementary">
 		    <?php if (!empty($page['sidebar_first'])): ?>
 			  <?php print render($page['sidebar_first']); ?>
 			 <!-- /#sidebar-first -->
@@ -12,7 +12,7 @@
 			  
 		</aside>
 		
-		<section class="col-md-6" role="main">
+		<section class="col-md-8" role="main">
 
 			<?php if (!empty($breadcrumb)): print $breadcrumb; endif;?>
 			<!-- /#breadcrumb -->

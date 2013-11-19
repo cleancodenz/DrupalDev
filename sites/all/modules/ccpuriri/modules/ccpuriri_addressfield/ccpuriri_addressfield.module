@@ -147,7 +147,7 @@ function ccpuriri_addressfield_field_formatter_view($entity_type, $entity, $fiel
               '#attributes' => array('class' => array('city-block')),
           );
           $format['city_block']['city'] =
-          array('#markup' => strip_tags($address['locality']));
+          array('#markup' => check_plain($address['locality']));
           
           $format['suburb_block'] = array(
               '#type' => 'ccpuriri_container',
@@ -155,7 +155,7 @@ function ccpuriri_addressfield_field_formatter_view($entity_type, $entity, $fiel
               '#attributes' => array('class' => array('suburb-block')),
           );
           $format['suburb_block']['suburb'] =
-            array('#markup' => strip_tags($address['dependent_locality']));
+            array('#markup' => check_plain($address['dependent_locality']));
           
           $format['street_block'] = array(
               '#type' => 'ccpuriri_container',
@@ -163,7 +163,7 @@ function ccpuriri_addressfield_field_formatter_view($entity_type, $entity, $fiel
               '#attributes' => array('class' => array('street-block')),
           );
           $format['street_block']['street'] =
-          array('#markup' => strip_tags($address['thoroughfare']));
+          array('#markup' => check_plain($address['thoroughfare']));
           
           
           $element[$delta] =$format ;

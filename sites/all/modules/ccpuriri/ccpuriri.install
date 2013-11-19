@@ -122,8 +122,7 @@ function  _ccpuriri_field_addressfield_add()
 
     field_create_field($field);
 
- 
-    
+     
     
     // Create the instance if needed.
     // add the field to user, with some widget settings
@@ -192,6 +191,14 @@ function  _ccpuriri_field_addressfield_add_rental()
           'entity_type' => 'node',
           'widget' => array('settings'=> $settings),
           'bundle' => 'ccpuriri_rental',
+          //default settings to avoid everytime to make these changes from UI
+          'display'=> array(
+              // display address in list view
+              'ccpuriri_rental_list_view'=>array(
+                                'label' => 'hidden',
+                                'type' => 'ccpuriri_addressfield_subandstreet',
+                              ),
+                      ),
       );
       
       field_create_instance($instance);

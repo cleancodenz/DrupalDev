@@ -37,7 +37,10 @@ body
     border-right: 1px solid #2a6496;
 }
 
-
+.nav>li>a
+{
+	padding: 10px 5px 10px 15px;
+}
 
 /* to make a box*/
 div.messages {
