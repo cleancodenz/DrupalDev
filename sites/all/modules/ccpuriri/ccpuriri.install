@@ -21,12 +21,24 @@ function ccpuriri_schema() {
  */
 function ccpuriri_install() {
 
+  //create custome menu blocks, like secondary top etc 
   _ccpuriri_menu_blocks_custom_add();
+  
+  // add list related menu items to our menu blocks
+  _ccpuriri_menu_system_main_add_list();
 
-  // add address field
+  // add menu items to system main menu
+  _ccpuriri_menu_main_add_items();
+  
+  // setup rental role and permissions, all previously
+  // signed up users will be given rental create permission by this function
+  // new signed up users will automatically have rental create permission 
+  _ccpuriri_rental_permission_setup();
+  
+  // create address field, add an address field instance to user 
  _ccpuriri_field_addressfield_add() ;
 
-  // add contact field
+  // create contact field, add a contact field instance to 
   _ccpuriri_field_contactfield_add() ;
 
 
@@ -38,13 +50,23 @@ function ccpuriri_install() {
  */
 function ccpuriri_uninstall() {
 
+  //delete custome menu blocks, like secondary top etc
   _ccpuriri_menu_blocks_custom_remove();
+  
+  // delete list related menu items to our menu blocks
+  _ccpuriri_menu_system_main_remove_list();
+ 
+  // delete menu items to system main menu
+  _ccpuriri_menu_main_remove_items();
 
+  // delete rental role and permissions
+  _ccpuriri_rental_permission_dispose();
+  
+  // remove address field and all its instance data
   _ccpuriri_field_addressfield_remove();
    
+  // remove contact field and all its instance data
   _ccpuriri_field_contactfield_remove();
-   
-
    
 }
 
@@ -54,40 +76,31 @@ function ccpuriri_uninstall() {
  * Implementation of hook_enable().
  */
 function ccpuriri_enable() {
-
-  // add list menu items to our menu blocks 
-  _ccpuriri_menu_system_main_add_list();
   
-  // add main menu items
-  _ccpuriri_menu_main_add_items();
   
-  // setup permissions
-  _ccpuriri_rental_permission_setup();
+  //add address field instance to rental
+  _ccpuriri_field_addressfield_rental_add();
   
-  //add address field to rental
-  _ccpuriri_field_addressfield_add_rental();
-  
-  // add contact field to rental
-  _ccpuriri_field_contactfield_add_rental();
+  // add contact field instance to rental
+  _ccpuriri_field_contactfield_rental_add();
  
-  // add body field to rental type
-  _ccpuriri_rental_body_field_add();
+  // add body field instance to rental type
+  _ccpuriri_field_body_rental_add();
 }
 
 /**
  * Implementation of hook_disable().
  */
 function ccpuriri_disable() {
-
-  _ccpuriri_menu_system_main_remove_list();
-
-  _ccpuriri_menu_main_remove_items();
   
-  //remove all rental permission settings
-  _ccpuriri_rental_permission_dispose();
+  //remove address field instance to rental
+  _ccpuriri_field_addressfield_rental_remove();
   
-  //remove body field from rental type
-  _ccpuriri_rental_body_field_remove();
+  //remove contact field instance to rental
+  _ccpuriri_field_contactfield_rental_remove();
+  
+  //remove body field instance to rental type
+   _ccpuriri_field_body_rental_remove();
 }
 
 
@@ -164,7 +177,7 @@ function  _ccpuriri_field_addressfield_add()
  * This does not have matching removing func, as it is included in field delete which is done in unsinatll
  * 
 * */
-function  _ccpuriri_field_addressfield_add_rental()
+function  _ccpuriri_field_addressfield_rental_add()
 {
   $startTime=  microtime(TRUE);
 
@@ -215,6 +228,40 @@ function  _ccpuriri_field_addressfield_add_rental()
 
 }
 
+/*
+ *Remove the address field from rental type
+* this will remove instance entry in field_config_instance
+* and it will remove any user data of this instance in field_data_body
+* they are not removed straight away but marked as deleted,
+* they will be permanantly removed after cron run
+* Reinstall of the field does not bring data back even if they are still not purged
+* */
+function  _ccpuriri_field_addressfield_rental_remove()
+{
+  // field name
+  $fieldname = 'field_ccpuriri_addressfield';
+  
+  $instance = field_info_instance('node', $fieldname, 'ccpuriri_rental');
+
+  if (!empty($instance))
+  {
+    $startTime=  microtime(TRUE);
+
+    // delete this instace
+    // field clean up is false, as in module uninstall the field will be deleted
+    // the data only marked as delete, run cron to purge the field instance data
+    field_delete_instance($instance, false) ;
+
+    watchdog('ccpuriri',
+        'field_ccpuriri_addressfield in ccpuriri rental bundle is marked for delete, time elapsed is %timeElpased ms',
+        array('%timeElpased' =>
+            round((microtime(TRUE) - $startTime) * 1000,2)
+
+        ),
+        WATCHDOG_DEBUG);
+  }
+}
+
 
 /*
  * Add contact field to user
@@ -261,23 +308,7 @@ function   _ccpuriri_field_contactfield_add()
       );
       field_create_instance($instance);
     }
-
-    // add to rental
-    if (!field_read_instance('node', $fieldname , 'ccpuriri_rental', array('include_inactive' => TRUE))) {
-
-       
-      $settings= array();
-
-      $instance = array(
-          'field_name' => $fieldname,
-          'label' => 'Contacts',
-          'entity_type' => 'node',
-          'widget' => array('settings'=> $settings),
-          'bundle' => 'ccpuriri_rental',
-      );
-      field_create_instance($instance);
-    }
-
+    
     watchdog('ccpuriri',
         'field_ccpuriri_contactfield is added, time elapsed is %timeElpased ms',
         array('%timeElpased' =>
@@ -295,7 +326,7 @@ function   _ccpuriri_field_contactfield_add()
  * Add contact field to rental
  * This does not have matching removing func, as it is included in field delete which is done in unsinatll
 * */
-function   _ccpuriri_field_contactfield_add_rental()
+function _ccpuriri_field_contactfield_rental_add()
 {
 
   $startTime=  microtime(TRUE);
@@ -336,6 +367,41 @@ function   _ccpuriri_field_contactfield_add_rental()
   }
 
 }
+
+/*
+ *Remove the contact field from rental type
+* this will remove instance entry in field_config_instance
+* and it will remove any user data of this instance in field_data_body
+* they are not removed straight away but marked as deleted,
+* they will be permanantly removed after cron run
+* Reinstall of the field does not bring data back even if they are still not purged
+* */
+function _ccpuriri_field_contactfield_rental_remove()
+{
+  // field name
+  $fieldname = 'field_ccpuriri_contactfield';
+
+  $instance = field_info_instance('node', $fieldname, 'ccpuriri_rental');
+
+  if (!empty($instance))
+  {
+    $startTime=  microtime(TRUE);
+
+    // delete this instace
+  // field clean up is false, as in module uninstall the field will be deleted
+    // the data only marked as delete, run cron to purge the field instance data
+    field_delete_instance($instance, false) ;
+
+    watchdog('ccpuriri',
+        'field_ccpuriri_contactfield in ccpuriri rental bundle is marked for delete, time elapsed is %timeElpased ms',
+        array('%timeElpased' =>
+            round((microtime(TRUE) - $startTime) * 1000,2)
+
+        ),
+        WATCHDOG_DEBUG);
+  }
+}
+
 
 
 /*
@@ -897,7 +963,7 @@ function _ccpuriri_rental_permission_dispose()
 * and removing of body is in module uninstall, as it will invovle the the data loss
 * this will add an entry in field_config_instance 
 * */
-function _ccpuriri_rental_body_field_add()
+function _ccpuriri_field_body_rental_add()
 {
   $instance = field_info_instance('node', 'body', 'ccpuriri_rental');
   
@@ -912,10 +978,28 @@ function _ccpuriri_rental_body_field_add()
     //change the settings of instance to turn off display summary
     
     $instance = field_info_instance('node', 'body', 'ccpuriri_rental');
-    if (!empty($instance['settings']['display_summary'])
-        &&$instance['settings']['display_summary'])
+    
+    if(!(empty($instance['settings'])||empty($instance['widget'])) )
     {
-      $instance['settings']['display_summary']=false;
+      // Change Label to from body to description
+      $instance['label']= 'Description';
+      // not to use the filter 
+      $instance['settings']['text_processing'] = false;
+           
+      // use the widget which does not include summary
+      $instance['widget']['type'] = 'text_textarea';
+      $instance['widget']['settings']['rows'] = 10;
+      
+      //default settings to avoid everytime to make these changes from UI
+      // set or add??????
+      $instance['display'][] = array(
+      // display address in list view
+          'ccpuriri_rental_list_view'=>array(
+              'label' => 'hidden',
+              'type' => 'ccpuriri_rental_body_list',
+          ),
+      );
+      
       
       field_update_instance($instance);
       
@@ -943,7 +1027,7 @@ function _ccpuriri_rental_body_field_add()
 * and it will remove any user data in field_data_body
 * not straight away, but after cron run 
 * */
-function _ccpuriri_rental_body_field_remove()
+function _ccpuriri_field_body_rental_remove()
 {
   // field name is body
   $instance = field_info_instance('node', 'body', 'ccpuriri_rental');
@@ -953,7 +1037,7 @@ function _ccpuriri_rental_body_field_remove()
     $startTime=  microtime(TRUE);
     
     // delete this instace
-    // field clean up is false, as this is system field
+    // field clean up is false, as body is system field
     // the data only marked as delete, run cron to purge the field instance data 
      field_delete_instance($instance, false) ;
      
