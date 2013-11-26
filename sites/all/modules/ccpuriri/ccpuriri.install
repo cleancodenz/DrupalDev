@@ -228,6 +228,73 @@ function  _ccpuriri_field_addressfield_rental_add()
 
 }
 
+
+/*
+ * Add plainlongtext field instance
+ * 
+* */
+function  _ccpuriri_field_longtext_add()
+{
+  $startTime=  microtime(TRUE);
+
+  // create addressfield
+  // to clear the cache to include the field type defined in this module
+
+  _field_info_collate_types(true);
+
+  $fieldname = 'field_ccpuriri_longtext';
+  $field = field_read_field($fieldname, array('include_inactive' => TRUE));
+
+  if (empty($field)) {
+
+    $field = array(
+        'field_name' => $fieldname,
+        'type' => 'text_long',
+        // 'entity_types' => array('user'), // do not limit entity types using this field
+
+    );
+
+    field_create_field($field);
+
+    watchdog('ccpuriri',
+        'field_ccpuriri_longtext is added, time elapsed is %timeElpased ms',
+        array('%timeElpased' =>
+            round((microtime(TRUE) - $startTime) * 1000,2)
+
+        ),
+        WATCHDOG_DEBUG);
+
+  }
+
+}
+
+
+/*
+ * Remove the longtext field
+* */
+function _ccpuriri_field_longtext_remove(){
+
+  $startTime=  microtime(TRUE);
+  
+  //delete the field
+  field_delete_field('field_ccpuriri_longtext');
+
+  //Purge field data now to allow module to be reinstalled
+  //if this is the only field remaining.
+  field_purge_batch(10);
+
+  watchdog('ccpuriri',
+      'field_ccpuriri_longtext is deleted, time elapsed is %timeElpased ms',
+      array('%timeElpased' =>
+          round((microtime(TRUE) - $startTime) * 1000,2)
+
+      ),
+      WATCHDOG_DEBUG);
+
+
+}
+
+
 /*
  *Remove the address field from rental type
 * this will remove instance entry in field_config_instance
@@ -975,9 +1042,9 @@ function _ccpuriri_field_body_rental_add()
     
     node_add_body_field($types['ccpuriri_rental']) ;
     
-    //change the settings of instance to turn off display summary
-    
     $instance = field_info_instance('node', 'body', 'ccpuriri_rental');
+    
+    //change the settings of instance to turn off display summary
     
     if(!(empty($instance['settings'])||empty($instance['widget'])) )
     {
@@ -991,13 +1058,11 @@ function _ccpuriri_field_body_rental_add()
       $instance['widget']['settings']['rows'] = 10;
       
       //default settings to avoid everytime to make these changes from UI
-      // set or add??????
-      $instance['display'][] = array(
-      // display address in list view
-          'ccpuriri_rental_list_view'=>array(
-              'label' => 'hidden',
-              'type' => 'ccpuriri_rental_body_list',
-          ),
+      
+      $instance['display']['ccpuriri_rental_list_view']= array(
+          'label' => 'hidden',
+          'type' => 'ccpuriri_rental_body_list',
+ 
       );
       
       

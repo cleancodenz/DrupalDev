@@ -145,3 +145,17 @@ function ccpuriri_dropdownbutton_process($element, &$form_state, $form) {
 }
 
 
+/**
+ * Implements hook_field_widget_info().
+ * this adds a widget for long text field used in our system, using the format of 'plain_text' auto matically
+ */
+function ccpuriri_common_field_widget_info() {
+  return array(
+      'ccpuriri_common_plain_text' => array(
+          'label' => t('Plain Long Text'),
+          'field types' => array('text_long'), // text processing default as false
+          'settings' => array('rows' => 20),
+      ),
+  );
+}
+

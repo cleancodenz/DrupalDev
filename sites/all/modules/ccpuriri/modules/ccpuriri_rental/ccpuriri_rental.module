@@ -199,12 +199,15 @@ function ccpuriri_rental_field_formatter_info() {
 
 /**
  * Implements hook_field_formatter_view().
+ * body field formater used in rental list view
  */
 function ccpuriri_rental_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
   $element = array();
 
   foreach ($items as $delta => $item) {
+      
     $output = strip_tags($item['value']);
+    
     
     $element[$delta] = array('#markup' => $output);
   }
