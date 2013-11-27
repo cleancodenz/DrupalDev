@@ -12,7 +12,7 @@
 function ccpuriri_schema() {
   // the cache table
   $schema['cache_ccpuriri'] = drupal_get_schema_unprocessed('system', 'cache');
-  
+
   return $schema;
 }
 
@@ -21,26 +21,37 @@ function ccpuriri_schema() {
  */
 function ccpuriri_install() {
 
-  //create custome menu blocks, like secondary top etc 
+  //create custome menu blocks, like secondary top etc
   _ccpuriri_menu_blocks_custom_add();
-  
+
   // add list related menu items to our menu blocks
   _ccpuriri_menu_system_main_add_list();
 
   // add menu items to system main menu
   _ccpuriri_menu_main_add_items();
-  
+
   // setup rental role and permissions, all previously
   // signed up users will be given rental create permission by this function
-  // new signed up users will automatically have rental create permission 
+  // new signed up users will automatically have rental create permission
   _ccpuriri_rental_permission_setup();
-  
-  // create address field, add an address field instance to user 
- _ccpuriri_field_addressfield_add() ;
 
-  // create contact field, add a contact field instance to 
-  _ccpuriri_field_contactfield_add() ;
+  // add fields
 
+  // create address field, add an address field instance to user
+  _ccpuriri_field_addressfield_add();
+
+  // create contact field, add a contact field instance to user
+  _ccpuriri_field_contactfield_add();
+
+ 
+
+  // add instances
+
+  //add address field instance to rental
+  _ccpuriri_field_addressfield_rental_add();
+
+  // add contact field instance to rental
+  _ccpuriri_field_contactfield_rental_add();
 
 
 }
@@ -50,24 +61,41 @@ function ccpuriri_install() {
  */
 function ccpuriri_uninstall() {
 
+  // remove instances
+
+  //remove address field instance to rental
+  _ccpuriri_field_addressfield_rental_remove();
+
+  //remove contact field instance to rental
+  _ccpuriri_field_contactfield_rental_remove();
+
+  // remove fields
+
+  // remove address field and all its instance data
+  _ccpuriri_field_addressfield_remove();
+
+  // remove contact field and all its instance data
+  _ccpuriri_field_contactfield_remove();
+
+
+
+  // remove menus
+
   //delete custome menu blocks, like secondary top etc
   _ccpuriri_menu_blocks_custom_remove();
-  
+
   // delete list related menu items to our menu blocks
   _ccpuriri_menu_system_main_remove_list();
- 
+
   // delete menu items to system main menu
   _ccpuriri_menu_main_remove_items();
 
+  // remove permission and roles
+
   // delete rental role and permissions
   _ccpuriri_rental_permission_dispose();
-  
-  // remove address field and all its instance data
-  _ccpuriri_field_addressfield_remove();
-   
-  // remove contact field and all its instance data
-  _ccpuriri_field_contactfield_remove();
-   
+
+
 }
 
 
@@ -76,31 +104,25 @@ function ccpuriri_uninstall() {
  * Implementation of hook_enable().
  */
 function ccpuriri_enable() {
+
+  // create longtext field
+  _ccpuriri_field_longtext_add();
   
-  
-  //add address field instance to rental
-  _ccpuriri_field_addressfield_rental_add();
-  
-  // add contact field instance to rental
-  _ccpuriri_field_contactfield_rental_add();
- 
-  // add body field instance to rental type
-  _ccpuriri_field_body_rental_add();
+  // add description field instance to rental type
+  _ccpuriri_field_description_rental_add();
 }
 
 /**
  * Implementation of hook_disable().
  */
 function ccpuriri_disable() {
+
+  //remove description field instance to rental type
+  _ccpuriri_field_description_rental_remove();
   
-  //remove address field instance to rental
-  _ccpuriri_field_addressfield_rental_remove();
+  // remove longtext field
+  _ccpuriri_field_longtext_remove();
   
-  //remove contact field instance to rental
-  _ccpuriri_field_contactfield_rental_remove();
-  
-  //remove body field instance to rental type
-   _ccpuriri_field_body_rental_remove();
 }
 
 
@@ -115,7 +137,7 @@ function ccpuriri_disable() {
 function  _ccpuriri_field_addressfield_add()
 {
   $startTime=  microtime(TRUE);
-  
+
   // create addressfield
   // to clear the cache to include the field type defined in this module
 
@@ -136,7 +158,7 @@ function  _ccpuriri_field_addressfield_add()
     field_create_field($field);
 
      
-    
+
     // Create the instance if needed.
     // add the field to user, with some widget settings
     if (!field_read_instance('user', $fieldname , 'user', array('include_inactive' => TRUE))) {
@@ -158,15 +180,15 @@ function  _ccpuriri_field_addressfield_add()
       field_create_instance($instance);
     }
 
-  
+
     watchdog('ccpuriri',
         'field_ccpuriri_addressfield is added, time elapsed is %timeElpased ms',
         array('%timeElpased' =>
             round((microtime(TRUE) - $startTime) * 1000,2)
-    
+
         ),
         WATCHDOG_DEBUG);
-    
+
   }
 
 }
@@ -174,15 +196,13 @@ function  _ccpuriri_field_addressfield_add()
 
 /*
  * Add addressfield to rental
- * This does not have matching removing func, as it is included in field delete which is done in unsinatll
- * 
+* This does not have matching removing func, as it is included in field delete which is done in unsinatll
+*
 * */
 function  _ccpuriri_field_addressfield_rental_add()
 {
   $startTime=  microtime(TRUE);
 
-  // create addressfield
-  // to clear the cache to include the field type defined in this module
 
   _field_info_collate_types(true);
 
@@ -190,48 +210,48 @@ function  _ccpuriri_field_addressfield_rental_add()
   $field = field_read_field($fieldname, array('include_inactive' => TRUE));
 
 
-    // add the field to rental
-    if (!empty($field) && !field_read_instance('node', $fieldname , 'ccpuriri_rental', array('include_inactive' => TRUE))) {
+  // add the field to rental
+  if (!empty($field) && !field_read_instance('node', $fieldname , 'ccpuriri_rental', array('include_inactive' => TRUE))) {
 
-      $settings= array(
-          'showname'=> false,
-          'showorganization' => false,
-      );
+    $settings= array(
+        'showname'=> false,
+        'showorganization' => false,
+    );
 
-      $instance = array(
-          'field_name' => $fieldname,
-          'label' => 'Address',
-          'entity_type' => 'node',
-          'widget' => array('settings'=> $settings),
-          'bundle' => 'ccpuriri_rental',
-          //default settings to avoid everytime to make these changes from UI
-          'display'=> array(
-              // display address in list view
-              'ccpuriri_rental_list_view'=>array(
-                                'label' => 'hidden',
-                                'type' => 'ccpuriri_addressfield_subandstreet',
-                              ),
-                      ),
-      );
-      
-      field_create_instance($instance);
+    $instance = array(
+        'field_name' => $fieldname,
+        'label' => 'Address',
+        'entity_type' => 'node',
+        'widget' => array('settings'=> $settings),
+        'bundle' => 'ccpuriri_rental',
+        //default settings to avoid everytime to make these changes from UI
+        'display'=> array(
+            // display address in list view
+            'ccpuriri_rental_list_view'=>array(
+                'label' => 'hidden',
+                'type' => 'ccpuriri_addressfield_subandstreet',
+            ),
+        ),
+    );
 
-      watchdog('ccpuriri',
-          'field_ccpuriri_addressfield is added to rental type, time elapsed is %timeElpased ms',
-          array('%timeElpased' =>
-              round((microtime(TRUE) - $startTime) * 1000,2)
-      
-          ),
-          WATCHDOG_DEBUG);
-      
-    }
+    field_create_instance($instance);
+
+    watchdog('ccpuriri',
+        'field_ccpuriri_addressfield is added to rental type, time elapsed is %timeElpased ms',
+        array('%timeElpased' =>
+            round((microtime(TRUE) - $startTime) * 1000,2)
+
+        ),
+        WATCHDOG_DEBUG);
+
+  }
 
 }
 
 
 /*
  * Add plainlongtext field instance
- * 
+*
 * */
 function  _ccpuriri_field_longtext_add()
 {
@@ -275,7 +295,7 @@ function  _ccpuriri_field_longtext_add()
 function _ccpuriri_field_longtext_remove(){
 
   $startTime=  microtime(TRUE);
-  
+
   //delete the field
   field_delete_field('field_ccpuriri_longtext');
 
@@ -307,7 +327,7 @@ function  _ccpuriri_field_addressfield_rental_remove()
 {
   // field name
   $fieldname = 'field_ccpuriri_addressfield';
-  
+
   $instance = field_info_instance('node', $fieldname, 'ccpuriri_rental');
 
   if (!empty($instance))
@@ -375,15 +395,15 @@ function   _ccpuriri_field_contactfield_add()
       );
       field_create_instance($instance);
     }
-    
+
     watchdog('ccpuriri',
         'field_ccpuriri_contactfield is added, time elapsed is %timeElpased ms',
         array('%timeElpased' =>
             round((microtime(TRUE) - $startTime) * 1000,2)
-    
+
         ),
         WATCHDOG_DEBUG);
-    
+
   }
 
 }
@@ -391,7 +411,7 @@ function   _ccpuriri_field_contactfield_add()
 
 /*
  * Add contact field to rental
- * This does not have matching removing func, as it is included in field delete which is done in unsinatll
+* This does not have matching removing func, as it is included in field delete which is done in unsinatll
 * */
 function _ccpuriri_field_contactfield_rental_add()
 {
@@ -455,7 +475,7 @@ function _ccpuriri_field_contactfield_rental_remove()
     $startTime=  microtime(TRUE);
 
     // delete this instace
-  // field clean up is false, as in module uninstall the field will be deleted
+    // field clean up is false, as in module uninstall the field will be deleted
     // the data only marked as delete, run cron to purge the field instance data
     field_delete_instance($instance, false) ;
 
@@ -490,11 +510,11 @@ function _ccpuriri_menu_blocks_custom_add(){
       'secondary_top menu block is added, time elapsed is %timeElpased ms',
       array('%timeElpased' =>
           round((microtime(TRUE) - $startTime) * 1000,2)
-  
+
       ),
       WATCHDOG_DEBUG);
-  
-  
+
+
   $startTime=  microtime(TRUE);
   //2. create ccpuririusernavigation
   //This is group for account related menu items, only displayed when url is user/1
@@ -508,38 +528,38 @@ function _ccpuriri_menu_blocks_custom_add(){
   );
 
   menu_save($ccpuririusernavigationmenu);
-  
-  
+
+
   watchdog('ccpuriri',
       'ccpuririusernavigation menu block is added, time elapsed is %timeElpased ms',
       array('%timeElpased' =>
           round((microtime(TRUE) - $startTime) * 1000,2)
-  
+
       ),
       WATCHDOG_DEBUG);
-  
+
   $startTime=  microtime(TRUE);
   // 3 list navigation is added by list module
-  
+
   //4. create ccpuririmainnavigation
   //This is for working area for logged in user
   //It will be switched on by navigation block CCPuriri Navigation when no specific menu block is required
-  
-  
-  
+
+
+
   $ccpuririmainnavigationmenu = array(
       'menu_name' => 'ccpuririmainnavigation',
       'title' => 'CCPuriri Main Navigation-not to be added to sidebar',
       'description' => 'CCPuriri Main Navigation menu, do not add this to regions, as it is displayed by CCPuriri Navigation block',
   );
-  
+
   menu_save($ccpuririmainnavigationmenu);
 
   watchdog('ccpuriri',
       'ccpuririmainnavigation menu block is added, time elapsed is %timeElpased ms',
       array('%timeElpased' =>
           round((microtime(TRUE) - $startTime) * 1000,2)
-  
+
       ),
       WATCHDOG_DEBUG);
 
@@ -593,11 +613,11 @@ function  _ccpuriri_field_addressfield_remove(){
       'field_ccpuriri_addressfield is deleted, time elapsed is %timeElpased ms',
       array('%timeElpased' =>
           round((microtime(TRUE) - $startTime) * 1000,2)
-  
+
       ),
       WATCHDOG_DEBUG);
-  
-  
+
+
 }
 
 /*
@@ -606,7 +626,7 @@ function  _ccpuriri_field_addressfield_remove(){
 function  _ccpuriri_field_contactfield_remove(){
 
   $startTime=  microtime(TRUE);
-  
+
   //delete the field
   field_delete_field('field_ccpuriri_contactfield');
 
@@ -618,10 +638,10 @@ function  _ccpuriri_field_contactfield_remove(){
       'field_ccpuriri_contactfield is deleted, time elapsed is %timeElpased ms',
       array('%timeElpased' =>
           round((microtime(TRUE) - $startTime) * 1000,2)
-  
+
       ),
       WATCHDOG_DEBUG);
-  
+
 }
 /*
  * Remove the menu blocks
@@ -643,23 +663,23 @@ function  _ccpuriri_menu_blocks_custom_remove(){
 
   menu_delete($ccpuririusernavigation);
   //3 list menu will be deleted by list module
-  
+
   // 4 delete ccpuriri main menu
   $ccpuririmainrnavigation = array(
       'menu_name' => 'ccpuririmainnavigation',
   );
-  
+
   menu_delete($ccpuririmainnavigation);
 
   watchdog('ccpuriri',
       'Menu blocks are deleted, time elapsed is %timeElpased ms',
       array('%timeElpased' =>
           round((microtime(TRUE) - $startTime) * 1000,2)
-  
+
       ),
       WATCHDOG_DEBUG);
-  
-  
+
+
 }
 
 /*
@@ -669,7 +689,7 @@ function  _ccpuriri_menu_blocks_custom_remove(){
 function _ccpuriri_menu_system_main_add_list(){
 
   $startTime=  microtime(TRUE);
-  
+
   //add the list to main menu
 
   $list_item = array(
@@ -712,12 +732,12 @@ function _ccpuriri_menu_system_main_add_list(){
       $sharedlistitem = array(
           'menu_name' => $menuname,
           'weight' => $i +10,
-          'link_title' => 'My listsss', // use router title to activate call back 
+          'link_title' => 'My listsss', // use router title to activate call back
           'link_path' => 'list/'.$list->lid,
           'description' => 'Shared list '.$list->title.' menu item on navigation menu',
           'options'=>array(
-             'icon'=>'tag',
-             'html'=>true,
+              'icon'=>'tag',
+              'html'=>true,
           ),
           'plid' => $parentmid,
           'module' => 'ccpuriri_list',
@@ -727,12 +747,12 @@ function _ccpuriri_menu_system_main_add_list(){
       $i =$i+10;
     }
   }
-  
+
   watchdog('ccpuriri',
       'List menu items are added, time elapsed is %timeElpased ms',
       array('%timeElpased' =>
           round((microtime(TRUE) - $startTime) * 1000,2)
-  
+
       ),
       WATCHDOG_DEBUG);
 }
@@ -744,7 +764,7 @@ function _ccpuriri_menu_system_main_add_list(){
 function _ccpuriri_menu_system_main_remove_list(){
 
   $startTime=  microtime(TRUE);
-  
+
   $menuname= "main-menu";
 
   $module = "ccpuriri_list";
@@ -763,33 +783,33 @@ function _ccpuriri_menu_system_main_remove_list(){
   ->condition('module', $module);
 
   $delete_query->execute();
-  
+
   watchdog('ccpuriri',
       'List menu links are removed, time elapsed is %timeElpased ms',
       array('%timeElpased' =>
           round((microtime(TRUE) - $startTime) * 1000,2)
-  
+
       ),
       WATCHDOG_DEBUG);
-  
+
 
 }
 
 
 /*
  * Add item to ccpuriri main menu
- * it is visible only when user is logged in
+* it is visible only when user is logged in
 *
 * */
 function _ccpuriri_menu_main_add_items(){
 
   $startTime=  microtime(TRUE);
-  
+
   // first add home to it
   $home_item = array(
       'menu_name' => 'ccpuririmainnavigation',
       'weight' => -100,
-      'link_title' => t('Home'), 
+      'link_title' => t('Home'),
       'link_path' => '<front>',
       'router_path' => '',
       'module' => 'ccpuriri',
@@ -800,18 +820,18 @@ function _ccpuriri_menu_main_add_items(){
       ),
       'external' => 1,
       'expanded' => 0,
-  
+
   );
-  
+
   menu_link_save($home_item);
-  
+
   //second add my lists to it
-  
-  
+
+
   $list_item = array(
       'menu_name' => 'ccpuririmainnavigation',
       'weight' => -90,
-      'link_title' => t('My Lists'), 
+      'link_title' => t('My Lists'),
       'link_path' => 'list',
       'router_path' => 'list',
       'module' => 'ccpuriri',
@@ -821,13 +841,13 @@ function _ccpuriri_menu_main_add_items(){
           'html'=>true,
       ),
       'expanded' => 0,
-  
+
   );
-    
+
   menu_link_save($list_item);
-  
+
   // 3 add my account to it
-  
+
   $account_item = array(
       'menu_name' => 'ccpuririmainnavigation',
       'weight' => -80,
@@ -841,14 +861,14 @@ function _ccpuriri_menu_main_add_items(){
           'html'=>true,
       ),
       'expanded' => 0,
-  
+
   );
-    
+
   menu_link_save($account_item);
-  
-  
+
+
   //add rental to main menu
-  
+
   $rental_item = array(
       'menu_name' => 'main-menu',
       'weight' => 120,
@@ -863,16 +883,16 @@ function _ccpuriri_menu_main_add_items(){
       ),
       'expanded' => 0,
   );
-  
-  
+
+
   menu_link_save($rental_item);
-  
-  
+
+
   watchdog('ccpuriri',
       'Menu links home, list my account etc are added, time elapsed is %timeElpased ms',
       array('%timeElpased' =>
           round((microtime(TRUE) - $startTime) * 1000,2)
-  
+
       ),
       WATCHDOG_DEBUG);
 }
@@ -883,51 +903,51 @@ function _ccpuriri_menu_main_add_items(){
 *
 * */
 function _ccpuriri_menu_main_remove_items(){
-  
+
   $startTime=  microtime(TRUE);
-  
+
   $menuname= "ccpuririmainnavigation";
-  
+
   $module = "ccpuriri";
-  
+
   //delete * from ccpuririmainnavigation
   $delete_query = db_delete('menu_links')
   ->condition('menu_name', $menuname)
   ->condition('module', $module);
-  
+
   $delete_query->execute();
-  
+
   // delete the ccpuriri-rental item on main-menu
   $menuname= "main-menu";
-  
+
   $module = "ccpuriri_rental";
-  
+
   $delete_query = db_delete('menu_links')
   ->condition('menu_name', $menuname)
   ->condition('module', $module);
-  
+
   $delete_query->execute();
-  
-  
-  
+
+
+
   watchdog('ccpuriri',
       'ccpuririmainnavigation Menu links are removed, time elapsed is %timeElpased ms',
       array('%timeElpased' =>
           round((microtime(TRUE) - $startTime) * 1000,2)
-  
+
       ),
       WATCHDOG_DEBUG);
-  
+
 }
 
 
 /*
- * it has to be in main module, compared in rental module 
- * where the node type has not be created in module enable or disable
- *set up a particular role ccpuriri_rental_standard_role for rental type
+ * it has to be in main module, compared in rental module
+* where the node type has not be created in module enable or disable
+*set up a particular role ccpuriri_rental_standard_role for rental type
 * set up permissions for ccpuriri_rental_standard_role
 * assign this role to all existing users exectept admin
-* 
+*
 *
 * */
 function _ccpuriri_rental_permission_setup()
@@ -950,7 +970,7 @@ function _ccpuriri_rental_permission_setup()
 
   }
 
-  
+
   //refresh
 
   $roles = user_roles();
@@ -1026,92 +1046,96 @@ function _ccpuriri_rental_permission_dispose()
 }
 
 /*
-* add the body field to rental type, it is in main module install
-* and removing of body is in module uninstall, as it will invovle the the data loss
-* this will add an entry in field_config_instance 
+ * add the description instance to rental type, it is in main module install
+* and removing of longtext is in module uninstall, as it will invovle the the data loss
+* this will add an entry in field_config_instance
 * */
-function _ccpuriri_field_body_rental_add()
+function _ccpuriri_field_description_rental_add()
 {
-  $instance = field_info_instance('node', 'body', 'ccpuriri_rental');
   
-  if (empty($instance))
-  {
-    $types = node_type_get_types();
+  $startTime=  microtime(TRUE);
     
-    $startTime=  microtime(TRUE);
+  _field_info_collate_types(true);
+  
+  $fieldname = 'field_ccpuriri_longtext';
+  
+  $field = field_read_field($fieldname, array('include_inactive' => TRUE));
+  
+  // add the field to rental
+  if (!empty($field) && !field_read_instance('node', $fieldname , 'ccpuriri_rental', array('include_inactive' => TRUE))) {
+  
+    $instance = array(
+        'field_name' => $fieldname,
+        'label' => 'Description', // description instance
+        'entity_type' => 'node',
+        'widget' => array(
+            'type' => 'ccpuriri_common_plain_text', // using our plain text widget
+            'settings'=> array(
+                'filter_format'=>'plain_text',
+                'rows' =>10,
+                ),
+            ),
+        'bundle' => 'ccpuriri_rental',
+        //default settings to avoid everytime to make these changes from UI
+        'display'=> array(
+            // display trimmed in list view
+            'ccpuriri_rental_list_view'=>array(
+                'label' => 'hidden',
+                'type' => 'ccpuriri_common_longtext_trimmed',
+            ),
+            // display full  in default
+            'default'=>array(
+                'label'=> 'above',
+                'type' => 'ccpuriri_common_longtext_full',
+            ),
+            
+        ),
+    );
     
-    node_add_body_field($types['ccpuriri_rental']) ;
-    
-    $instance = field_info_instance('node', 'body', 'ccpuriri_rental');
-    
-    //change the settings of instance to turn off display summary
-    
-    if(!(empty($instance['settings'])||empty($instance['widget'])) )
-    {
-      // Change Label to from body to description
-      $instance['label']= 'Description';
-      // not to use the filter 
-      $instance['settings']['text_processing'] = false;
-           
-      // use the widget which does not include summary
-      $instance['widget']['type'] = 'text_textarea';
-      $instance['widget']['settings']['rows'] = 10;
-      
-      //default settings to avoid everytime to make these changes from UI
-      
-      $instance['display']['ccpuriri_rental_list_view']= array(
-          'label' => 'hidden',
-          'type' => 'ccpuriri_rental_body_list',
- 
-      );
-      
-      
-      field_update_instance($instance);
-      
-    }
-    
-   
-    
-    
+    field_create_instance($instance);
+  
     watchdog('ccpuriri',
-        'Body field is added to ccpuriri rental bundle, time elapsed is %timeElpased ms',
+        'field_ccpuriri_longtext is added to rental type, time elapsed is %timeElpased ms',
         array('%timeElpased' =>
             round((microtime(TRUE) - $startTime) * 1000,2)
-    
+  
         ),
         WATCHDOG_DEBUG);
-  }
   
- 
+  }
+
 }
 
 /*
- * remove the body field of rental type
-* and removing of body is in module uninstall, as it will invovle the the data loss
+ * remove the description field of rental type
+* and removing of description is in module uninstall, as it will invovle the the data loss
 * this will remove instance entry in field_config_instance
 * and it will remove any user data in field_data_body
-* not straight away, but after cron run 
+* not straight away, but after cron run
 * */
-function _ccpuriri_field_body_rental_remove()
+function _ccpuriri_field_description_rental_remove()
 {
-  // field name is body
-  $instance = field_info_instance('node', 'body', 'ccpuriri_rental');
+  // field name
+  $fieldname = 'field_ccpuriri_longtext';
+  
+  $instance = field_info_instance('node', $fieldname, 'ccpuriri_rental');
   
   if (!empty($instance))
   {
     $startTime=  microtime(TRUE);
-    
+  
     // delete this instace
-    // field clean up is false, as body is system field
-    // the data only marked as delete, run cron to purge the field instance data 
-     field_delete_instance($instance, false) ;
-     
-     watchdog('ccpuriri',
-         'Body field in ccpuriri rental bundle is marked for delete, time elapsed is %timeElpased ms',
-         array('%timeElpased' =>
-             round((microtime(TRUE) - $startTime) * 1000,2)
-     
-         ),
-         WATCHDOG_DEBUG);
+    // field clean up is false, as in module uninstall the field will be deleted
+    // the data only marked as delete, run cron to purge the field instance data
+    field_delete_instance($instance, false) ;
+  
+    watchdog('ccpuriri',
+        'field_ccpuriri_longtext in ccpuriri rental bundle is marked for delete, time elapsed is %timeElpased ms',
+        array('%timeElpased' =>
+            round((microtime(TRUE) - $startTime) * 1000,2)
+  
+        ),
+        WATCHDOG_DEBUG);
   }
+  
 }

@@ -181,37 +181,4 @@ function ccpuriri_rental_preprocess_node(&$variables) {
   }
 }
 
-/**
- * Implements hook_field_formatter_info().
- * this formatter is created to render body field, strip_tags, limit length and plus...
- * in a list view most likely
- */
-function ccpuriri_rental_field_formatter_info() {
-  
-  return array(
-      'ccpuriri_rental_body_list' => array(
-          'label' => t('Rental description list view'),
-          'field types' => array('text_with_summary'),
-          'settings' => array('trim_length' => 600), // no settings form implemented 
-      ),
-  );
-}
-
-/**
- * Implements hook_field_formatter_view().
- * body field formater used in rental list view
- */
-function ccpuriri_rental_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
-  $element = array();
-
-  foreach ($items as $delta => $item) {
-      
-    $output = strip_tags($item['value']);
-    
-    
-    $element[$delta] = array('#markup' => $output);
-  }
-  return $element;
-}
-
 

@@ -152,10 +152,91 @@ function ccpuriri_dropdownbutton_process($element, &$form_state, $form) {
 function ccpuriri_common_field_widget_info() {
   return array(
       'ccpuriri_common_plain_text' => array(
-          'label' => t('Plain Long Text'),
+          'label' => t('CCPuriri Plain Long Text'),
           'field types' => array('text_long'), // text processing default as false
           'settings' => array('rows' => 20),
       ),
   );
 }
+
+/**
+ * Implements hook_field_widget_form().
+ * This sets the field format as plain_text filter type
+ * 
+ */
+function ccpuriri_common_field_widget_form(&$form, &$form_state, $field, $instance, $langcode, $items, $delta, $element) {
+  
+  $rows =10;
+  
+  if (!empty($instance['widget']['settings']['rows']))
+  {
+    $rows = $instance['widget']['settings']['rows'];
+  }
+  
+  $filter_format ='plain_text';
+  
+  if (!empty($instance['widget']['settings']['filter_format']))
+  {
+    $filter_format = $instance['widget']['settings']['filter_format'];
+  }
+  
+ // add value column
+  
+  $element['value'] = array(
+      '#type' => 'textarea',
+      '#default_value' => isset($items[$delta]['value']) ? $items[$delta]['value'] : NULL,
+      '#rows' => $rows,
+      '#attributes' => array('class' => array('text-full')),
+  );
+  
+ // add format column, readonly
+  $element['format'] = array(
+      '#type' => 'value',
+      '#value' => $filter_format ,
+  );
+  
+  return $element;
+  
+}
+
+
+/**
+ * Implements hook_field_formatter_info().
+ * this formatter is created to render longtext field using whatever filter formater (normally it is plain_text)
+ */
+function ccpuriri_common_field_formatter_info() {
+
+  return array(
+      'ccpuriri_common_longtext_trimmed' => array(
+          'label' => t('CCPuriri Long text trimmed'),
+          'field types' => array('text_long'),
+          'settings' => array('trim_length' => 50), // no settings form implemented
+      ),
+      'ccpuriri_common_longtext_full' => array(
+          'label' => t('CCPuriri Long text full'),
+          'field types' => array('text_long'),
+      ),
+  );
+}
+
+/**
+ * Implements hook_field_formatter_view().
+ * body field formater used in rental list view
+ */
+function ccpuriri_common_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
+  
+  
+  $element = array();
+
+  foreach ($items as $delta => $item) {
+
+    $output = strip_tags($item['value']);
+
+
+    $element[$delta] = array('#markup' => $output);
+  }
+  return $element;
+}
+
+
 
