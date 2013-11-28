@@ -184,6 +184,7 @@ function ccpuriri_common_field_widget_form(&$form, &$form_state, $field, $instan
   
   $element['value'] = array(
       '#type' => 'textarea',
+      '#title' => check_plain($instance['label']),
       '#default_value' => isset($items[$delta]['value']) ? $items[$delta]['value'] : NULL,
       '#rows' => $rows,
       '#attributes' => array('class' => array('text-full')),
