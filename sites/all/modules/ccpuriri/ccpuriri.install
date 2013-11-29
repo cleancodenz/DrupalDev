@@ -1082,6 +1082,7 @@ function _ccpuriri_field_description_rental_add()
             'ccpuriri_rental_list_view'=>array(
                 'label' => 'hidden',
                 'type' => 'ccpuriri_common_longtext_trimmed',
+                'settings' => array('trim_length' => 220), //override formatter settings
             ),
             // display full  in default
             'default'=>array(
