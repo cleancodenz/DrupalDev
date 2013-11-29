@@ -43,8 +43,9 @@ function ccpuriri_install() {
   // create contact field, add a contact field instance to user
   _ccpuriri_field_contactfield_add();
 
+  // create longtext field
+  _ccpuriri_field_longtext_add();
  
-
   // add instances
 
   //add address field instance to rental
@@ -53,6 +54,8 @@ function ccpuriri_install() {
   // add contact field instance to rental
   _ccpuriri_field_contactfield_rental_add();
 
+  // add description field instance to rental type
+  _ccpuriri_field_description_rental_add();
 
 }
 
@@ -69,6 +72,9 @@ function ccpuriri_uninstall() {
   //remove contact field instance to rental
   _ccpuriri_field_contactfield_rental_remove();
 
+  //remove description field instance to rental type
+  _ccpuriri_field_description_rental_remove();
+  
   // remove fields
 
   // remove address field and all its instance data
@@ -77,7 +83,9 @@ function ccpuriri_uninstall() {
   // remove contact field and all its instance data
   _ccpuriri_field_contactfield_remove();
 
-
+  // remove longtext field
+  _ccpuriri_field_longtext_remove();
+  
 
   // remove menus
 
@@ -105,11 +113,6 @@ function ccpuriri_uninstall() {
  */
 function ccpuriri_enable() {
 
-  // create longtext field
-  _ccpuriri_field_longtext_add();
-  
-  // add description field instance to rental type
-  _ccpuriri_field_description_rental_add();
 }
 
 /**
@@ -117,11 +120,8 @@ function ccpuriri_enable() {
  */
 function ccpuriri_disable() {
 
-  //remove description field instance to rental type
-  _ccpuriri_field_description_rental_remove();
   
-  // remove longtext field
-  _ccpuriri_field_longtext_remove();
+  
   
 }
 
@@ -794,6 +794,76 @@ function _ccpuriri_menu_system_main_remove_list(){
 
 
 }
+
+
+/*
+ * Add named anchor tags(using id actually) to rental view  
+*
+* */
+function _ccpuriri_menu_system_ccpuririrentalnavigation_namedtags_add(){
+
+  $startTime=  microtime(TRUE);
+  
+  $menuname = 'ccpuririrentalnavigation';
+
+  $i=-100;
+
+  // The parent should be the one on same menu which is ccpuririrentalnavigation
+  $parentmid= _ccpuriri_rental_view_menu_id();
+
+  if (isset($parentmid) && $parentmid>0)
+  {
+
+    foreach($lists as $key=>$list)
+    {
+
+      $sharedlistitem = array(
+          'menu_name' => $menuname,
+          'weight' => $i +10,
+          'link_title' => 'My listsss', // use router title to activate call back
+          'link_path' => 'list/'.$list->lid,
+          'description' => 'Shared list '.$list->title.' menu item on navigation menu',
+          'options'=>array(
+              'icon'=>'tag',
+              'html'=>true,
+          ),
+          'plid' => $parentmid,
+          'module' => 'ccpuriri_list',
+      );
+
+     // menu_link_save($sharedlistitem);
+      $i =$i+10;
+    }
+  }
+
+  watchdog('ccpuriri',
+      'Named anchor links are added to ccpuririrentalnavigation menu, time elapsed is %timeElpased ms',
+      array('%timeElpased' =>
+          round((microtime(TRUE) - $startTime) * 1000,2)
+
+      ),
+      WATCHDOG_DEBUG);
+}
+
+/*
+ * Remove named anchor tags(using id actually) to rental view
+*
+* */
+function _ccpuriri_menu_system_ccpuririrentalnavigation_namedtags_remove(){
+
+  $startTime=  microtime(TRUE);
+
+ 
+
+  watchdog('ccpuriri',
+      'Named anchor links are added to ccpuririrentalnavigation menu, time elapsed is %timeElpased ms',
+      array('%timeElpased' =>
+          round((microtime(TRUE) - $startTime) * 1000,2)
+
+      ),
+      WATCHDOG_DEBUG);
+}
+
 
 
 /*
