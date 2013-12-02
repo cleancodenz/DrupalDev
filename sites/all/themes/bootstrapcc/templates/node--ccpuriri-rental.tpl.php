@@ -16,6 +16,12 @@
       </span>
     <?php endif; ?>
   </header>
+  <div id='address'>
+    <h2>
+      Address
+    </h2>
+  fffffff
+  </div>
 
   <?php
     // Hide comments, tags, and links now so that we can render them later.

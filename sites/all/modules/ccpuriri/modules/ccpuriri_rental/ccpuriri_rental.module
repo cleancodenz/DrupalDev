@@ -195,3 +195,23 @@ function _ccpuriri_rental_view_menu_id() {
 
 }
 
+/**
+ * Implements hook_translated_menu_link_alter(). for rental/%
+ */
+function ccpuriri_rental_translated_menu_link_alter(&$link) {
+  // add named tags.
+  if ($link['link_path'] == '#address' && $link['module'] == 'ccpuriri_rental') {
+
+    $link['access'] = true;
+    // set the title, as it has not gone through _menu_item_localize()
+    $link['title'] = $link['link_title'];
+   
+    // to fake external in order not to be prefixed with base in url
+    $link['options']['external'] = true;
+    
+    //this has been set in menu_item_localize which has been bypassed
+    $link['localized_options'] = $link['options'];
+    
+  }
+}
+

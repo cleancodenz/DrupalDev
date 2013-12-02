@@ -255,11 +255,15 @@ function bootstrapcc_menu_link(array $variables) {
 
   if( $strpos!==false)
   {
-    $parts =explode('#',$element['#href']);
+    if ($strpos>0)
+    {
+      //$strpos==0, this local named tags, do not use fragment
+    
+      $parts =explode('#',$element['#href']);
 
-    $element['#href'] = $parts[0];
-    $element['#localized_options']['fragment']=$parts[1];
-
+      $element['#href'] = $parts[0];
+      $element['#localized_options']['fragment']=$parts[1];
+    }
   }
   
   if ($active)
