@@ -445,3 +445,24 @@ function bootstrapcc_ccpuriri_imagebutton($variables) {
 }
 
 
+/**
+ * Implements hook_preprocess_region().
+ */
+function bootstrapcc_preprocess_region(&$variables) {
+ 
+  if($variables['region']=='sidebar_first') {
+    // add affix
+    drupal_add_js('
+     jQuery(document).ready(function ($) {
+         $(".region-sidebar-first").affix({
+                offset: {
+                  top: $("#page-header").height()
+               }
+          });	 
+      });', 
+      array('type' => 'inline', 'scope' => 'footer', 'weight' => 5));
+  }
+ 
+}
+
+

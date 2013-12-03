@@ -1,18 +1,19 @@
 <?php include 'page-header.php'; ?>
 
-
+<!-- Begin Body -->
 <div class="container cp-docs-container">
 	<div class="row">
-
-		<aside class="col-md-2" role="complementary">
+		<aside class="col-md-3" role="complementary">
+		    
 		    <?php if (!empty($page['sidebar_first'])): ?>
 			  <?php print render($page['sidebar_first']); ?>
 			 <!-- /#sidebar-first -->
 		    <?php endif; ?>
-			  
+			 
+			 
 		</aside>
 		
-		<section class="col-md-8" role="main">
+		<section class="col-md-7" role="main">
 
 			<?php if (!empty($breadcrumb)): print $breadcrumb; endif;?>
 			<!-- /#breadcrumb -->
@@ -55,4 +56,5 @@
 		<?php print render($page['footer']); ?>
 	</footer>
 </div>
+
 

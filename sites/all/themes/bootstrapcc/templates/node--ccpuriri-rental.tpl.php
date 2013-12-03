@@ -16,10 +16,12 @@
       </span>
     <?php endif; ?>
   </header>
-  <div id='address'>
-    <h2>
+  <div class="rental-section">
+    <div class="section-header">
+    <h3 id="address">
       Address
     </h2>
+    </div>
   fffffff
   </div>
 
