@@ -320,6 +320,10 @@ function _ccpuriri_get_navigation()
           _ccpuriri_add_user_created_lists($tree);
 
           break;
+         case 'rental':
+            $tree = menu_tree_page_data('ccpuririrentalnavigation');
+            break;
+          
         default:
           $tree =  menu_tree_page_data('ccpuririmainnavigation');
         break;

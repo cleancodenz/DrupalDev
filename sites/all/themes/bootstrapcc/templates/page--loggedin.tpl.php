@@ -52,9 +52,9 @@
 		</aside>
 		
 	</div>
-	<footer class="footer">
-		<?php print render($page['footer']); ?>
-	</footer>
-</div>
 
+</div>
+<footer class="cp-footer" role="contentinfo">
+	<?php print render($page['footer']); ?>
+</footer>
 

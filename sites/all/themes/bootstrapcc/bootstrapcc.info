@@ -15,6 +15,7 @@ stylesheets[all][] = css/bootstrapcc_style.css
 
 ;Exclude
 ;javascript
+scripts[] = js/bootstrapcc.js
 ;exclude[js][] = 'modules/contextual/contextual.js'
 ;exclude[js][] = 'misc/jquery.js'
 

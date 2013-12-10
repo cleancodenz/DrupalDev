@@ -44,8 +44,8 @@
 		</aside>
 		
 	</div>
-	<footer class="footer">
-		<?php print render($page['footer']); ?>
-	</footer>
+	
 </div>
-
+<footer class="footer">
+		<?php print render($page['footer']); ?>
+</footer>

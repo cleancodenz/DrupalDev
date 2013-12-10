@@ -1,112 +1,158 @@
 @CHARSET "ISO-8859-1";
 
+html {
+	height: 100%;
+}
 /* to leave the top menu out of flow*/
-body
-{
-   position: relative;
-   padding-top: 50px; 
-
+body {
+	position: relative;
+	padding-top: 50px;
+	height: 100%;
 }
 
-
-
-.cp-logo-container .col-md-4
-{
-    padding-left:0px; 
+/**
+ logo    
+**/
+.cp-logo-container .col-md-4 {
+	padding-left: 0px;
 }
 
-.cp-logo-container hr
-{
+.cp-logo-container hr {
 	margin-top: 0px;
 	margin-bottom: 10px;
 }
 
-/* affix*/
-@media (min-width: 979px) {
-  .region.affix-top {
-    position: static;
-   /* margin-top:25px;*/
-    width:228px;
-  }
-  
-  .region.affix {
-    position: fixed;
-    top:50px;
-    width:228px;
-  }
+/*
+ * Side navigation
+ *
+ * Scrollspy and affixed enhanced navigation to highlight sections and secondary
+ * sections of docs content.
+ */
+
+/* By default it's not affixed in mobile views, so undo that */
+.cp-sidebar-menu.affix {
+	position: static;
 }
 
-.affix,.affix-top {
-   position:relative;
-}
-
-
-
-.cp-sidebar{
+/* First level of nav */
+.cp-sidenav {
+	margin-bottom: 30px;
+	padding-top: 8px;
+	padding-bottom: 10px;
 	background-color: #f5f5f5;
-    border-radius: 5px;
-    margin-bottom :10px;
+	border-radius: 5px;
 }
 
-.nav-stacked ul{
-    margin-left: 15px !important;
+/* All levels of nav */
+.cp-sidebar-menu .nav>li>a {
+	display: block;
+	padding: 5px 20px;
 }
 
-.nav-stacked a.active-trail
-{
-    border-right: 1px solid #2a6496;
+.cp-sidebar-menu .nav>li>a:hover,.cp-sidebar-menu .nav>li>a:focus {
+	text-decoration: none;
+	/* background-color: #e5e3e9;*/
+	border-right: 1px solid #2a6496;
 }
 
-.nav>li>a
-{
-	padding: 10px 5px 10px 15px;
+.cp-sidebar-menu .nav>.active>a,.cp-sidebar-menu .nav>.active:hover>a,.cp-sidebar-menu .nav>.active:focus>a
+	{
+	font-weight: bold;
+	/* color: #563d7c;*/
+	background-color: transparent;
+	border-right: 1px solid #2a6496; /*add a right border on active item*/
+}
+
+/* Nav: second level (shown on .active) */
+.cp-sidebar-menu .nav .nav {
+	/* display: none; Hide by default, but at >768px, show it */
+	margin-bottom: 8px;
+}
+
+.cp-sidebar-menu .nav .nav>li>a {
+	padding-top: 3px;
+	padding-bottom: 3px;
+	padding-left: 30px;
+	font-size: 90%;
+}
+
+/* Show and affix the side nav when space allows it */
+@media ( min-width : 992px) {
+	.cp-sidebar-menu .nav>.active>ul {
+		display: block;
+	}
+	/* Widen the fixed sidebar */
+	.cp-sidebar-menu.affix,.cp-sidebar-menu.affix-bottom {
+		width: 213px;
+	}
+	.cp-sidebar-menu.affix {
+		position: fixed; /* Undo the static from mobile first approach */
+		top: 80px;
+	}
+	.cp-sidebar-menu.affix-bottom {
+		position: absolute; /* Undo the static from mobile first approach */
+	}
+	.cp-sidebar-menu.affix-bottom>.cp-sidenav,.cp-sidebar-menu.affix>.cp-sidenav
+		{
+		margin-top: 0;
+		margin-bottom: 0;
+	}
+}
+
+@media ( min-width : 1200px) { /* Widen the fixed sidebar again */
+	.cp-sidebar-menu.affix-bottom,.cp-sidebar-menu.affix {
+		width: 263px;
+	}
 }
 
 /* to make a box*/
 div.messages {
-  background-position: 8px 8px; //LTR
-  background-repeat: no-repeat;
-  border: 1px solid;
-  margin: 6px 0;
-  padding: 15px; //LTR
+	background-position: 8px 8px; //
+	LTR background-repeat: no-repeat;
+	border: 1px solid;
+	margin: 6px 0;
+	padding: 15px;
+	//
+	LTR
 }
-
 
 /* using .alert.info  */
 div.warning {
-
-  color: #3a87ad;
-  background-color: #d9edf7;
-  border-color: #bce8f1;
+	color: #3a87ad;
+	background-color: #d9edf7;
+	border-color: #bce8f1;
 }
 
 /* rental list view*/
-div.node-ccpuriri-rental .thumbnail img
-{
-    padding-right: 5px;
+div.node-ccpuriri-rental .thumbnail img {
+	padding-right: 5px;
 }
 
-div.node-ccpuriri-rental .thumbnail .caption
-{
+div.node-ccpuriri-rental .thumbnail .caption {
 	padding: 5px;
 }
 
 /* named tags*/
 .section-header {
-    padding-bottom: 9px;
-    margin: 40px 0 20px;
-    border-bottom: 1px solid #eee;
+	padding-bottom: 9px;
+	margin: 40px 0 20px;
+	border-bottom: 1px solid #eee;
 }
 
 h3[id] {
-    padding-top: 80px;
-    margin-top: -45px;
+	padding-top: 80px;
+	margin-top: -45px;
 }
 
+.cp-docs-container {
+	overflow: auto;
+	padding-bottom: 150px; /* this needs to be bigger than footer height*/
+}
 /* footer*/
-.footer {
-    background-color:#ffffff;
-    bottom:0;
-    position:fixed;
-    padding:10px;
+footer.cp-footer {
+	padding-top: 40px;
+	padding-bottom: 30px;
+	margin-top: 100px;
+	color: #7e7e7e;
+	background: #3a3a3a;
 }

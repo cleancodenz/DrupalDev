@@ -237,7 +237,7 @@ function bootstrapcc_menu_link(array $variables) {
     // Ad our own wrapper
 
     unset($element['#below']['#theme_wrappers']);
-    $sub_menu = "<ul class='nav nav-stacked' style='max-width: 250px;'>" . drupal_render($element['#below']) . "</ul>\n";
+    $sub_menu = "<ul class='nav'>" . drupal_render($element['#below']) . "</ul>\n";
   }
 
   // add active class on li level
@@ -248,6 +248,7 @@ function bootstrapcc_menu_link(array $variables) {
           ||in_array("active", $element['#localized_options']['attributes']['class']))) {
      
     $active=true;
+    $element['#attributes']['class'][] ='active';
 
   }
 
@@ -269,7 +270,6 @@ function bootstrapcc_menu_link(array $variables) {
   if ($active)
   {
     $element['#title'] ='<strong>'.$element['#title'].'</strong>';
-  
      
   }
   
@@ -293,19 +293,7 @@ function bootstrapcc_menu_link(array $variables) {
 
 
 
-/*
- * The navigation menu wrapper
-* Other menu wrappers
-* bootstrap_menu_tree__primary in bootstrap.tmplate.php for main menu wrapper
-* bootstrap_menu_tree__secondary in bootstrap.tmplate.php for secondary menu wrapper
 
-
-function bootstrapcc_menu_tree(&$variables) {
-return "<div class='cp-sidebar hidden-print' role='complementary'>
-<ul class='nav nav-pills nav-stacked' style='max-width: 250px;'>" . $variables['tree'] . "</ul></div>\n";
-}
-
-*/
 
 /*
  * The navigation menu wrapper
@@ -317,8 +305,8 @@ return "<div class='cp-sidebar hidden-print' role='complementary'>
 */
 
 function bootstrapcc_menu_tree(&$variables) {
-  return "<div class='cp-sidebar hidden-print' role='complementary'>
-  <ul class='nav nav-stacked' style='max-width: 250px;'>" . $variables['tree'] . "</ul></div>\n";
+  return "<div class='cp-sidebar-menu hidden-print' role='complementary'>
+  <ul class='nav cp-sidenav'>" . $variables['tree'] . "</ul></div>\n";
 }
 
 
@@ -449,19 +437,12 @@ function bootstrapcc_ccpuriri_imagebutton($variables) {
  * Implements hook_preprocess_region().
  */
 function bootstrapcc_preprocess_region(&$variables) {
- 
-  if($variables['region']=='sidebar_first') {
-    // add affix
-    drupal_add_js('
-     jQuery(document).ready(function ($) {
-         $(".region-sidebar-first").affix({
-                offset: {
-                  top: $("#page-header").height()
-               }
-          });	 
-      });', 
-      array('type' => 'inline', 'scope' => 'footer', 'weight' => 5));
-  }
+   
+ if($variables['region']=='sidebar_first') {
+    // add cp-sidebar
+    $variables['classes_array'][]='cp-sidebar';
+    
+ }
  
 }
 
