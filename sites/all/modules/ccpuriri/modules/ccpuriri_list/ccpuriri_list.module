@@ -601,7 +601,6 @@ function ccpuriri_list_menu() {
       'access callback' => 'ccpuriri_list_access',
       'access arguments' => array('view', 1),
       'menu_name' => 'ccpuririlistnavigation',
-
       'file' => 'ccpuriri_list.pages.inc',
   );
 
@@ -611,7 +610,7 @@ function ccpuriri_list_menu() {
       'page arguments' => array('ccpuriri_list_edit_form','edit', 1),
       'access callback' => 'ccpuriri_list_access',
       'access arguments' => array('update', 1),
-      'weight' => 0,
+       'weight' => 0,
       'menu_name' => 'ccpuririlistnavigation',
       'file' => 'ccpuriri_list.pages.inc',
   );
@@ -627,6 +626,27 @@ function ccpuriri_list_menu() {
   );
 
   return $items;
+}
+
+/**
+ * hook_menu_get_item_alter 
+ * add tab_parent and tab_root_href to router item to make root active in all menus
+ *  
+ * **/
+function ccpuriri_list_menu_get_item_alter(&$router_item, $path, $original_map) {
+ 
+  if ($router_item['path'] == 'list/%' 
+      || $router_item['path'] == 'list/add') {
+      $router_item['tab_parent'] ='list';
+      $router_item['tab_root'] ='list';
+  }
+  else if ($router_item['path'] == 'list/%/edit' 
+      || $router_item['path'] == 'list/%/delete')
+  {
+    $router_item['tab_parent'] ='list/%';
+    $router_item['tab_root'] ='list';
+  }
+ 
 }
 
 
