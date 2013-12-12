@@ -640,13 +640,13 @@ function ccpuriri_list_menu_get_item_alter(&$router_item, $path, $original_map) 
       $router_item['tab_parent'] ='list';
       $router_item['tab_root'] ='list';
   }
+  
   else if ($router_item['path'] == 'list/%/edit' 
       || $router_item['path'] == 'list/%/delete')
   {
     $router_item['tab_parent'] ='list/%';
     $router_item['tab_root'] ='list';
-  }
- 
+  } 
 }
 
 

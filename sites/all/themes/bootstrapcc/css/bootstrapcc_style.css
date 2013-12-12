@@ -56,7 +56,7 @@ body {
 }
 
 .cp-sidebar-menu .nav>.active>a,.cp-sidebar-menu .nav>.active:hover>a,.cp-sidebar-menu .nav>.active:focus>a
-	{
+{
 	font-weight: bold;
 	/* color: #563d7c;*/
 	background-color: transparent;
@@ -74,6 +74,19 @@ body {
 	padding-bottom: 3px;
 	padding-left: 30px;
 	font-size: 90%;
+}
+
+/* Nav: third level (shown on .active) */
+.cp-sidebar-menu .nav .nav .nav {
+    /* display: none; Hide by default, but at >768px, show it */
+    margin-bottom: 8px;
+}
+
+.cp-sidebar-menu .nav .nav .nav>li>a {
+    padding-top: 3px;
+    padding-bottom: 3px;
+    padding-left: 40px;
+    font-size: 90%;
 }
 
 /* Show and affix the side nav when space allows it */
