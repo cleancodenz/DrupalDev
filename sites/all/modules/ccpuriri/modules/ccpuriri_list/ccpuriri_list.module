@@ -634,7 +634,7 @@ function ccpuriri_list_menu() {
  *  
  * **/
 function ccpuriri_list_menu_get_item_alter(&$router_item, $path, $original_map) {
- 
+ /** this will cause list to be the preferred link of list/2 
   if ($router_item['path'] == 'list/%' 
       || $router_item['path'] == 'list/add') {
       $router_item['tab_parent'] ='list';
@@ -647,6 +647,7 @@ function ccpuriri_list_menu_get_item_alter(&$router_item, $path, $original_map) 
     $router_item['tab_parent'] ='list/%';
     $router_item['tab_root'] ='list';
   } 
+  **/
 }
 
 
