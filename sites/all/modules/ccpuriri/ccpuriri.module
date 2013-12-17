@@ -35,22 +35,22 @@ function ccpuriri_menu_alter(&$items)
 {
   // user navigation menu
   $items['user']['title callback'] = '_ccpuriri_user_menu_title';
-  
+
   $items['user/login']['type'] = MENU_NORMAL_ITEM;
 
   //get the titile back by making it a normal menu item
   // need manual change to move it to top level
   $items['user/register']['type'] = MENU_NORMAL_ITEM;
   $items['user/register']['title'] ='Sign up';
-  
-  
+
+
   // must remove original one, it can only have one
   if (array_key_exists('user/%user',$items))
   {
     unset($items['user/%user']);
   }
 
-  
+
   if (array_key_exists('user/%user/view',$items))
   {
     unset($items['user/%user/view']);
@@ -71,33 +71,43 @@ function ccpuriri_menu_alter(&$items)
     unset($items['user/%user/cancel']);
   }
 
-  
+
   // this is the user menu top bar
   // with user/%/account etc as its submenu
   $items['user/%user_uid_optional'] = array(
       'title' => 'My account',
+      'weight' => 40,
       'page callback' => 'user_view_page',
       'page arguments' => array(1),
       'access callback' => 'user_view_access',
       'access arguments' => array(1),
+      'menu_name' => 'ccpuririmainnavigation',
+      'options'=>array(
+          'icon'=>'user',
+          'html'=>true,
+      ),
   );
-  
+
   $items['user/%user_uid_optional/cancel'] = array(
-      'title' => 'Cancel account',
+      'title' => 'Cancel',
+      'weight' => 60,
       'page callback' => 'drupal_get_form',
       'page arguments' => array('user_cancel_confirm_form', 1),
       'access callback' => 'user_cancel_access',
       'access arguments' => array(1),
+      'menu_name' => 'ccpuririmainnavigation',
       'file' => drupal_get_path('module', 'user').'/user.pages.inc',
   );
-  
+
   // here for new development to compare with
   // later on set this to admin only
   $items['user/%user_uid_optional/edit'] = array(
       'title' => 'Edit',
+      'weight' => 50,
       'page callback' => 'drupal_get_form',
       'page arguments' => array('user_profile_form', 1),
       'access arguments' => array('administer users'),
+      'menu_name' => 'ccpuririmainnavigation',
       'file' => drupal_get_path('module', 'user').'/user.pages.inc',
   );
 }
@@ -105,73 +115,54 @@ function ccpuriri_menu_alter(&$items)
 
 /*
  * hook_menu_link_alter, this is perlink
- * */
+* */
 function ccpuriri_menu_link_alter(&$link) {
-  
+
   // items logged in
-  
-  //the menu name change has to be in hook_menu_link_alter 
+
+  //the menu name change has to be in hook_menu_link_alter
   if ($link['link_path'] == 'user' && $link['module'] == 'system') {
     $link['menu_name'] ='secondary_top';
     $link['weight'] =10;
     $link['options']['icon'] = 'user';
     $link['options']['html'] = true;
+    $link['expanded'] = 0; // do not expand on top level
   }
- 
+
   if ($link['link_path'] == 'user/logout' && $link['module'] == 'system') {
-    
+
     $link['menu_name'] ='secondary_top';
     $link['weight'] =20;
     $link['options']['icon'] = 'log-out';
     $link['options']['html'] = true;
     $link['plid'] = 0; // move it to top level
   }
-  
-  
- 
+
+
+
   // items for not logged in
-  
+
   if ($link['link_path'] == 'user/login' && $link['module'] == 'system') {
 
     $link['weight'] =10;
     $link['menu_name'] ='secondary_top';
     $link['options']['icon'] = 'log-in';
     $link['options']['html'] = true;
-    
+
     $link['plid'] = 0; // move it to top level
   }
-  
+
   if ($link['link_path'] == 'user/register' && $link['module'] == 'system') {
-    
+
     $link['weight'] =15;
     $link['menu_name'] ='secondary_top';
     $link['options']['icon'] = 'cog';
     $link['options']['html'] = true;
     $link['plid'] = 0; // move it to top level
   }
-  
-   //change of  $items['user/%user_uid_optional'], but only need to reference %
-  if ($link['link_path'] == 'user/%' && $link['module'] == 'system') {
-    
-    $link['weight'] =10;
-    $link['menu_name'] ='ccpuririusernavigation';
-    $link['options']['icon'] = 'user';
-    $link['options']['html'] = true;
-  }
- 
-  if ($link['link_path'] == 'user/%/cancel' && $link['module'] == 'system') {
-    
-    $link['weight'] =100;
-    $link['menu_name'] ='ccpuririusernavigation';
-    
-  }
-  
-  if ($link['link_path'] == 'user/%/cancel' && $link['module'] == 'system') {
-  
-    $link['menu_name'] ='ccpuririusernavigation';
-    
-  }
-  
+
+
+   
 }
 
 /**
@@ -201,7 +192,7 @@ function ccpuriri_menu() {
       'page arguments' => array('ccpuriri_user_account_info_form', 1),
       'access callback' => 'user_edit_access',
       'access arguments' => array(1),
-      'menu_name' => 'ccpuririusernavigation',
+      'menu_name' => 'ccpuririmainnavigation',
       'weight' =>10,
       'file' =>'ccpuriri.user.pages.inc'
   );
@@ -212,7 +203,7 @@ function ccpuriri_menu() {
       'page arguments' => array('ccpuriri_user_picture_form', 1),
       'access callback' => 'user_edit_access',
       'access arguments' => array(1),
-      'menu_name' => 'ccpuririusernavigation',
+      'menu_name' => 'ccpuririmainnavigation',
       'weight' =>30,
       'file' =>'ccpuriri.user.pages.inc'
   );
@@ -223,7 +214,7 @@ function ccpuriri_menu() {
       'page arguments' => array('ccpuriri_user_address_form', 1),
       'access callback' => 'user_edit_access',
       'access arguments' => array(1),
-      'menu_name' => 'ccpuririusernavigation',
+      'menu_name' => 'ccpuririmainnavigation',
       'weight' =>20,
       'file' =>'ccpuriri.user.pages.inc'
   );
@@ -234,7 +225,7 @@ function ccpuriri_menu() {
       'page arguments' => array('ccpuriri_user_contact_form', 1),
       'access callback' => 'user_edit_access',
       'access arguments' => array(1),
-      'menu_name' => 'ccpuririusernavigation',
+      'menu_name' => 'ccpuririmainnavigation',
       'weight' =>20,
       'file' =>'ccpuriri.user.pages.inc'
   );
@@ -268,7 +259,7 @@ function ccpuriri_menu() {
  */
 function ccpuriri_block_info() {
 
-  $blocks['navigation'] =array(
+  $blocks['ccpuriri_navigation'] =array(
       'info' => t('CCPuriri Navigation- add to sidebar first'),
       'region' => 'sidebar_first',
       // Menu blocks can't be cached because each menu item can have
@@ -291,7 +282,7 @@ function ccpuriri_block_view($delta = '') {
 
   $block = array();
   switch ($delta) {
-    case 'navigation':
+    case 'ccpuriri_navigation':
       $block['subject'] = NULL;
       $block['content'] = _ccpuriri_get_navigation();
       return $block;
@@ -304,30 +295,18 @@ function _ccpuriri_get_navigation()
 {
   if(user_is_logged_in())
   {
+    $tree =  menu_tree_page_data('ccpuririmainnavigation');
+
     // to get current router item
     $router_item = menu_get_item();
 
-    if (isset($router_item['map']) && count($router_item['map'])>0)
+    if (isset($router_item['map']) && count($router_item['map'])>0
+        && $router_item['map'][0]=='list' )
     {
-      switch ($router_item['map'][0]) {
-        case 'user':
-          $tree = menu_tree_page_data('ccpuririusernavigation');
-          break;
-        case 'list':
-           
-          $tree = menu_tree_page_data('ccpuririlistnavigation');
-          // add custom lists
-          _ccpuriri_add_user_created_lists($tree);
+      
+      // add custom lists
+      _ccpuriri_add_user_created_lists($tree);
 
-          break;
-         case 'rental':
-            $tree = menu_tree_page_data('ccpuririrentalnavigation');
-            break;
-          
-        default:
-          $tree =  menu_tree_page_data('ccpuririmainnavigation');
-        break;
-      }
     }
      
     if (isset($tree) && !empty($tree))
@@ -348,10 +327,21 @@ function _ccpuriri_get_navigation()
 
 function  _ccpuriri_add_user_created_lists(&$tree)
 {
-
-  reset($tree);
-  $first_key = key($tree);
-
+  // find the list key
+  foreach ($tree as $key => $value)
+  {
+    if ($value['link']['link_path']=='list')
+    {
+      $listkey = $key;
+      break;    
+    }
+  }
+  
+  if (!isset($listkey))
+  {
+    return;
+  }
+ 
   // to get the list
   $userlist= ccpuriri_list_load_user();
 
@@ -369,22 +359,28 @@ function  _ccpuriri_add_user_created_lists(&$tree)
         {
           $currentlistid = $current_router_item['map'][1]->lid;
            
-          // take out the last item which is supposed to be list/%
-          end($tree[$first_key]['below']);
-
-          $lastmenukey = key($tree[$first_key]['below']);
-          $currentmenuitem = $tree[$first_key]['below'][$lastmenukey];
-
-          // double check the last item
-          if ($currentmenuitem['link']['href']=='list/'.$currentlistid)
+          // take out the item which is supposed to be list/%
+          foreach($tree[$listkey]['below'] as $glistkey => $glistvalue)
           {
-            unset($tree[$first_key]['below'][$lastmenukey]);
-            _ccpuriri_list_tree_add_list($userlist, $tree[$first_key]['below'],
-                $currentmenuitem,$lastmenukey, $currentlistid);
+            if ($glistvalue['link']['href']=='list/'.$currentlistid)
+            {
+              $itemmenukey = $glistkey;
+              break;
+            }
+          }
+          
+          if (isset($itemmenukey))
+          {
+            $currentmenuitem = $tree[$listkey]['below'][$itemmenukey];
             
+            
+            unset($tree[$listkey]['below'][$itemmenukey]);
+            _ccpuriri_list_tree_add_list($userlist, $tree[$listkey]['below'],
+                $currentmenuitem,$itemmenukey, $currentlistid);
+
             return ;
           }
-  
+
         }
       }
 
@@ -393,7 +389,7 @@ function  _ccpuriri_add_user_created_lists(&$tree)
     // create items for user list
     //current tree is as this
     /*
-     $tree	Array [1]
+    $tree	Array [1]
     50010 My Lists 1780	Array [2]
     link	Array [45]
     below	Array [3]
@@ -402,8 +398,8 @@ function  _ccpuriri_add_user_created_lists(&$tree)
     50000 Add list 1781	Array [2]
     50000 hgt(0) 1782 Array
     */
-     
-   _ccpuriri_list_tree_add_list($userlist, $tree[$first_key]['below']);
+    // add user lists under list
+    _ccpuriri_list_tree_add_list($userlist, $tree[$listkey]['below']);
 
   }
 
@@ -433,7 +429,7 @@ function _ccpuriri_list_tree_add_list($userlist,&$treeref,$currentMenuItem=NULL,
       $treeref[$title]=array(
           'link'=> array(
               'mlid'=> $i, // just a fake mlid to be used by array indexing
-              'menu_name'=>'ccpuririlistnavigation',
+              'menu_name'=>'ccpuririmainnavigation',
               'title'=> $title,
               'href' => 'list/'.$list->lid,
               'access' =>true,
@@ -465,14 +461,14 @@ function _ccpuriri_list_tree_add_list($userlist,&$treeref,$currentMenuItem=NULL,
 function ccpuriri_user_insert(&$edit, $account, $category) {
 
   $roles = user_roles();
-  
+
   $key = array_search(CCPURIRI_RENTAL_STANDARD_ROLE,$roles);
-  
+
   if($key)
   {
     //add all authenticated user to CCPURIRI_RENTAL_STANDARD_ROLE
-      $account->roles[$key] = CCPURIRI_RENTAL_STANDARD_ROLE;
-    
+    $account->roles[$key] = CCPURIRI_RENTAL_STANDARD_ROLE;
+
   }
 
 }

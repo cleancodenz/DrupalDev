@@ -140,7 +140,7 @@ function ccpuriri_list_uninstall() {
  */
 function ccpuriri_list_enable() {
 
-  _ccpuriri_list_add_custom_menu();
+ 
 
 }
 
@@ -149,7 +149,7 @@ function ccpuriri_list_enable() {
  */
 function ccpuriri_list_disable() {
 
-  _ccpuriri_list_remove_custom_menu();
+
 
 }
 
@@ -185,39 +185,7 @@ function  _ccpuriri_setup_lists()
 }
 
 
-/*
- * Add menu blocks
-* */
-function _ccpuriri_list_add_custom_menu(){
 
 
-  //create ccpuririlistnavigation
-  //This is group for list related menu items, only displayed when url is list/
-  //It will be switched on by main navigation block CCPuriri Navigation
-
-  $ccpuririlistnavigationmenu = array(
-      'menu_name' => 'ccpuririlistnavigation',
-      'title' => 'CCPuriri List Navigation - not to be added to sidebar',
-      'description' => 'CCPuriri list navigation menu, do not add this to regions, as it is displayed by CCPuriri Navigation block.',
-  );
-
-  menu_save($ccpuririlistnavigationmenu);
- 
-
-}
-
-/*
- * Remove menu blocks
-* */
-function _ccpuriri_list_remove_custom_menu(){
-
-  $ccpuririlistnavigationmenu = array(
-      'menu_name' => 'ccpuririlistnavigation',
-
-  );
-
-  menu_delete($ccpuririlistnavigationmenu);
-
-}
 
 

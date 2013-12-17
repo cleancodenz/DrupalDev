@@ -1,8 +1,7 @@
 <?php 
-/**
- * @file
- *  Install, update and uninstall functions for the ccpuriri module.
- */
+
+require_once (dirname(__FILE__) . '/ccpuriri.menusetup.inc');
+
 
 
 
@@ -21,41 +20,52 @@ function ccpuriri_schema() {
  */
 function ccpuriri_install() {
 
+  // Menu operations
+  /**
   //create custome menu blocks, like secondary top etc
   _ccpuriri_menu_blocks_custom_add();
-
-  // add list related menu items to our menu blocks
-  _ccpuriri_menu_system_main_add_list();
-
-  // add menu items to system main menu
-  _ccpuriri_menu_main_add_items();
-
+  
+  //add home to ccpuriri main menu
+  _ccpuriri_menu_home_add();
+  
+  
+  //add list related menu items to ccpuriri main menu
+  _ccpuriri_menu_list_add();
+  
+  //add rental related menu items to ccpuriri main menu
+  _ccpuriri_menu_rental_add();
+  **/
+  
+  // End of menu operations
+  
   // setup rental role and permissions, all previously
   // signed up users will be given rental create permission by this function
   // new signed up users will automatically have rental create permission
   _ccpuriri_rental_permission_setup();
-
+  
   // add fields
-
+  
   // create address field, add an address field instance to user
   _ccpuriri_field_addressfield_add();
-
+  
   // create contact field, add a contact field instance to user
   _ccpuriri_field_contactfield_add();
-
+  
   // create longtext field
   _ccpuriri_field_longtext_add();
- 
+  
   // add instances
-
+  
   //add address field instance to rental
   _ccpuriri_field_addressfield_rental_add();
-
+  
   // add contact field instance to rental
   _ccpuriri_field_contactfield_rental_add();
-
+  
   // add description field instance to rental type
   _ccpuriri_field_description_rental_add();
+  
+  
 
 }
 
@@ -65,44 +75,45 @@ function ccpuriri_install() {
 function ccpuriri_uninstall() {
 
   // remove instances
-
+  
   //remove address field instance to rental
   _ccpuriri_field_addressfield_rental_remove();
-
+  
   //remove contact field instance to rental
   _ccpuriri_field_contactfield_rental_remove();
-
+  
   //remove description field instance to rental type
   _ccpuriri_field_description_rental_remove();
   
   // remove fields
-
+  
   // remove address field and all its instance data
   _ccpuriri_field_addressfield_remove();
-
+  
   // remove contact field and all its instance data
   _ccpuriri_field_contactfield_remove();
-
+  
   // remove longtext field
   _ccpuriri_field_longtext_remove();
   
-
+  // Menu operations
+  /**
   // remove menus
-
+  
   //delete custome menu blocks, like secondary top etc
   _ccpuriri_menu_blocks_custom_remove();
-
-  // delete list related menu items to our menu blocks
-  _ccpuriri_menu_system_main_remove_list();
-
-  // delete menu items to system main menu
+  
+  
+  // delete menu items from system main menu
   _ccpuriri_menu_main_remove_items();
-
+  **/
+  //End of menu operations
+  
   // remove permission and roles
-
+  
   // delete rental role and permissions
   _ccpuriri_rental_permission_dispose();
-
+  
 
 }
 
@@ -112,19 +123,45 @@ function ccpuriri_uninstall() {
  * Implementation of hook_enable().
  */
 function ccpuriri_enable() {
+ 
+  // Menu operations
   
-  // to add the named tags under a rental item view
-  _ccpuriri_menu_system_ccpuririrentalnavigation_namedtags_add();
+  //create custome menu blocks, like secondary top etc
+  _ccpuriri_menu_blocks_custom_add();
   
+  //add home to ccpuriri main menu
+  _ccpuriri_menu_home_add();
+  
+  
+  //add list related menu items to ccpuriri main menu
+  _ccpuriri_menu_list_add();
+  
+  //add rental related menu items to ccpuriri main menu
+  _ccpuriri_menu_rental_add();
+  
+  // End of menu operations
+  
+   
 }
 
 /**
  * Implementation of hook_disable().
  */
 function ccpuriri_disable() {
-
-  // to add the named tags under a rental item view
-  _ccpuriri_menu_system_ccpuririrentalnavigation_namedtags_remove();
+  
+  // Menu operations
+  // remove menus
+  
+  //delete custome menu blocks, like secondary top etc
+  _ccpuriri_menu_blocks_custom_remove();
+  
+  
+  // delete menu items from system main menu
+  _ccpuriri_menu_main_remove_items();
+  
+  //End of menu operations
+  
+  
   
 }
 
@@ -518,34 +555,12 @@ function _ccpuriri_menu_blocks_custom_add(){
       WATCHDOG_DEBUG);
 
 
+ 
   $startTime=  microtime(TRUE);
-  //2. create ccpuririusernavigation
-  //This is group for account related menu items, only displayed when url is user/1
-  //It will be switched on by main navigation block CCPuriri Navigation
+ 
 
-
-  $ccpuririusernavigationmenu = array(
-      'menu_name' => 'ccpuririusernavigation',
-      'title' => 'CCPuriri User Navigation- not to be added to sidebar',
-      'description' => 'CCPuriri User Navigation menu, do not add this to regions, as it is displayed by CCPuriri Navigation block',
-  );
-
-  menu_save($ccpuririusernavigationmenu);
-
-
-  watchdog('ccpuriri',
-      'ccpuririusernavigation menu block is added, time elapsed is %timeElpased ms',
-      array('%timeElpased' =>
-          round((microtime(TRUE) - $startTime) * 1000,2)
-
-      ),
-      WATCHDOG_DEBUG);
-
-  $startTime=  microtime(TRUE);
-  // 3 list navigation is added by list module
-
-  //4. create ccpuririmainnavigation
-  //This is for working area for logged in user
+  //2. create ccpuririmainnavigation
+  //This is left side menu
   //It will be switched on by navigation block CCPuriri Navigation when no specific menu block is required
 
 
@@ -659,16 +674,10 @@ function  _ccpuriri_menu_blocks_custom_remove(){
 
   menu_delete($secondarymenu);
 
-  // 2. delete custom menu
-  $ccpuririusernavigation = array(
-      'menu_name' => 'ccpuririusernavigation',
-  );
-
-  menu_delete($ccpuririusernavigation);
-  //3 list menu will be deleted by list module
-
-  // 4 delete ccpuriri main menu
-  $ccpuririmainrnavigation = array(
+  
+  
+  //2 delete ccpuriri main menu
+  $ccpuririmainnavigation = array(
       'menu_name' => 'ccpuririmainnavigation',
   );
 
@@ -685,308 +694,8 @@ function  _ccpuriri_menu_blocks_custom_remove(){
 
 }
 
-/*
- * Add list to main menu, this must be in main module as it depends on list module
-*
-* */
-function _ccpuriri_menu_system_main_add_list(){
 
-  $startTime=  microtime(TRUE);
 
-  //add the list to main menu
-
-  $list_item = array(
-      'menu_name' => 'main-menu',
-      'weight' => 100,
-      'link_title' => t('My Lists'), //use the router one, to activate callback
-      'link_path' => 'list',
-      'router_path' => 'list',
-      'module' => 'ccpuriri_list',
-      'description' => 'My lists menu item on system main menu',
-      'options'=>array(
-          'icon'=>'indent-left',
-          'html'=>true,
-      ),
-      'expanded' => 0,
-
-  );
-
-
-  menu_link_save($list_item);
-
-
-  // add the shared list to ccpuririlistnavigation
-  $lists = ccpuriri_list_load_shared();
-
-  $menuname = 'ccpuririlistnavigation';
-
-  $i=-100;
-
-  // do not use this item as parent for shared list menus
-  // The parent should be the one on same menu which is ccpuririlistnavigation
-  $parentmid= ccpuriri_list_root_menu_link_id();
-
-  if (isset($parentmid) && $parentmid>0)
-  {
-
-    foreach($lists as $key=>$list)
-    {
-
-      $sharedlistitem = array(
-          'menu_name' => $menuname,
-          'weight' => $i +10,
-          'link_title' => 'My listsss', // use router title to activate call back
-          'link_path' => 'list/'.$list->lid,
-          'description' => 'Shared list '.$list->title.' menu item on navigation menu',
-          'options'=>array(
-              'icon'=>'tag',
-              'html'=>true,
-          ),
-          'plid' => $parentmid,
-          'module' => 'ccpuriri_list',
-      );
-
-      menu_link_save($sharedlistitem);
-      $i =$i+10;
-    }
-  }
-
-  watchdog('ccpuriri',
-      'List menu items are added, time elapsed is %timeElpased ms',
-      array('%timeElpased' =>
-          round((microtime(TRUE) - $startTime) * 1000,2)
-
-      ),
-      WATCHDOG_DEBUG);
-}
-
-/*
- * remove list from main menu, this must be in main module as it depends on list module
-*
-*/
-function _ccpuriri_menu_system_main_remove_list(){
-
-  $startTime=  microtime(TRUE);
-
-  $menuname= "main-menu";
-
-  $module = "ccpuriri_list";
-
-  //delete /list from manin menu
-  $delete_query = db_delete('menu_links')
-  ->condition('menu_name', $menuname)
-  ->condition('module', $module);
-
-  $delete_query->execute();
-
-  // delete top lists from ccpuririlistnavigation
-  $menuname= "ccpuririlistnavigation";
-  $delete_query = db_delete('menu_links')
-  ->condition('menu_name', $menuname)
-  ->condition('module', $module);
-
-  $delete_query->execute();
-
-  watchdog('ccpuriri',
-      'List menu links are removed, time elapsed is %timeElpased ms',
-      array('%timeElpased' =>
-          round((microtime(TRUE) - $startTime) * 1000,2)
-
-      ),
-      WATCHDOG_DEBUG);
-
-
-}
-
-
-/*
- * Add named anchor tags(using id actually) to rental view  
-*
-* */
-function _ccpuriri_menu_system_ccpuririrentalnavigation_namedtags_add(){
-
-  $startTime=  microtime(TRUE);
-  
-  $menuname = 'ccpuririrentalnavigation';
-
-  $i=-100;
-
-  // The parent should be the one on same menu which is ccpuririrentalnavigation
-  $parentmid= _ccpuriri_rental_view_menu_id();
-
-  if (isset($parentmid) && $parentmid>0)
-  {
-      $address = array(
-          'menu_name' => $menuname,
-          'weight' => 10,
-          'link_title' => 'Address', 
-          'link_path' => '#address',
-          'customized'=>true,
-          'description' => 'Address of Rental',
-          'plid' => $parentmid,
-          'options'=>array(
-              'alter'=>true,
-          ),
-          'module' => 'ccpuriri_rental',
-      );
-
-      menu_link_save($address);
-
-      $contact = array(
-          'menu_name' => $menuname,
-          'weight' => 10,
-          'link_title' => 'Contacts',
-          'link_path' => '#contacts',
-          'customized'=>true,
-          'description' => 'Contacts of Rental',
-          'plid' => $parentmid,
-          'options'=>array(
-              'alter'=>true,
-          ),
-          'module' => 'ccpuriri_rental',
-      );
-      
-      menu_link_save($contact);
-      
-   
-  }
-
-  watchdog('ccpuriri',
-      'Named anchor links are added to ccpuririrentalnavigation menu, time elapsed is %timeElpased ms',
-      array('%timeElpased' =>
-          round((microtime(TRUE) - $startTime) * 1000,2)
-
-      ),
-      WATCHDOG_DEBUG);
-}
-
-/*
- * Remove named anchor tags(using id actually) to rental view
-*
-* */
-function _ccpuriri_menu_system_ccpuririrentalnavigation_namedtags_remove(){
-
-  $startTime=  microtime(TRUE);
-
-  // delete #address
-  menu_link_delete(NULL, '#address');
-  
-  
-  // delete #address
-  menu_link_delete(NULL, '#contacts');
-  
-
-  watchdog('ccpuriri',
-      'Named anchor links are deleted from ccpuririrentalnavigation menu, time elapsed is %timeElpased ms',
-      array('%timeElpased' =>
-          round((microtime(TRUE) - $startTime) * 1000,2)
-
-      ),
-      WATCHDOG_DEBUG);
-}
-
-
-
-/*
- * Add item to ccpuriri main menu
-* it is visible only when user is logged in
-*
-* */
-function _ccpuriri_menu_main_add_items(){
-
-  $startTime=  microtime(TRUE);
-
-  // first add home to it
-  $home_item = array(
-      'menu_name' => 'ccpuririmainnavigation',
-      'weight' => -100,
-      'link_title' => t('Home'),
-      'link_path' => '<front>',
-      'router_path' => '',
-      'module' => 'ccpuriri',
-      'description' => 'Home on main menu',
-      'options'=>array(
-          'icon'=>'home',
-          'html'=>true,
-      ),
-      'external' => 1,
-      'expanded' => 0,
-
-  );
-
-  menu_link_save($home_item);
-
-  //second add my lists to it
-
-
-  $list_item = array(
-      'menu_name' => 'ccpuririmainnavigation',
-      'weight' => -90,
-      'link_title' => t('My Lists'),
-      'link_path' => 'list',
-      'router_path' => 'list',
-      'module' => 'ccpuriri',
-      'description' => 'My lists menu item on main menu',
-      'options'=>array(
-          'icon'=>'indent-left',
-          'html'=>true,
-      ),
-      'expanded' => 0,
-
-  );
-
-  menu_link_save($list_item);
-
-  // 3 add my account to it
-
-  $account_item = array(
-      'menu_name' => 'ccpuririmainnavigation',
-      'weight' => -80,
-      'link_title' => t('My account'),
-      'link_path' => 'user',
-      'router_path' => 'user',
-      'module' => 'ccpuriri',
-      'description' => 'My account menu item on main menu',
-      'options'=>array(
-          'icon'=>'user',
-          'html'=>true,
-      ),
-      'expanded' => 0,
-
-  );
-
-  menu_link_save($account_item);
-
-
-  //add rental to main menu
-
-  $rental_item = array(
-      'menu_name' => 'main-menu',
-      'weight' => 120,
-      'link_title' => t('Rental'), //use the router one, to activate callback
-      'link_path' => 'rental',
-      'router_path' => 'rental',
-      'module' => 'ccpuriri_rental',
-      'description' => 'Rental menu item on system main menu',
-      'options'=>array(
-          'icon'=>'th', // th-large for house
-          'html'=>true,
-      ),
-      'expanded' => 0,
-  );
-
-
-  menu_link_save($rental_item);
-
-
-  watchdog('ccpuriri',
-      'Menu links home, list my account etc are added, time elapsed is %timeElpased ms',
-      array('%timeElpased' =>
-          round((microtime(TRUE) - $startTime) * 1000,2)
-
-      ),
-      WATCHDOG_DEBUG);
-}
 
 /*
  * Add item to ccpuriri main menu
@@ -999,27 +708,16 @@ function _ccpuriri_menu_main_remove_items(){
 
   $menuname= "ccpuririmainnavigation";
 
-  $module = "ccpuriri";
+ 
 
   //delete * from ccpuririmainnavigation
   $delete_query = db_delete('menu_links')
-  ->condition('menu_name', $menuname)
-  ->condition('module', $module);
+  ->condition('menu_name', $menuname);
+ 
 
-  $delete_query->execute();
+  $records = $delete_query->execute();
 
-  // delete the ccpuriri-rental item on main-menu
-  $menuname= "main-menu";
-
-  $module = "ccpuriri_rental";
-
-  $delete_query = db_delete('menu_links')
-  ->condition('menu_name', $menuname)
-  ->condition('module', $module);
-
-  $delete_query->execute();
-
-
+  
 
   watchdog('ccpuriri',
       'ccpuririmainnavigation Menu links are removed, time elapsed is %timeElpased ms',
@@ -1035,27 +733,27 @@ function _ccpuriri_menu_main_remove_items(){
 /*
  * it has to be in main module, compared in rental module
 * where the node type has not be created in module enable or disable
-*set up a particular role ccpuriri_rental_standard_role for rental type
-* set up permissions for ccpuriri_rental_standard_role
+*set up a particular role 'CCPuriri rental standard user' for rental type
+* set up permissions for 'CCPuriri rental standard user'
 * assign this role to all existing users exectept admin
 *
 *
 * */
 function _ccpuriri_rental_permission_setup()
 {
-  // create CCPURIRI_RENTAL_STANDARD_ROLE
+  // create role :'CCPuriri rental standard user'
 
   // role id keyed key value array, value is role name
   $roles = user_roles();
 
-  $key = array_search(CCPURIRI_RENTAL_STANDARD_ROLE,$roles);
+  $key = array_search('CCPuriri rental standard user',$roles);
 
 
   if(!$key)
   {
     // add the standard role
     $standardRole= new stdClass();
-    $standardRole->name = CCPURIRI_RENTAL_STANDARD_ROLE;
+    $standardRole->name = 'CCPuriri rental standard user';
 
     user_role_save($standardRole);
 
@@ -1066,11 +764,11 @@ function _ccpuriri_rental_permission_setup()
 
   $roles = user_roles();
 
-  $key = array_search(CCPURIRI_RENTAL_STANDARD_ROLE,$roles);
+  $key = array_search('CCPuriri rental standard user',$roles);
 
   if($key)
   {
-    // set up the permissions for CCPURIRI_RENTAL_STANDARD_ROLE
+    // set up the permissions for 'CCPuriri rental standard user'
     // do not call module_invoke_all('permission') as current content type has not been added yet
 
     $type = 'ccpuriri_rental';
@@ -1114,8 +812,8 @@ function _ccpuriri_rental_permission_setup()
 }
 
 /**
- * remove users for role  ccpuriri_rental_standard_role
- * remove permissions for role ccpuriri_rental_standard_role
+ * remove users for role  'CCPuriri rental standard user'
+ * remove permissions for role 'CCPuriri rental standard user'
  * remove role itself
  *
  * */
@@ -1126,7 +824,7 @@ function _ccpuriri_rental_permission_dispose()
   // role id keyed key value array, value is role name
   $roles = user_roles();
   // if not found it returns false, otherwise the key
-  $key = array_search(CCPURIRI_RENTAL_STANDARD_ROLE,$roles);
+  $key = array_search('CCPuriri rental standard user',$roles);
 
   if($key)
   {

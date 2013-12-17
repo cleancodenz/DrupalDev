@@ -569,12 +569,14 @@ function ccpuriri_list_menu() {
       'page arguments' => array('ccpuriri_list_form'),
       //'user_is_logged_in', changed to true, it is visible for every one,but when click it will prompt login
       'access callback' => true,
-      'menu_name' => 'ccpuririlistnavigation',
+      'menu_name' => 'main-menu',
       'weight' =>10,
       'options'=>array(
           'icon'=>'indent-left',
           'html'=>true,
       ),
+     // We only display the top level, child here to indicate the active trail
+      'expanded' => 0,
       'file' =>'ccpuriri_list.pages.inc'
   );
 
@@ -585,7 +587,7 @@ function ccpuriri_list_menu() {
       'page arguments' => array('ccpuriri_list_edit_form','add'),
       'access callback' => 'user_is_logged_in',
       'description' => 'Add a user list',
-      'menu_name' => 'ccpuririlistnavigation',
+      'menu_name' => 'main-menu',
       'file' => 'ccpuriri_list.pages.inc',
   );
 
@@ -600,7 +602,7 @@ function ccpuriri_list_menu() {
       'page arguments' => array(1),
       'access callback' => 'ccpuriri_list_access',
       'access arguments' => array('view', 1),
-      'menu_name' => 'ccpuririlistnavigation',
+      'menu_name' => 'main-menu',
       'file' => 'ccpuriri_list.pages.inc',
   );
 
@@ -611,7 +613,7 @@ function ccpuriri_list_menu() {
       'access callback' => 'ccpuriri_list_access',
       'access arguments' => array('update', 1),
        'weight' => 0,
-      'menu_name' => 'ccpuririlistnavigation',
+      'menu_name' => 'main-menu',
       'file' => 'ccpuriri_list.pages.inc',
   );
   $items['list/%ccpuriri_list/delete'] = array(
@@ -621,7 +623,7 @@ function ccpuriri_list_menu() {
       'access callback' => 'ccpuriri_list_access',
       'access arguments' => array('delete', 1),
       'weight' => 1,
-      'menu_name' => 'ccpuririlistnavigation',
+      'menu_name' => 'main-menu',
       'file' => 'ccpuriri_list.pages.inc',
   );
 

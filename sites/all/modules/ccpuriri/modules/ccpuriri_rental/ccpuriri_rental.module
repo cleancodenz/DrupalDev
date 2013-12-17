@@ -25,12 +25,14 @@ function ccpuriri_rental_menu() {
       'title' => t('Rentals'),
       'page callback' => '_ccpuriri_rental_list_page',
       'access arguments' => array('access content'),
-      'menu_name' => 'ccpuririrentalnavigation',
+      'menu_name' => 'main-menu',
       'weight' =>10,
       'options'=>array(
           'icon'=>'th',
           'html'=>true,
       ),
+      // We only display the top level, child here to indicate the active trail
+      'expanded' => 0,
       'file' =>'ccpuriri_rental.pages.inc'
   );
 
@@ -43,7 +45,7 @@ function ccpuriri_rental_menu() {
       'access callback' => 'node_access',
       'access arguments' => array('create', 'ccpuriri_rental'),
       'description' => 'Add a rental',
-      'menu_name' => 'ccpuririrentalnavigation',
+      'menu_name' => 'main-menu',
       'file' => 'node.pages.inc',
       'file path' =>drupal_get_path('module', 'node'), 
   );
@@ -61,17 +63,18 @@ function ccpuriri_rental_menu() {
       'page arguments' => array(1),
       'access callback' => 'node_access',
       'access arguments' => array('view', 1),
-      'menu_name' => 'ccpuririrentalnavigation',
+      'menu_name' => 'main-menu',
 
   );
 
   $items['rental/%ccpuriri_rental_menu/edit'] = array(
       'title' => t('Edit'),
+      'weight' =>1000,
       'page callback' => 'node_page_edit',
       'page arguments' => array(1),
       'access callback' => 'node_access',
       'access arguments' => array('update', 1),
-      'menu_name' => 'ccpuririrentalnavigation',
+      'menu_name' => 'main-menu',
       'weight' => 0,
       'file' => 'node.pages.inc',
       'file path' =>drupal_get_path('module', 'node'),
@@ -200,7 +203,7 @@ function _ccpuriri_rental_view_menu_id() {
  */
 function ccpuriri_rental_translated_menu_link_alter(&$link) {
   // add named tags.
-  if ($link['link_path'] == '#address' && $link['module'] == 'ccpuriri_rental') {
+  if ($link['link_path'] == '#address' && $link['module'] == 'menu') {
 
     $link['access'] = true;
     // set the title, as it has not gone through _menu_item_localize()
