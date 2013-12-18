@@ -185,18 +185,6 @@ function ccpuriri_rental_preprocess_node(&$variables) {
 }
 
 
-/**
- * Get the root menu link (rental/%ccpuriri_rental_menu on ccpuririrentalnavigation).
- */
-function _ccpuriri_rental_view_menu_id() {
-
-  $query = db_query('SELECT mlid FROM menu_links where link_path =:link_path AND menu_name=:menu_name',
-      array(':link_path'=>'rental/%',
-          ':menu_name'=>'ccpuririrentalnavigation',));
-
-  return $query->fetchField();
-
-}
 
 /**
  * Implements hook_translated_menu_link_alter(). for rental/%

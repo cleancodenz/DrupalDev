@@ -229,6 +229,8 @@ function bootstrapcc_menu_link(array $variables) {
   
   // set the localized options html to true, no matter what has been set,
   // in order to make bold text, bages 
+  // if html options need to be true in menu links, they must be set, otehrwise breadcrumb will
+  // expose funny html tags 
   
   $element['#localized_options']['html']= true;
   

@@ -193,6 +193,9 @@ function _ccpuriri_menu_list_add(){
       'link_title' => 'My listsss',
       'link_path' => 'list/%',
       'router_path' => 'list/%',
+      'options'=>array(
+          'html'=>true, // turn on html title
+      ),
       'plid' => $list_item['mlid'],
 
   );
@@ -265,66 +268,6 @@ function _ccpuriri_menu_list_add(){
 }
 
 
-/*
- * Add named anchor tags(using id actually) to rental view
-*
-* */
-function _ccpuriri_menu_system_ccpuririrentalnavigation_namedtags_add(){
-
-  $startTime=  microtime(TRUE);
-
-  $menuname = 'ccpuririmainnavigation';
-
-  $i=-100;
-
-  // The parent should be the one on same menu which is ccpuririrentalnavigation
-  $parentmid= _ccpuriri_rental_view_menu_id();
-
-  if (isset($parentmid) && $parentmid>0)
-  {
-    $address = array(
-        'menu_name' => $menuname,
-        'weight' => 10,
-        'link_title' => 'Address',
-        'link_path' => '#address',
-        'customized'=>true,
-        'description' => 'Address of Rental',
-        'plid' => $parentmid,
-        'options'=>array(
-            'alter'=>true,
-        ),
-        'module' => 'ccpuriri_rental',
-    );
-
-    menu_link_save($address);
-
-    $contact = array(
-        'menu_name' => $menuname,
-        'weight' => 10,
-        'link_title' => 'Contacts',
-        'link_path' => '#contacts',
-        'customized'=>true,
-        'description' => 'Contacts of Rental',
-        'plid' => $parentmid,
-        'options'=>array(
-            'alter'=>true,
-        ),
-        'module' => 'ccpuriri_rental',
-    );
-
-    menu_link_save($contact);
-
-
-  }
-
-  watchdog('ccpuriri',
-      'Named anchor links are added to ccpuririrentalnavigation menu, time elapsed is %timeElpased ms',
-      array('%timeElpased' =>
-          round((microtime(TRUE) - $startTime) * 1000,2)
-
-      ),
-      WATCHDOG_DEBUG);
-}
 
 
 

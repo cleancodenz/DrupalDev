@@ -264,44 +264,6 @@ function _ccpuriri_list_add_list($title,$uid){
     $newlist->title = $title;
     $newlist->uid = $uid;
     ccpuriri_list_save($newlist);
-      
-
-    /*
-    // create menu item as well
-    $menuname = 'ccpuririlistnavigation';
-  
-    $plid = ccpuriri_list_root_menu_link_id();
-    
-    $listitem = array(
-        'menu_name' => $menuname,
-        'weight' => 1000,
-        'link_title' => 'My listsss', // use router title to activate call back, can not be empty as well 
-        'link_path' => 'list/'.$newlist->lid,
-        'description' => 'User customized list',
-        'module' => 'ccpuriri_list',
-        'options'=>array(
-            'alter'=> true, // to use link list/%
-     //       'icon'=>'icon-reorder',
-     //       'html'=>true,
-        ),
-        'plid'=>$plid, 
-    );
-  
-    menu_link_save($listitem);
-  
-    // to get the weight of the list
-    
-    $userlists[$newlist->lid]= $newlist;
-    
-    
-    // uasort
-    uasort($userlists,'_ccpuriri_list_sort_by_title');
-    */
-    // update the weight of all items of this user
-    
- 
-    
-   
  
   
 }

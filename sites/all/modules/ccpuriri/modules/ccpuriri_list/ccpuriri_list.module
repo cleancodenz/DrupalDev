@@ -603,6 +603,9 @@ function ccpuriri_list_menu() {
       'access callback' => 'ccpuriri_list_access',
       'access arguments' => array('view', 1),
       'menu_name' => 'main-menu',
+      'options'=>array(
+          'html'=>true, // the title has html
+      ),
       'file' => 'ccpuriri_list.pages.inc',
   );
 
@@ -714,18 +717,7 @@ function ccpuriri_list_page_title($list) {
   return $list->title.'<span class="badge pull-right">'.$list->items_count.'</span>';
 }
 
-/**
- * Get the root menu link (/list on navigation).
- */
-function ccpuriri_list_root_menu_link_id() {
 
-  $query = db_query('SELECT mlid FROM menu_links where link_path =:link_path AND menu_name=:menu_name',
-      array(':link_path'=>'list',
-          ':menu_name'=>'ccpuririlistnavigation',));
-
-  return $query->fetchField();
-
-}
 
 /**
  *
